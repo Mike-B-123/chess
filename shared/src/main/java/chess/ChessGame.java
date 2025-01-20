@@ -1,5 +1,5 @@
 package chess;
-
+//will work on this in Phase 1 not Phase 0
 import java.util.Collection;
 
 /**

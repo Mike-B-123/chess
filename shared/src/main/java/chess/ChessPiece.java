@@ -48,5 +48,8 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         throw new RuntimeException("Not implemented");
+        // this allows pieces to move and need to implement this
     }
 }
+
+// Note: video mentioned a two string mentioned on the chess move class. What is this?
