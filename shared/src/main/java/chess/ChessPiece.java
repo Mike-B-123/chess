@@ -9,7 +9,7 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessPiece {
-
+// Instructor recommends creating a piece moves caculator class that then has sub classes for moves instead of storing those in the ChessPiece class
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
     }
 
