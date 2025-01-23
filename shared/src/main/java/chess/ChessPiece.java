@@ -34,15 +34,14 @@ public class ChessPiece {
     /**
      * @return Which team this chess piece belongs to
      */
-    public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+    public ChessGame.TeamColor getTeamColor(){
+        return pieceColor ;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-
         return type;
     }
     /**
@@ -53,7 +52,28 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        if type == PieceType.KING ;// do we check the board at the given position for the type or is the type given?
+        if(type == PieceType.KING) {
+            KingMovesCaculator.
+        }
+        else if (type == PieceType.QUEEN) {
+            QueenMovesCaculator
+        }
+        else if (type == PieceType.BISHOP) {
+            BishopMovesCaculator
+        }
+        else if (type == PieceType.KNIGHT) {
+            KnightMovesCaculator
+        }
+        else if (type == PieceType.ROOK) {
+            RookMovesCaculator
+        }
+        else if (type == PieceType.PAWN) {
+            PawnMovesCaculator
+        }
+
+
+
+        // do we check the board at the given position for the type or is the type given?
 
         // this allows pieces to move and need to implement this
     }
