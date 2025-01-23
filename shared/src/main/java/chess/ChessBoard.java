@@ -41,4 +41,6 @@ public class ChessBoard {
     public void resetBoard() {
         throw new RuntimeException("Not implemented");
     }
+    // This is where we establish here each pice should start like in a normal game of chess
+    //
 }

@@ -1,5 +1,5 @@
 package chess;
-
+// learn.cs240.click
 import java.util.Collection;
 
 /**
@@ -9,8 +9,14 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessPiece {
+    private PieceType type ;
+    private final ChessGame.TeamColor pieceColor ; // This is correct just not used yet
+
+    // call the constructor with new Piece (WHITE, King)
 // Instructor recommends creating a piece moves caculator class that then has sub classes for moves instead of storing those in the ChessPiece class
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.type = type ;
+        this.pieceColor = pieceColor ;
     }
 
     /**
@@ -36,9 +42,9 @@ public class ChessPiece {
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
-    }
 
+        return type;
+    }
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -47,9 +53,13 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        if type == PieceType.KING ;// do we check the board at the given position for the type or is the type given?
+
         // this allows pieces to move and need to implement this
     }
 }
+// variables should be private and if needed in other files create a getter that returns the variable
 
 // Note: video mentioned a two string mentioned on the chess move class. What is this?
+// Two string is useful for debug. so you know did and return and should return.
+// only worry about start position and returning possible move areas. NOt if a move is valid.
