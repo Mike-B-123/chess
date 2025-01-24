@@ -1,4 +1,9 @@
 package chess;
 
-public class QueenMovesCaculator {
+import java.util.Collection;
+
+public class QueenMovesCaculator implements PieceMovesCaculator{
+    public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition startPosition) {
+
+    }
 }

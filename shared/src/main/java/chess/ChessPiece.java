@@ -53,22 +53,22 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         if(type == PieceType.KING) {
-            KingMovesCaculator.
+            new KingMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.QUEEN) {
-            QueenMovesCaculator
+           new QueenMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.BISHOP) {
-            BishopMovesCaculator
+            new BishopMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.KNIGHT) {
-            KnightMovesCaculator
+            new KnightMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.ROOK) {
-            RookMovesCaculator
+            new RookMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.PAWN) {
-            PawnMovesCaculator
+            new PawnMovesCaculator().calculateMoves(board, myPosition) ;
         }
 
 
