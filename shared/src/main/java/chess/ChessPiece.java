@@ -2,6 +2,7 @@ package chess;
 // learn.cs240.click
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -18,6 +19,28 @@ public class ChessPiece {
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type ;
         this.pieceColor = pieceColor ;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return type == that.type && pieceColor == that.pieceColor;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, pieceColor);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "type=" + type +
+                ", pieceColor=" + pieceColor +
+                '}';
     }
 
     /**
@@ -55,22 +78,22 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> MovePossibilities = new ArrayList<> () ;
         if(type == PieceType.KING) {
-          // MovePossibilities = new KingMovesCaculator().calculateMoves(board, myPosition) ;
+           MovePossibilities = new KingMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.QUEEN) {
-            // MovePossibilities = new QueenMovesCaculator().calculateMoves(board, myPosition) ;
+             MovePossibilities = new QueenMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.BISHOP) {
-           // MovePossibilities = new BishopMovesCaculator().calculateMoves(board, myPosition) ;
+            MovePossibilities = new BishopMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.KNIGHT) {
-           // MovePossibilities = new KnightMovesCaculator().calculateMoves(board, myPosition) ;
+            MovePossibilities = new KnightMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.ROOK) {
             MovePossibilities = new RookMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.PAWN) {
-           // MovePossibilities = new PawnMovesCaculator().calculateMoves(board, myPosition) ;
+            MovePossibilities = new PawnMovesCaculator().calculateMoves(board, myPosition) ;
         }
 
 

@@ -12,9 +12,10 @@ public class KnightMovesCaculator implements PieceMovesCaculator {
         int col = startPosition.getColumn();
         int[][] numbers = {{row + 2, col + 1}, {row + 1, col + 2}, {row - 1, col + 2},
                 {row-2, col+1}, {row-2, col-1}, {row-1,col-2}, {row+1,col-2}, {row+2,col-1}} ;
-        for (int i = 0; i < numbers.length; i += 1){
-            ChessPosition current_position = new ChessPosition(numbers[i][0], numbers[i][1]) ;
-            if(numbers[i][0] > 8 || numbers[i][1] > 8){
+        for (int[] number : numbers){
+            ChessPosition current_position = new ChessPosition(number[0], number[1]) ;
+            if(current_position.getRow() > 8 || current_position.getColumn() > 8 ||
+            current_position.getRow() < 1 || current_position.getColumn() < 1){
                 continue ;
             }
             if(board.getPiece(current_position) != null
