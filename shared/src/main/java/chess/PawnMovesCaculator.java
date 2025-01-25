@@ -39,9 +39,17 @@ public class PawnMovesCaculator implements PieceMovesCaculator {
         }
         return null ;
     }
-    private class promotionHelper(Collection<ChessMove> possibilities){
+    public Collection<ChessMove> promotionHelper(Collection<ChessMove> possibilities) {
+        Collection<ChessMove> helperPossibilities = new ArrayList<>();
         for (ChessMove move : possibilities) {
-            if(move.get)
+            if(move.getEndPosition().getRow() == 8){
+                int count = 0 ;
+                while( count != 4){
+                    ChessMove SingleMove = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.QUEEN) ;
+                    helperPossibilities.add(SingleMove) ;
+                count ++ ;
+            }
         }
     }
+        return helperPossibilities ;
 }
