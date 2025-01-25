@@ -2,31 +2,37 @@ package chess;
 
 import com.sun.source.tree.WhileLoopTree;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class RookMovesCaculator implements PieceMovesCaculator {
-    private int vertical_direction ;
-    private int horizontal_direction ;
     public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition startPosition) {
-        int count = 0 ;
+        int[][] numbers = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+        Collection<ChessMove> movePossibilities = new ArrayList<>();
         // create an array list with all possible directions ex: ( v = 1, h = 0; v=0, h=1; v= -1, h=0; v=-1, h=0)
-        while(count != 4){
-            int current_row = 0;
-            int current_col = 0;
-            while(true){
-                current_col += horizontal_direction ;
-                current_row += vertical_direction ;
-                if(current_row > 8 || current_col > 8){
-                    break ;
+        for(int [] number : numbers) {
+            int current_row = startPosition.getRow();
+            int current_col = startPosition.getColumn();
+            while (true) {
+                current_row += number[0];
+                current_col += number[1];
+                if (current_row > 8 || current_col > 8 || current_row < 1 || current_col < 1) {
+                    break;
                 }
-                if(board[current_col][current_col] != null){
-                    continue ;
+                ChessPosition current_position = new ChessPosition(current_row, current_col);
+                if (board.getPiece(current_position) != null) {
+                    if(board.getPiece(current_position).getTeamColor() != board.getPiece(startPosition).getTeamColor()){
+                        ChessMove SingleMove = new ChessMove(startPosition, current_position, null);
+                        movePossibilities.add(SingleMove);}
+                    break;
                 }
-                Collection<ChessMove>.add(current_row, current_col) ;
-            }
-            }
 
+                ChessMove SingleMove = new ChessMove(startPosition, current_position, null);
+
+                movePossibilities.add(SingleMove);
+            }
         }
-
+        return movePossibilities ;
     }
 }
+

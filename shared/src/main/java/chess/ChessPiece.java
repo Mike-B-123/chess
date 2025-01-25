@@ -1,5 +1,6 @@
 package chess;
 // learn.cs240.click
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -52,31 +53,33 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> MovePossibilities = new ArrayList<> () ;
         if(type == PieceType.KING) {
-            new KingMovesCaculator().calculateMoves(board, myPosition) ;
+          // MovePossibilities = new KingMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.QUEEN) {
-           new QueenMovesCaculator().calculateMoves(board, myPosition) ;
+            // MovePossibilities = new QueenMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.BISHOP) {
-            new BishopMovesCaculator().calculateMoves(board, myPosition) ;
+           // MovePossibilities = new BishopMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.KNIGHT) {
-            new KnightMovesCaculator().calculateMoves(board, myPosition) ;
+           // MovePossibilities = new KnightMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.ROOK) {
-            new RookMovesCaculator().calculateMoves(board, myPosition) ;
+            MovePossibilities = new RookMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.PAWN) {
-            new PawnMovesCaculator().calculateMoves(board, myPosition) ;
+           // MovePossibilities = new PawnMovesCaculator().calculateMoves(board, myPosition) ;
         }
 
 
-
+return MovePossibilities ;
         // do we check the board at the given position for the type or is the type given?
 
         // this allows pieces to move and need to implement this
     }
+
 }
 // variables should be private and if needed in other files create a getter that returns the variable
 
