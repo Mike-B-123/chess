@@ -28,7 +28,6 @@ public class RookMovesCaculator implements PieceMovesCaculator {
                 }
 
                 ChessMove SingleMove = new ChessMove(startPosition, current_position, null);
-
                 movePossibilities.add(SingleMove);
             }
         }

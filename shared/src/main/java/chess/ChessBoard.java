@@ -39,7 +39,8 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        squares[2][1] = new ChessPiece()
+
     }
     // This is where we establish here each pice should start like in a normal game of chess
     //
