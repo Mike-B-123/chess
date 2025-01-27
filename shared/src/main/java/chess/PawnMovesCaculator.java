@@ -46,7 +46,10 @@ public class PawnMovesCaculator implements PieceMovesCaculator {
         }
         overallPossibilities.addAll(promotionHelper(forwardPossibilities, end)) ;
         return overallPossibilities ;
-        }
+    }
+
+
+
     public Collection<ChessMove> promotionHelper(Collection<ChessMove> possibilities, int end) {
         Collection<ChessMove> helperPossibilities = new ArrayList<>();
         for (ChessMove move : possibilities) {
