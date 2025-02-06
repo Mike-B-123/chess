@@ -14,7 +14,8 @@ public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {}
 
-    /**
+    /** // private CheesePiece[][] squares = new ChessPiece [8][8];
+     * //private Chess Piece [][] squares = new ChessPiece [8][8];
      * Adds a chess piece to the chessboard
      *
      * @param position where to add the piece to

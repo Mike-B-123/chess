@@ -1,5 +1,6 @@
 package chess;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -68,6 +69,8 @@ public class PawnMovesCaculator implements PieceMovesCaculator {
         }
         return helperPossibilities ;
     }
+
+    // public Collection<ChessMove> EnPas(Collection<ChessMove> possinilities, int end){}
 }
 
 // can use ternary for Blakc and white variable using ?

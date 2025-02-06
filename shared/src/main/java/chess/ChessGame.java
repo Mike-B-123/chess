@@ -30,6 +30,7 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
+
     /**
      * Enum identifying the 2 possible teams in a chess game
      */
