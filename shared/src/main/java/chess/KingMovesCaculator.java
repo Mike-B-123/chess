@@ -28,4 +28,5 @@ public class KingMovesCaculator implements PieceMovesCaculator {
         }
         return movePossibilities;
     }
+    // public Collection<ChessMove> Castle(Collection<ChessMove> possinilities, int end){}
 }
