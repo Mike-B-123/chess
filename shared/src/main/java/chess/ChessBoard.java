@@ -12,14 +12,51 @@ import java.util.Objects;
 public class ChessBoard {
     // I used the below implementation from the class instruction video, should I be doing it in a different way to be academically honest?
     private ChessPiece[][] squares ;
+    private ChessPosition whiteKingPosition ;
+    private ChessPosition blackKingPosition ;
 
     public ChessBoard() {
         squares = new ChessPiece[8][8];
+        whiteKingPosition = new ChessPosition(1, 5) ;
+        blackKingPosition = new ChessPosition(8, 5) ;
     }
+
+
     public ChessBoard(ChessBoard newBoard){
         this.squares = Arrays.copyOf(newBoard.squares, 8) ;
         for(int i = 0; i < newBoard.squares.length; i++){
             squares[i] = Arrays.copyOf(newBoard.squares[i], 8) ;
+        }
+        whiteKingPosition = new ChessPosition(1, 5) ;
+        blackKingPosition = new ChessPosition(8, 5) ;
+    }
+
+
+    public void updateKingPosition(ChessGame.TeamColor teamColor, ChessMove move){
+        if(teamColor == teamColor.BLACK){
+            blackKingPosition = move.getEndPosition() ;
+        }
+        else {
+            whiteKingPosition = move.getEndPosition() ;
+        }
+    }
+
+
+
+    public void makeMove(ChessMove move){
+        if(getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.KING){
+            updateKingPosition(getPiece(move.getStartPosition()).getTeamColor(), move);
+        }
+        addPiece(move.getEndPosition(), getPiece(move.getStartPosition()));
+        addPiece(move.getStartPosition(), null);
+    }
+
+    public ChessPosition getKingPosition(ChessGame.TeamColor teamColor){
+        if(teamColor == teamColor.BLACK){
+            return blackKingPosition ;
+        }
+        else {
+            return whiteKingPosition ;
         }
     }
 
