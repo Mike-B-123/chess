@@ -50,7 +50,10 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = current_board.getPiece(startPosition) ;
-        return piece.pieceMoves(current_board, startPosition) ;
+        Collection<ChessMove> validMoves ;
+        for(ChessMove move : piece.pieceMoves(current_board, startPosition)){
+            //if(move.) I want to basically check if this move causes check
+        }
     }
 
     /**
@@ -60,8 +63,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        // do I ned to do an "if" statment that checks for null?
+        // do I need to do an "if" statment that checks for null?
         this.new_move = move ;
+        if
     }
 
     /**
@@ -71,7 +75,26 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        int row = 0 ;
+        while(row < 9){
+            int col = 1 ;
+            row ++ ;
+            while(col < 9){
+                ChessPosition myPosition = new ChessPosition(row, col);
+                ChessPiece piece = current_board.getPiece(myPosition) ;
+                if(piece.getTeamColor() == teamColor){
+                    col ++ ;
+                    continue ;
+                }
+                for(ChessMove move : piece.pieceMoves(current_board, myPosition)){
+                   // if(move.getEndPosition() == king's position){
+                        // return true ;
+                    // do I need to create a king position variable?
+                }
+                col ++ ;
+        }
+        }
+        return false ;
     }
 
     /**
@@ -81,7 +104,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
     }
 
     /**
