@@ -11,8 +11,17 @@ import java.util.Objects;
  */
 public class ChessBoard {
     // I used the below implementation from the class instruction video, should I be doing it in a different way to be academically honest?
-    private ChessPiece[][] squares = new ChessPiece[8][8];
-    public ChessBoard() {}
+    private ChessPiece[][] squares ;
+
+    public ChessBoard() {
+        squares = new ChessPiece[8][8];
+    }
+    public ChessBoard(ChessBoard newBoard){
+        this.squares = Arrays.copyOf(newBoard.squares, 8) ;
+        for(int i = 0; i < newBoard.squares.length; i++){
+            squares[i] = Arrays.copyOf(newBoard.squares[i], 8) ;
+        }
+    }
 
     /** // private CheesePiece[][] squares = new ChessPiece [8][8];
      * //private Chess Piece [][] squares = new ChessPiece [8][8];
@@ -25,6 +34,7 @@ public class ChessBoard {
 
         squares[position.getRow() - 1][position.getColumn() - 1] = piece ;
     }
+
 
     /**
      * Gets a chess piece on the chessboard

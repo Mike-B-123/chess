@@ -11,16 +11,38 @@ import java.util.Collection;
 public class ChessGame {
     private ChessGame.TeamColor team ;
     private ChessBoard current_board ;
-    private ChessMove new_move ;
+    private ChessPosition whiteKingPosition ;
+    private ChessPosition blackKingPosition ;
+    private ChessPosition kingPosition ;
     public ChessGame() {
-
+            whiteKingPosition = new ChessPosition(1, 5) ;
+            blackKingPosition = new ChessPosition(8, 5) ;
     }
+
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
         return team ;
+    }
+
+    public void getKingPosition(TeamColor teamColor){
+        if(teamColor == teamColor.BLACK){
+            kingPosition = blackKingPosition ;
+        }
+        else {
+            kingPosition = whiteKingPosition ;
+        }
+    }
+
+    public void updateKingPosition(TeamColor teamColor, ChessMove move){
+        if(teamColor == teamColor.BLACK){
+            blackKingPosition = move.getEndPosition() ;
+        }
+        else {
+            whiteKingPosition = move.getEndPosition() ;
+        }
     }
 
     /**
@@ -50,11 +72,22 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = current_board.getPiece(startPosition) ;
-        Collection<ChessMove> validMoves ;
+        Collection<ChessMove> validMoves = new ArrayList<> () ;
         for(ChessMove move : piece.pieceMoves(current_board, startPosition)){
-            //if(move.) I want to basically check if this move causes check
+            ChessBoard hypotheticalBoard = new ChessBoard(current_board) ;
+            hypotheticalBoard.addPiece(move.getEndPosition(), current_board.getPiece(move.getStartPosition()));
+            hypotheticalBoard.addPiece(move.getStartPosition(), null);
+            if(isInCheck(current_board.getPiece(startPosition).getTeamColor(), hypotheticalBoard) == false){
+                validMoves.add(move) ;
+            }
         }
+        if(validMoves.isEmpty() == true){
+            return null ;
+        }
+        return validMoves ;
     }
+
+
 
     /**
      * Makes a move in a chess game
@@ -63,9 +96,27 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        // do I need to do an "if" statment that checks for null?
-        this.new_move = move ;
-        if
+        if(validMoves(move.getStartPosition()) == null){
+            throw new InvalidMoveException("Invalid Move");
+        }
+        ChessPiece piece = current_board.getPiece(move.getStartPosition()) ;
+        if(piece.getTeamColor() != getTeamTurn()){
+            throw new InvalidMoveException("Invalid Move");
+        }
+        if (validMoves(move.getStartPosition()).contains(move)) {
+            if(current_board.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.KING){
+                updateKingPosition(current_board.getPiece(move.getStartPosition()).getTeamColor(), move);
+            }
+            current_board.addPiece(move.getEndPosition(), current_board.getPiece(move.getStartPosition()));
+            current_board.addPiece(move.getStartPosition(), null);
+            if(team == TeamColor.BLACK)
+                setTeamTurn(TeamColor.WHITE);
+            else{
+                setTeamTurn(TeamColor.BLACK);
+            }
+        } else {
+            throw new InvalidMoveException("Invalid Move"); // double check this is properly formatted
+        }
     }
 
     /**
@@ -74,27 +125,26 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor) {
-        int row = 0 ;
-        while(row < 9){
-            int col = 1 ;
-            row ++ ;
-            while(col < 9){
+    public boolean isInCheck(TeamColor teamColor, ChessBoard hypthoeticalBoard) {
+        getKingPosition(teamColor) ;
+        for(int row = 1; row < 9; row ++) {
+            for (int col = 1; col < 9; col++) {
                 ChessPosition myPosition = new ChessPosition(row, col);
-                ChessPiece piece = current_board.getPiece(myPosition) ;
-                if(piece.getTeamColor() == teamColor){
-                    col ++ ;
-                    continue ;
+                ChessPiece piece = hypthoeticalBoard.getPiece(myPosition);
+                if (piece != null && piece.getTeamColor() != teamColor) {
+                    for (ChessMove move : piece.pieceMoves(hypthoeticalBoard, myPosition)) {
+                        if (move.getEndPosition() == kingPosition) {
+                            return true; // double check logic
+                        }
+                    }
                 }
-                for(ChessMove move : piece.pieceMoves(current_board, myPosition)){
-                   // if(move.getEndPosition() == king's position){
-                        // return true ;
-                    // do I need to create a king position variable?
-                }
-                col ++ ;
+            }
         }
-        }
-        return false ;
+        return false;
+    }
+
+    public boolean isInCheck(TeamColor teamColor){
+        return isInCheck(teamColor, current_board) ;
     }
 
     /**
@@ -103,9 +153,31 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) {
-
+    // fix this logic
+    public boolean isInCheckmate(TeamColor teamColor, ChessBoard hypthoeticalBoard) {
+        getKingPosition(teamColor) ;
+        Collection<ChessMove> endMoves = new ArrayList<> () ;
+        for(int row = 1; row < 9; row ++) {
+            for(int col = 1; col < 9; col ++) {
+                ChessPosition myPosition = new ChessPosition(row, col);
+                ChessPiece piece = hypthoeticalBoard.getPiece(myPosition);
+                if (piece != null && piece.getTeamColor() != teamColor) {
+                    if(validMoves(myPosition) != null)
+                        endMoves.addAll(validMoves(myPosition));
+                    }
+                }
+            }
+        return endMoves.isEmpty();
     }
+
+    public boolean isInCheckmate(TeamColor teamColor) {
+        return isInCheckmate(teamColor, current_board) ;
+    }
+//         if(validMoves(kingPosition) == null && isInCheck(teamColor, current_board) == true){
+//             return true ;
+//         }
+//            // should I be entering the king's postion or another piece's position
+            // return false if valid moves contains anything?
 
     /**
      * Determines if the given team is in stalemate, which here is defined as having
@@ -114,9 +186,34 @@ public class ChessGame {
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
-    public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+    public boolean isInStalemate(TeamColor teamColor, ChessBoard hypthoeticalBoard) {
+        getKingPosition(teamColor);
+        Collection<ChessMove> endMoves = new ArrayList<> () ;
+        for (int row = 1; row < 9; row++) {
+            for (int col = 1; col < 9; col++) {
+                ChessPosition myPosition = new ChessPosition(row, col);
+                ChessPiece piece = hypthoeticalBoard.getPiece(myPosition);
+                if (piece != null && piece.getTeamColor() != teamColor) {
+                    if(validMoves(myPosition) != null){
+                        endMoves.addAll(validMoves(myPosition));
+                }
+            }
+                if (piece.getTeamColor() == teamColor) {
+                    if(validMoves(myPosition) != null)
+                        endMoves.addAll(validMoves(myPosition));
+                }
+            }
+        }
+        if(endMoves.isEmpty() && isInCheck(teamColor, hypthoeticalBoard) == false){
+            return true ;
+        }
+        return false ;
     }
+
+    public boolean isInStalemate(TeamColor teamColor) {
+        return isInStalemate(teamColor, current_board) ;
+    }
+
 
     /**
      * Sets this game's chessboard with a given board
