@@ -15,6 +15,8 @@ public class ChessGame {
 
     public ChessGame() {
             this.team = TeamColor.WHITE ;
+            this.current_board = new ChessBoard() ;
+            current_board.resetBoard();
     }
 
 
@@ -53,6 +55,9 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        if(current_board.getPiece(startPosition) == null){
+            return null ;
+        }
         ChessPiece piece = current_board.getPiece(startPosition) ;
         Collection<ChessMove> validMoves = new ArrayList<> () ;
         for(ChessMove move : piece.pieceMoves(current_board, startPosition)){
@@ -61,9 +66,6 @@ public class ChessGame {
             if(isInCheck(current_board.getPiece(startPosition).getTeamColor(), hypotheticalBoard) == false){
                 validMoves.add(move) ;
             }
-        }
-        if(validMoves.isEmpty() == true){
-            return null ;
         }
         return validMoves ;
     }
@@ -201,6 +203,7 @@ public class ChessGame {
      */
     public void setBoard(ChessBoard board) {
         this.current_board = board;
+        // this.team = TeamColor.WHITE  maybe have to set board
         for (int row = 1; row < 9; row++) {
             for (int col = 1; col < 9; col++) {
                 ChessPosition myPosition = new ChessPosition(row, col);

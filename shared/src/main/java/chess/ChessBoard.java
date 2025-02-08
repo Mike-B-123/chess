@@ -17,8 +17,6 @@ public class ChessBoard {
 
     public ChessBoard() {
         squares = new ChessPiece[8][8];
-        whiteKingPosition = new ChessPosition(1, 5) ;
-        blackKingPosition = new ChessPosition(8, 5) ;
     }
 
 
@@ -27,8 +25,8 @@ public class ChessBoard {
         for(int i = 0; i < newBoard.squares.length; i++){
             squares[i] = Arrays.copyOf(newBoard.squares[i], 8) ;
         }
-        whiteKingPosition = new ChessPosition(1, 5) ;
-        blackKingPosition = new ChessPosition(8, 5) ;
+        whiteKingPosition =  newBoard.whiteKingPosition ;
+        blackKingPosition = newBoard.blackKingPosition ;
     }
 
 
@@ -116,6 +114,9 @@ public class ChessBoard {
             squares[6][count] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN) ;
             count ++ ;
         }
+
+        whiteKingPosition = new ChessPosition(1, 5) ;
+        blackKingPosition = new ChessPosition(8, 5) ;
 
 
     }
