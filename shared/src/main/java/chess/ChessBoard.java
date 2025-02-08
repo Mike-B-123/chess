@@ -42,11 +42,22 @@ public class ChessBoard {
 
 
     public void executeMove(ChessMove move){
+        ChessGame.TeamColor color = getPiece(move.getStartPosition()).getTeamColor() ;
         if(getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.KING){
-            updateKingPosition(getPiece(move.getStartPosition()).getTeamColor(), move.getEndPosition());
+            updateKingPosition(color, move.getEndPosition());
         }
-        addPiece(move.getEndPosition(), getPiece(move.getStartPosition()));
-        addPiece(move.getStartPosition(), null);
+        if(getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN){
+            ChessPiece pawn = new ChessPiece(color, move.getPromotionPiece()) ;
+            if(pawn.getPieceType() == null){
+                pawn = new ChessPiece(color, ChessPiece.PieceType.PAWN) ;
+            }
+            addPiece(move.getEndPosition(), pawn);
+            addPiece(move.getStartPosition(), null);
+        }
+        else{
+            addPiece(move.getEndPosition(), getPiece(move.getStartPosition()));
+            addPiece(move.getStartPosition(), null);
+        }
     }
 
     public ChessPosition getKingPosition(ChessGame.TeamColor teamColor){
@@ -139,8 +150,12 @@ public class ChessBoard {
     public String toString() {
         return "ChessBoard{" +
                 "squares=" + Arrays.toString(squares) +
+                ", whiteKingPosition=" + whiteKingPosition +
+                ", blackKingPosition=" + blackKingPosition +
                 '}';
     }
+
+
     // This is where we establish here each pice should start like in a normal game of chess
     //
 }

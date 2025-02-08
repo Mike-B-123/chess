@@ -38,6 +38,28 @@ public class ChessGame {
         this.team = team ;
     }
 
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "team=" + team +
+                ", current_board=" + current_board +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return team == chessGame.team && Objects.equals(current_board, chessGame.current_board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(team, current_board);
+    }
+
 
     /**
      * Enum identifying the 2 possible teams in a chess game
