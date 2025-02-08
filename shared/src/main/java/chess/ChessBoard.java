@@ -32,20 +32,20 @@ public class ChessBoard {
     }
 
 
-    public void updateKingPosition(ChessGame.TeamColor teamColor, ChessMove move){
+    public void updateKingPosition(ChessGame.TeamColor teamColor, ChessPosition endPosition){
         if(teamColor == teamColor.BLACK){
-            blackKingPosition = move.getEndPosition() ;
+            blackKingPosition = endPosition ;
         }
         else {
-            whiteKingPosition = move.getEndPosition() ;
+            whiteKingPosition = endPosition ;
         }
     }
 
 
 
-    public void makeMove(ChessMove move){
+    public void executeMove(ChessMove move){
         if(getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.KING){
-            updateKingPosition(getPiece(move.getStartPosition()).getTeamColor(), move);
+            updateKingPosition(getPiece(move.getStartPosition()).getTeamColor(), move.getEndPosition());
         }
         addPiece(move.getEndPosition(), getPiece(move.getStartPosition()));
         addPiece(move.getStartPosition(), null);
