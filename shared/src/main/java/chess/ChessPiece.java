@@ -12,7 +12,9 @@ import java.util.Objects;
  */
 public class ChessPiece {
     private PieceType type ;
-    private final ChessGame.TeamColor pieceColor ; // This is correct just not used yet
+    private final ChessGame.TeamColor pieceColor ;
+    private boolean rookPreviousMove = false ;
+    private boolean kingPreviousMove = false;// This is correct just not used yet
 
     // call the constructor with new Piece (WHITE, King)
 // Instructor recommends creating a piece moves caculator class that then has sub classes for moves instead of storing those in the ChessPiece class
@@ -67,6 +69,19 @@ public class ChessPiece {
      */
     public PieceType getPieceType() {
         return type;
+    }
+
+    public void setRook() {
+        rookPreviousMove = true ;
+    }
+    public boolean getRook(){
+        return rookPreviousMove ;
+    }
+    public void setKingPreviousMove() {
+        kingPreviousMove = true ;
+    }
+    public boolean getKingPreviousMove(){
+        return kingPreviousMove ;
     }
     /**
      * Calculates all the positions a chess piece can move to

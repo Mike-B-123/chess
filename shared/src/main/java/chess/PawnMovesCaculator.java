@@ -73,5 +73,9 @@ public class PawnMovesCaculator implements PieceMovesCaculator {
     // public Collection<ChessMove> EnPas(Collection<ChessMove> possinilities, int end){}
 }
 
+//public Collection<ChessMove> Enpas(Collection<ChessMove> possibilities, int end){
+//
+//}
+
 // can use ternary for Blakc and white variable using ?
 // then compare row to start

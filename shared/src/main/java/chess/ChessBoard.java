@@ -43,7 +43,7 @@ public class ChessBoard {
 
     public void executeMove(ChessMove move){
         ChessGame.TeamColor color = getPiece(move.getStartPosition()).getTeamColor() ;
-        if(getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.KING){
+        if(getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.KING) {
             updateKingPosition(color, move.getEndPosition());
         }
         if(getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN){
