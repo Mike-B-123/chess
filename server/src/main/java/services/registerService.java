@@ -26,7 +26,7 @@ public class registerService {
     }
     public static AuthData createAuth(User user){
         AuthDAO authDao = MemoryAuthDAO.getInstance() ;
-            return authDao.createAuth(user) ;
+        return authDao.createAuth(user) ;
     }
 
 }
