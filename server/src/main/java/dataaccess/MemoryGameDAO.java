@@ -14,11 +14,12 @@ public class MemoryGameDAO implements GameDAO{
         return gameDatas ;
     }
 
-    public void createGame(String inputGameName) {
+    public Integer createGame(String inputGameName) {
         gameID ++ ;
         ChessGame inputChessGame = new ChessGame() ;
         Game newGameData = new Game(gameID, null, null, inputGameName, inputChessGame) ;
         gameDatas.put(gameID, newGameData) ;
+        return gameID ;
 
 // How should I create a game? I understand there is a game name, but should I also assign players to Blakc and White or is that done seperately
     }

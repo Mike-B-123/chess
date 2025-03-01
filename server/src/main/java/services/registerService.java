@@ -2,16 +2,25 @@ package services;
 import dataaccess.* ;
 import model.AuthData;
 import model.User;
+import responses.errors.BadRequest400;
+import responses.errors.Taken403;
+import responses.errors.Unauthorized401;
+import responses.errors.UniqueError500;
 
 // class need to be start with capital (upper camial case for tests)
 public class registerService {
 
-    public static AuthData register(User inputUser){
-        if(getUser(inputUser) != null){
+    public static AuthData register(User inputUser) throws BadRequest400, Taken403, UniqueError500 {
+        try{ // when should I throw bad request?
+        if(getUser(inputUser) == null){
             createUser(inputUser);
             return createAuth(inputUser);
         }
-        return null ; // should actually return exception
+            throw new Taken403();
+        }
+        catch(Exception ex){
+            throw new UniqueError500() ;
+        }
 
     }
 

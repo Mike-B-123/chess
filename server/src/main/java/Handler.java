@@ -84,6 +84,7 @@ public class Handler {
                 res.body(UniEx.getMessage());
                 return res ;
             }
+        // Bad request is if the input is "null" so just do an if statement for that in the service
         catch(Unauthorized401 UnauthEx){
                 res.status(UnauthEx.getErrorCode()) ;
                 res.body(UnauthEx.getMessage());
@@ -94,7 +95,27 @@ public class Handler {
 
     }
     public Object createGame(Request req, Response res) {
-
+        // How do I break this between two things? authToken and GameName?
+        try{String gameName = new Gson().fromJson(req.body(), String.class);
+            String authToken = req.headers("authorization:") ;
+            int outGameID = createGamesService.create(authToken, gameName) ;
+            res.status(200) ;
+            return new Gson().toJson(outGameID) ;}
+        catch(UniqueError500 UniEx){
+            res.status(UniEx.getErrorCode()) ;
+            res.body(UniEx.getMessage());
+            return res ;
+        }
+        catch(Unauthorized401 UnauthEx){
+            res.status(UnauthEx.getErrorCode()) ;
+            res.body(UnauthEx.getMessage());
+            return res ;
+        }
+        catch (BadRequest400 Badreq){
+            res.status(Badreq.getErrorCode()) ;
+            res.body(Badreq.getMessage());
+            return res ;
+        }
     }
     public Object joinGame(Request req, Response res) {
 

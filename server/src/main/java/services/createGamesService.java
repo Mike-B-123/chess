@@ -1,33 +1,28 @@
 package services;
 
 import dataaccess.AuthDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import dataaccess.UserDAO;
 import model.AuthData;
+import model.Game;
 import model.User;
+import responses.errors.BadRequest400;
+import responses.errors.Unauthorized401;
+import responses.errors.UniqueError500;
 
 public class createGamesService {
-    public static AuthData register(User inputUser){
-        if(getUser(inputUser) != null){
-            createUser(inputUser);
-            return createAuth(inputUser);
+    public static Integer create(String authToken, String gameName) throws BadRequest400, Unauthorized401, UniqueError500 {
+        try {
+            AuthDAO authDao = MemoryAuthDAO.getInstance();
+            GameDAO gameDAO = MemoryGameDAO.getInstance();
+            if (authDao.verifyAuth(authToken) == Boolean.TRUE) {
+                return gameDAO.createGame(gameName);
+            }
+            throw new Unauthorized401();
         }
-        return null ; // should actually return exception
+        catch(Exception ex){
+            throw  new UniqueError500() ;// should actually return exception
+        }
 
-    }
-
-    public static User getUser(User inputUser){
-        UserDAO userDao = MemoryUserDAO.getInstance() ;
-        return userDao.findUser(inputUser) ;
-    }
-    public static void createUser(User user){
-        UserDAO userDao = MemoryUserDAO.getInstance() ;
-        if(getUser(user) == null)
-            userDao.addUser(user) ;
-    }
-    public static AuthData createAuth(User user){
-        AuthDAO authDao = MemoryAuthDAO.getInstance() ;
-        return authDao.createAuth(user) ;
     }
 }
