@@ -3,6 +3,7 @@ import model.AuthData;
 import model.Message;
 import responses.errors.BadRequest400;
 import responses.errors.Taken403;
+import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
 import spark.* ;
 import model.User ;
@@ -21,6 +22,9 @@ public class Handler {
     public Object clear(Request req, Response res) {
         try{
             clearService.clear();
+            res.status(200) ;
+            return res ;
+            // make sure I am still returning something.
         }
         catch(UniqueError500 UE){
             res.status(UE.getErrorCode()) ;
@@ -32,7 +36,13 @@ public class Handler {
         try {
             User user = new Gson().fromJson(req.body(), User.class);
             AuthData outAuthData = registerService.register(user); // overarching method needs to be here
+            res.status(200) ;
             return new Gson().toJson(outAuthData);
+        }
+        catch(BadRequest400 BadEx){
+            res.status(BadEx.getErrorCode()) ;
+            res.body(BadEx.getMessage());
+            return res ;
         }
         catch(UniqueError500 UniEx){
             res.status(UniEx.getErrorCode()) ;
@@ -44,17 +54,41 @@ public class Handler {
             res.body(TakeEx.getMessage());
             return res ;
         }
+
     }
     public Object login(Request req, Response res) {
-        User user = new Gson().fromJson(req.body(), User.class);
-        AuthData outAuthData = loginService.login(user) ; // overarching method needs to be here
-        return new Gson().toJson(outAuthData) ;
+        try {
+            User user = new Gson().fromJson(req.body(), User.class);
+            AuthData outAuthData = loginService.login(user); // overarching method needs to be here
+            res.status(200) ;
+            return new Gson().toJson(outAuthData);
+        }
+        catch(UniqueError500 UniEx){
+            res.status(UniEx.getErrorCode()) ;
+            res.body(UniEx.getMessage());
+            return res ;
+        }
+        catch(Unauthorized401 UnauthEx){
+            res.status(UnauthEx.getErrorCode()) ;
+            res.body(UnauthEx.getMessage());
+            return res ;
+        }
     }
     public Object logout(Request req, Response res) {
-        String authToken = new Gson().fromJson(req.body(), String.class);
+        try{String authToken = new Gson().fromJson(req.body(), String.class);
         String outAuthData = logoutService.logout(authToken) ;
-        res.status(200) ;// overarching method needs to be here
-        return new Gson().toJson(outAuthData) ;
+        res.status(200) ;
+        return new Gson().toJson(outAuthData) ;}
+        catch(UniqueError500 UniEx){
+                res.status(UniEx.getErrorCode()) ;
+                res.body(UniEx.getMessage());
+                return res ;
+            }
+        catch(Unauthorized401 UnauthEx){
+                res.status(UnauthEx.getErrorCode()) ;
+                res.body(UnauthEx.getMessage());
+                return res ;
+            }
     }
     public Object listGames(Request req, Response res) {
 
