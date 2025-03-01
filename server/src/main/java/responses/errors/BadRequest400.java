@@ -4,17 +4,14 @@ import model.Message;
 
 public class BadRequest400 extends Exception{
     public int errorCode = 400 ;
+    private final Message message = new Message("Error: Could not complete request") ;
     public int getErrorCode() {
         return errorCode;
     }
-    public Message setGetMessage(String message){
-        Message mess = new Message(message) ;
-        return  mess ;
+    public String getMessage(){
+        return  this.message.message() ;
     }
 
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
-    }
 }
 /// do try catch blocks to rpocess errors in handlers
 ///

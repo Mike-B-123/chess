@@ -1,6 +1,8 @@
 import com.google.gson.Gson;
 import model.AuthData;
+import model.Message;
 import responses.errors.BadRequest400;
+import responses.errors.Taken403;
 import responses.errors.UniqueError500;
 import spark.* ;
 import model.User ;
@@ -20,15 +22,28 @@ public class Handler {
         try{
             clearService.clear();
         }
-        catch(UniqueError500 ex){
-
+        catch(UniqueError500 UE){
+            res.status(UE.getErrorCode()) ;
+            res.body(UE.getMessage());
+            return res ;
         }
-
     }
     public Object register(Request req, Response res) {
+        try {
             User user = new Gson().fromJson(req.body(), User.class);
-            AuthData outAuthData = registerService.register(user) ; // overarching method needs to be here
-            return new Gson().toJson(outAuthData) ;
+            AuthData outAuthData = registerService.register(user); // overarching method needs to be here
+            return new Gson().toJson(outAuthData);
+        }
+        catch(UniqueError500 UniEx){
+            res.status(UniEx.getErrorCode()) ;
+            res.body(UniEx.getMessage());
+            return res ;
+        }
+        catch(Taken403 TakeEx){
+            res.status(TakeEx.getErrorCode()) ;
+            res.body(TakeEx.getMessage());
+            return res ;
+        }
     }
     public Object login(Request req, Response res) {
         User user = new Gson().fromJson(req.body(), User.class);
