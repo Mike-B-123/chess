@@ -1,4 +1,4 @@
 package responses.errors;
 
-public record Taken403() {
+public class Taken403 extends Exception {
 }

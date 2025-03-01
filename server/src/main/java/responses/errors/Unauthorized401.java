@@ -1,4 +1,4 @@
 package responses.errors;
 
-public record Unauthorized401() {
+public class Unauthorized401 extends Exception {
 }
