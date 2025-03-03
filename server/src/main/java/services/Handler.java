@@ -12,6 +12,7 @@ import model.User ;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 // make a spark. exception to make the try and catch easier
 public class Handler {
@@ -90,8 +91,8 @@ public class Handler {
     public Object listGames(Request req, Response res) {
         try{
             String authToken = req.headers("authorization:") ;
-            Collection<Game> games = new ArrayList<>() ;
-            games.addAll(listGames(authToken)) ;
+            HashMap<Integer,Game> games = listGamesService.listGames(authToken) ; // this might need to become deep copy?
+            res.status(200) ;
             return new Gson().toJson(games) ;
         }
         catch(UniqueError500 UniEx){
@@ -132,7 +133,7 @@ public class Handler {
 
     }
 
- throw new BadREquest400 which will will trigger Catch(BadRequest400);
+ //throw new BadREquest400 which will will trigger Catch(BadRequest400);
 
 
 }

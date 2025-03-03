@@ -4,13 +4,14 @@ import chess.ChessGame;
 import model.Game;
 import model.User;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 public class MemoryGameDAO implements GameDAO{
     private HashMap<Integer, Game> gameDatas = new HashMap<>();
     private static MemoryGameDAO instance ;
     private int gameID = 0 ;
-    public HashMap<Integer, Game> listAllGames(User inputUser) {
+    public HashMap<Integer, Game> listAllGames() {
         return gameDatas ;
     }
 
