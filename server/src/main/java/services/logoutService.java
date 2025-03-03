@@ -9,15 +9,11 @@ import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
 
 public class logoutService {
-    public static String logout(String authToken) throws Unauthorized401, UniqueError500 {
-        try {
+    public static String logout(String authToken) throws Unauthorized401{
             AuthDAO authDao = MemoryAuthDAO.getInstance();
-            if (authDao.verifyAuth(authToken) != null) {
+            if (authDao.verifyAuth(authToken) == Boolean.TRUE) {
                 return authDao.deleteAuth(authToken);
             }
-            throw new Unauthorized401(); // should actually return exception
-        } catch (Exception ex) {
-            throw new UniqueError500();
-        }
+            throw new Unauthorized401();
     }
 }

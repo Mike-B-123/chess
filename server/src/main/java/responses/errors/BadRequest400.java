@@ -4,12 +4,12 @@ import model.Message;
 
 public class BadRequest400 extends Exception{
     public int errorCode = 400 ;
-    private final Message message = new Message("Error: Could not complete request") ;
+    private final Message message = new Message("Error: This was a null request") ;
     public int getErrorCode() {
         return errorCode;
     }
-    public String getMessage(){
-        return  this.message.message() ;
+    public Message getErrorMessage(){
+        return  this.message ;
     }
 
 }

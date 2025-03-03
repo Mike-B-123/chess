@@ -18,7 +18,7 @@ public class Handler {
         try{
             clearService.clear();
             res.status(200) ;
-            return res ;
+            return "{}" ;
             // make sure I am still returning something.
         }
         catch(UniqueError500 UE){
@@ -32,22 +32,20 @@ public class Handler {
             User user = new Gson().fromJson(req.body(), User.class);
             AuthData outAuthData = registerService.register(user); // overarching method needs to be here
             res.status(200) ;
-            return new Gson().toJson(outAuthData);
+            return new Gson().toJson(outAuthData) ;
         }
         catch(BadRequest400 BadEx){
             res.status(BadEx.getErrorCode()) ;
-            res.body(BadEx.getMessage());
-            return res ;
-        }
-        catch(UniqueError500 UniEx){
-            res.status(UniEx.getErrorCode()) ;
-            res.body(UniEx.getMessage());
-            return res ;
+            return new Gson().toJson(BadEx.getErrorMessage()) ;
         }
         catch(Taken403 TakeEx){
             res.status(TakeEx.getErrorCode()) ;
-            res.body(TakeEx.getMessage());
-            return res ;
+            return new Gson().toJson(TakeEx.getErrorMessage()) ;
+        }
+        catch(Exception Ex){
+             UniqueError500 UniEx = new UniqueError500();
+            res.status(UniEx.getErrorCode()) ;
+            return new Gson().toJson(UniEx.getErrorMessage());
         }
 
     }
@@ -58,33 +56,32 @@ public class Handler {
             res.status(200) ;
             return new Gson().toJson(outAuthData);
         }
-        catch(UniqueError500 UniEx){
+        catch(Unauthorized401 UnAuthEx){
+            res.status(UnAuthEx.getErrorCode()) ;
+            return new Gson().toJson(UnAuthEx.getErrorMessage());
+        }
+        catch(Exception Ex){
+            UniqueError500 UniEx = new UniqueError500();
             res.status(UniEx.getErrorCode()) ;
-            res.body(UniEx.getMessage());
-            return res ;
+            return new Gson().toJson(UniEx.getErrorMessage());
         }
-        catch(Unauthorized401 UnauthEx){
-            res.status(UnauthEx.getErrorCode()) ;
-            res.body(UnauthEx.getMessage());
-            return res ;
-        }
-    }
+
+     }
     public Object logout(Request req, Response res) {
         try{String authToken = new Gson().fromJson(req.body(), String.class);
         String outAuthData = logoutService.logout(authToken) ;
         res.status(200) ;
-        return new Gson().toJson(outAuthData) ;}
-        catch(UniqueError500 UniEx){
-                res.status(UniEx.getErrorCode()) ;
-                res.body(UniEx.getMessage());
-                return res ;
-            }
-        // Bad request is if the input is "null" so just do an if statement for that in the service
+        return new Gson().toJson(outAuthData) ;
+        }
         catch(Unauthorized401 UnauthEx){
-                res.status(UnauthEx.getErrorCode()) ;
-                res.body(UnauthEx.getMessage());
-                return res ;
+            res.status(UnauthEx.getErrorCode()) ;
+            return new Gson().toJson(UnauthEx.getErrorMessage()) ;
             }
+        catch(Exception Ex){
+            UniqueError500 UniEx = new UniqueError500() ;
+            res.status(UniEx.getErrorCode()) ;
+            return new Gson().toJson(UniEx.getErrorMessage()) ;
+        }
     }
     public Object listGames(Request req, Response res) {
         try{
@@ -123,7 +120,7 @@ public class Handler {
         }
         catch (BadRequest400 Badreq){
             res.status(Badreq.getErrorCode()) ;
-            res.body(Badreq.getMessage());
+            res.body(new Gson().toJson(Badreq.getErrorMessage()));
             return res ;
        }
     }
@@ -147,7 +144,7 @@ public class Handler {
         }
         catch (BadRequest400 Badreq){
             res.status(Badreq.getErrorCode()) ;
-            res.body(Badreq.getMessage());
+            res.body(new Gson().toJson(Badreq.getErrorMessage()));
             return res ;
         }
         catch(Taken403 TakeEx){

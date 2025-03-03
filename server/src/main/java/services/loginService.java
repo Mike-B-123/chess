@@ -9,20 +9,17 @@ import model.User;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
 
+import java.util.Objects;
+
 public class loginService {
     public static AuthData login(User inputUser) throws Unauthorized401, UniqueError500 {
-        try{
-            if(getUser(inputUser) != null){
-                if(getUser(inputUser).password() != inputUser.password()){
-                    throw new Unauthorized401() ;
-                }
-                return createAuth(inputUser);
+        if (getUser(inputUser) != null) {
+            if (!Objects.equals(getUser(inputUser).password(), inputUser.password())) {
+                throw new Unauthorized401();
             }
-            throw new UniqueError500() ; // should this be unauthorized?
+            return createAuth(inputUser);
         }
-        catch(Exception ex){
-            throw new UniqueError500() ;
-            }
+        throw new Unauthorized401() ;
     }
 
     public static User getUser(User inputUser){
