@@ -2,12 +2,16 @@ package services;
 
 import com.google.gson.Gson;
 import model.AuthData;
+import model.Game;
 import responses.errors.BadRequest400;
 import responses.errors.Taken403;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
 import spark.* ;
 import model.User ;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 // make a spark. exception to make the try and catch easier
 public class Handler {
@@ -84,7 +88,22 @@ public class Handler {
             }
     }
     public Object listGames(Request req, Response res) {
-
+        try{
+            String authToken = req.headers("authorization:") ;
+            Collection<Game> games = new ArrayList<>() ;
+            games.addAll(listGames(authToken)) ;
+            return new Gson().toJson(games) ;
+        }
+        catch(UniqueError500 UniEx){
+            res.status(UniEx.getErrorCode()) ;
+            res.body(UniEx.getMessage());
+            return res ;
+        }
+        catch(Unauthorized401 UnauthEx){
+            res.status(UnauthEx.getErrorCode()) ;
+            res.body(UnauthEx.getMessage());
+            return res ;
+        }
     }
     public Object createGame(Request req, Response res) {
         // How do I break this between two things? authToken and GameName?
