@@ -31,6 +31,10 @@ public class MemoryGameDAO implements GameDAO{
     public void insertGame(Game gameData) {
         gameDatas.replace(gameData.gameID(), gameData) ;
     }
+    public Boolean availableGame(ChessGame.TeamColor color, Integer gameID){
+
+        if(gameDatas.get(gameID).blackUsername() != null)
+    }
     public void clearGame(){
             gameDatas.clear();
         }

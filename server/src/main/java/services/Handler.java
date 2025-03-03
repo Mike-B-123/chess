@@ -118,6 +118,28 @@ public class Handler {
             res.body(UniEx.getMessage());
             return res ;
         }
+        catch(Unauthorized401 UnauthEx) {
+            res.status(UnauthEx.getErrorCode());
+            res.body(UnauthEx.getMessage());
+            return res;
+        }
+        catch (BadRequest400 Badreq){
+            res.status(Badreq.getErrorCode()) ;
+            res.body(Badreq.getMessage());
+            return res ;
+       }
+    }
+    public Object joinGame(Request req, Response res) {
+        try{String gameName = new Gson().fromJson(req.body(), String.class);
+            String authToken = req.headers("authorization:") ;
+            int outGameID = createGamesService.create(authToken, gameName) ;
+            res.status(200) ;
+            return new Gson().toJson(outGameID) ;}
+        catch(UniqueError500 UniEx){
+            res.status(UniEx.getErrorCode()) ;
+            res.body(UniEx.getMessage());
+            return res ;
+        }
         catch(Unauthorized401 UnauthEx){
             res.status(UnauthEx.getErrorCode()) ;
             res.body(UnauthEx.getMessage());
@@ -127,10 +149,12 @@ public class Handler {
             res.status(Badreq.getErrorCode()) ;
             res.body(Badreq.getMessage());
             return res ;
-       }
-    }
-    public Object joinGame(Request req, Response res) {
-
+        }
+        catch(Taken403 TakeEx){
+            res.status(TakeEx.getErrorCode()) ;
+            res.body(TakeEx.getMessage());
+            return res ;
+        }
     }
 
  //throw new BadREquest400 which will will trigger Catch(BadRequest400);
