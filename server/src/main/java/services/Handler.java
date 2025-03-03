@@ -3,15 +3,13 @@ package services;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.Game;
+import model.JoinData;
 import responses.errors.BadRequest400;
 import responses.errors.Taken403;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
 import spark.* ;
 import model.User ;
-
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 // make a spark. exception to make the try and catch easier
@@ -130,11 +128,13 @@ public class Handler {
        }
     }
     public Object joinGame(Request req, Response res) {
-        try{String gameName = new Gson().fromJson(req.body(), String.class);
-            String authToken = req.headers("authorization:") ;
-            int outGameID = createGamesService.create(authToken, gameName) ;
-            res.status(200) ;
-            return new Gson().toJson(outGameID) ;}
+        try {
+            JoinData inputJoinData = new Gson().fromJson(req.body(), JoinData.class);
+            String authToken = req.headers("authorization:");
+            joinGameService.joinGame(authToken, inputJoinData);
+            res.status(200);
+            return res;
+        }
         catch(UniqueError500 UniEx){
             res.status(UniEx.getErrorCode()) ;
             res.body(UniEx.getMessage());

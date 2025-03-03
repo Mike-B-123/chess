@@ -14,4 +14,5 @@ public interface GameDAO {
     public HashMap<Integer , Game> listAllGames() ;
     public void clearGame() ;
     public Boolean availableGame(ChessGame.TeamColor color, Integer gameID) throws Taken403;
+    public void modifyInsert(String authToken, ChessGame.TeamColor color, Integer gameID) ;
 }

@@ -1,7 +1,9 @@
 package dataaccess;
 
 import chess.ChessGame;
+import model.AuthData;
 import model.Game;
+import model.JoinData;
 import model.User;
 import responses.errors.Taken403;
 
@@ -16,6 +18,7 @@ public class MemoryGameDAO implements GameDAO{
         return gameDatas ;
     }
 
+
     public Integer createGame(String inputGameName) {
         gameID ++ ;
         ChessGame inputChessGame = new ChessGame() ;
@@ -28,6 +31,19 @@ public class MemoryGameDAO implements GameDAO{
     public Game getGame(String gameName) {
         return gameDatas.get(gameName) ;
 
+    }
+    public void modifyInsert(String authToken, ChessGame.TeamColor color, Integer gameID){
+        AuthDAO authDao = MemoryAuthDAO.getInstance();
+        Game game = gameDatas.get(gameID) ;
+        String username = authDao.getUsernameFromAuth(authToken) ;
+        if(color == ChessGame.TeamColor.BLACK){
+            Game newGameData = new Game(gameID, game.whiteUsername(), username, game.gameName(), game.game()) ;
+            gameDatas.replace(game.gameID(), game, newGameData) ;
+        }
+        else{
+            Game newGameData = new Game(gameID, username, game.blackUsername(), game.gameName(), game.game()) ;
+            gameDatas.replace(game.gameID(), game, newGameData) ;
+        }
     }
     public void insertGame(Game gameData) {
         gameDatas.replace(gameData.gameID(), gameData) ;
