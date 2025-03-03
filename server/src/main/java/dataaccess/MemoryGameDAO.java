@@ -3,6 +3,7 @@ package dataaccess;
 import chess.ChessGame;
 import model.Game;
 import model.User;
+import responses.errors.Taken403;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,9 +32,17 @@ public class MemoryGameDAO implements GameDAO{
     public void insertGame(Game gameData) {
         gameDatas.replace(gameData.gameID(), gameData) ;
     }
-    public Boolean availableGame(ChessGame.TeamColor color, Integer gameID){
-
-        if(gameDatas.get(gameID).blackUsername() != null)
+    public Boolean availableGame(ChessGame.TeamColor color, Integer gameID) throws Taken403 {
+        if (color == ChessGame.TeamColor.BLACK) {
+            if (gameDatas.get(gameID).blackUsername() != null) {
+                throw new Taken403();
+            }
+            return Boolean.TRUE ;
+        }
+        if (gameDatas.get(gameID).whiteUsername() != null) {
+            throw new Taken403();
+        }
+        return Boolean.TRUE ;
     }
     public void clearGame(){
             gameDatas.clear();

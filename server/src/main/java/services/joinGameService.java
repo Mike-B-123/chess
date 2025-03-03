@@ -14,7 +14,6 @@ import responses.errors.UniqueError500;
 
 public class joinGameService {
     public static void joinGames(String authToken, JoinData joinData) throws UniqueError500, Unauthorized401, Taken403, BadRequest400 {
-
         try{
             AuthDAO authDao = MemoryAuthDAO.getInstance();
             GameDAO gameDAO = MemoryGameDAO.getInstance();
@@ -22,8 +21,14 @@ public class joinGameService {
                 throw new BadRequest400();
             }
             if (authDao.verifyAuth(authToken) == Boolean.TRUE) {
-                if(gameDAO)
-                return gameDAO.listAllGames() ;
+                try {
+                    if (gameDAO.availableGame(joinData.color(), joinData.gameID()) == Boolean.TRUE) {
+                        modifyInsert
+                    }
+                }
+                catch(Taken403 TA){
+                    throw new Taken403() ;
+                }
             }
             throw new Unauthorized401();
         }
