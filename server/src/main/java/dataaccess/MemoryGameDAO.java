@@ -19,17 +19,12 @@ public class MemoryGameDAO implements GameDAO{
     }
 
 
-    public Integer createGame(String inputGameName) {
+    public Game createGame(String inputGameName) {
         gameID ++ ;
         ChessGame inputChessGame = new ChessGame() ;
         Game newGameData = new Game(gameID, null, null, inputGameName, inputChessGame) ;
         gameDatas.put(gameID, newGameData) ;
-        return gameID ;
-
-// How should I create a game? I understand there is a game name, but should I also assign players to Blakc and White or is that done seperately
-    }
-    public Game getGame(String gameName) {
-        return gameDatas.get(gameName) ;
+        return newGameData ;
 
     }
     public void modifyInsert(String authToken, ChessGame.TeamColor color, Integer gameID){
@@ -44,9 +39,6 @@ public class MemoryGameDAO implements GameDAO{
             Game newGameData = new Game(gameID, username, game.blackUsername(), game.gameName(), game.game()) ;
             gameDatas.replace(game.gameID(), game, newGameData) ;
         }
-    }
-    public void insertGame(Game gameData) {
-        gameDatas.replace(gameData.gameID(), gameData) ;
     }
     public Boolean availableGame(ChessGame.TeamColor color, Integer gameID) throws Taken403 {
         if (color == ChessGame.TeamColor.BLACK) {

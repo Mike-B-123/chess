@@ -1,15 +1,13 @@
 package services;
 
 import com.google.gson.Gson;
-import model.AuthData;
-import model.Game;
-import model.JoinData;
+import model.*;
 import responses.errors.BadRequest400;
 import responses.errors.Taken403;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
 import spark.* ;
-import model.User ;
+
 import java.util.HashMap;
 
 // make a spark. exception to make the try and catch easier
@@ -67,11 +65,12 @@ public class Handler {
         }
 
      }
-    public Object logout(Request req, Response res) {
-        try{String authToken = new Gson().fromJson(req.body(), String.class);
-        String outAuthData = logoutService.logout(authToken) ;
+    public Object logoutHandle(Request req, Response res) {
+        try {
+            String authToken = req.headers("Authorization") ;
+        logoutService.logout(authToken) ;
         res.status(200) ;
-        return new Gson().toJson(outAuthData) ;
+        return "{}" ;
         }
         catch(Unauthorized401 UnauthEx){
             res.status(UnauthEx.getErrorCode()) ;
@@ -85,7 +84,7 @@ public class Handler {
     }
     public Object listGames(Request req, Response res) {
         try{
-            String authToken = req.headers("authorization:") ;
+            String authToken = req.headers("Authorization") ;
             HashMap<Integer,Game> games = listGamesService.listGames(authToken) ; // this might need to become deep copy?
             res.status(200) ;
             return new Gson().toJson(games) ;
@@ -101,28 +100,28 @@ public class Handler {
             return res ;
         }
     }
-    public Object createGame(Request req, Response res) {
-        // How do I break this between two things? authToken and GameName?
-        try{String gameName = new Gson().fromJson(req.body(), String.class);
-            String authToken = req.headers("authorization:") ;
-            int outGameID = createGamesService.create(authToken, gameName) ;
+    public Object createNewGame(Request req, Response res) {
+        try{
+            CreateGameName gameName = new Gson().fromJson(req.body(), CreateGameName.class);
+            String authToken = req.headers("Authorization") ;
+            Game outGame = createGamesService.create(authToken, gameName.gameName()) ;
+            GameID ID = new GameID(outGame.gameID()) ;
             res.status(200) ;
-            return new Gson().toJson(outGameID) ;}
-        catch(UniqueError500 UniEx){
-            res.status(UniEx.getErrorCode()) ;
-            res.body(UniEx.getMessage());
-            return res ;
+            return new Gson().toJson(ID) ;
         }
-        catch(Unauthorized401 UnauthEx) {
-            res.status(UnauthEx.getErrorCode());
-            res.body(UnauthEx.getMessage());
-            return res;
+        catch(BadRequest400 BadEx){
+            res.status(BadEx.getErrorCode()) ;
+            return new Gson().toJson(BadEx.getErrorMessage()) ;
         }
-        catch (BadRequest400 Badreq){
-            res.status(Badreq.getErrorCode()) ;
-            res.body(new Gson().toJson(Badreq.getErrorMessage()));
-            return res ;
-       }
+        catch(Unauthorized401 UnAuthEx){
+            res.status(UnAuthEx.getErrorCode()) ;
+            return new Gson().toJson(UnAuthEx.getErrorMessage()) ;
+        }
+//        catch(Exception Ex){
+//            UniqueError500 UniEx = new UniqueError500();
+//            res.status(UniEx.getErrorCode()) ;
+//            return new Gson().toJson(UniEx.getErrorMessage());
+//        }
     }
     public Object joinGame(Request req, Response res) {
         try {
