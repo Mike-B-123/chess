@@ -20,9 +20,9 @@ public class Handler {
             return "{}" ;
             // make sure I am still returning something.
         }
-        catch(UniqueError500 UE){
-            res.status(UE.getErrorCode()) ;
-            res.body(UE.getMessage());
+        catch(UniqueError500 uniQue){
+            res.status(uniQue.getErrorCode()) ;
+            res.body(uniQue.getMessage());
             return res ;
         }
     }
@@ -33,18 +33,18 @@ public class Handler {
             res.status(200) ;
             return new Gson().toJson(outAuthData) ;
         }
-        catch(BadRequest400 BadEx){
-            res.status(BadEx.getErrorCode()) ;
-            return new Gson().toJson(BadEx.getErrorMessage()) ;
+        catch(BadRequest400 badEx){
+            res.status(badEx.getErrorCode()) ;
+            return new Gson().toJson(badEx.getErrorMessage()) ;
         }
-        catch(Taken403 TakeEx){
-            res.status(TakeEx.getErrorCode()) ;
-            return new Gson().toJson(TakeEx.getErrorMessage()) ;
+        catch(Taken403 takeEx){
+            res.status(takeEx.getErrorCode()) ;
+            return new Gson().toJson(takeEx.getErrorMessage()) ;
         }
-        catch(Exception Ex){
-             UniqueError500 UniEx = new UniqueError500();
-            res.status(UniEx.getErrorCode()) ;
-            return new Gson().toJson(UniEx.getErrorMessage());
+        catch(Exception ex){
+             UniqueError500 uniEx = new UniqueError500();
+            res.status(uniEx.getErrorCode()) ;
+            return new Gson().toJson(uniEx.getErrorMessage());
         }
 
     }
@@ -55,14 +55,14 @@ public class Handler {
             res.status(200) ;
             return new Gson().toJson(outAuthData);
         }
-        catch(Unauthorized401 UnAuthEx){
-            res.status(UnAuthEx.getErrorCode()) ;
-            return new Gson().toJson(UnAuthEx.getErrorMessage());
+        catch(Unauthorized401 unAuthEx){
+            res.status(unAuthEx.getErrorCode()) ;
+            return new Gson().toJson(unAuthEx.getErrorMessage());
         }
-        catch(Exception Ex){
-            UniqueError500 UniEx = new UniqueError500();
-            res.status(UniEx.getErrorCode()) ;
-            return new Gson().toJson(UniEx.getErrorMessage());
+        catch(Exception ex){
+            UniqueError500 uniEx = new UniqueError500();
+            res.status(uniEx.getErrorCode()) ;
+            return new Gson().toJson(uniEx.getErrorMessage());
         }
 
      }
@@ -73,14 +73,14 @@ public class Handler {
         res.status(200) ;
         return result ;
         }
-        catch(Unauthorized401 UnauthEx){
-            res.status(UnauthEx.getErrorCode()) ;
-            return new Gson().toJson(UnauthEx.getErrorMessage()) ;
+        catch(Unauthorized401 unauthEx){
+            res.status(unauthEx.getErrorCode()) ;
+            return new Gson().toJson(unauthEx.getErrorMessage()) ;
             }
-        catch(Exception Ex){
-            UniqueError500 UniEx = new UniqueError500() ;
-            res.status(UniEx.getErrorCode()) ;
-            return new Gson().toJson(UniEx.getErrorMessage()) ;
+        catch(Exception ex){
+            UniqueError500 uniEx = new UniqueError500() ;
+            res.status(uniEx.getErrorCode()) ;
+            return new Gson().toJson(uniEx.getErrorMessage()) ;
         }
     }
     public Object listGames(Request req, Response res) {
@@ -92,14 +92,14 @@ public class Handler {
             GamesList games = new GamesList(gameCollection) ;
             return new Gson().toJson(games) ;
         }
-        catch(Unauthorized401 UnAuthEx){
-            res.status(UnAuthEx.getErrorCode()) ;
-            return new Gson().toJson(UnAuthEx.getErrorMessage()) ;
+        catch(Unauthorized401 unAuthEx){
+            res.status(unAuthEx.getErrorCode()) ;
+            return new Gson().toJson(unAuthEx.getErrorMessage()) ;
         }
-        catch(Exception Ex){
-            UniqueError500 UniEx = new UniqueError500();
-            res.status(UniEx.getErrorCode()) ;
-            return new Gson().toJson(UniEx.getErrorMessage());
+        catch(Exception ex){
+            UniqueError500 uniEx = new UniqueError500();
+            res.status(uniEx.getErrorCode()) ;
+            return new Gson().toJson(uniEx.getErrorMessage());
         }
     }
     public Object createNewGame(Request req, Response res) {
@@ -107,22 +107,22 @@ public class Handler {
             CreateGameName gameName = new Gson().fromJson(req.body(), CreateGameName.class);
             String authToken = req.headers("Authorization") ;
             Game outGame = CreateGamesService.create(authToken, gameName.gameName()) ;
-            GameID ID = new GameID(outGame.gameID()) ;
+            GameID id = new GameID(outGame.gameID()) ;
             res.status(200) ;
-            return new Gson().toJson(ID) ;
+            return new Gson().toJson(id) ;
         }
-        catch(BadRequest400 BadEx){
-            res.status(BadEx.getErrorCode()) ;
-            return new Gson().toJson(BadEx.getErrorMessage()) ;
+        catch(BadRequest400 badEx){
+            res.status(badEx.getErrorCode()) ;
+            return new Gson().toJson(badEx.getErrorMessage()) ;
         }
-        catch(Unauthorized401 UnAuthEx){
-            res.status(UnAuthEx.getErrorCode()) ;
-            return new Gson().toJson(UnAuthEx.getErrorMessage()) ;
+        catch(Unauthorized401 unAuthEx){
+            res.status(unAuthEx.getErrorCode()) ;
+            return new Gson().toJson(unAuthEx.getErrorMessage()) ;
         }
-       catch(Exception Ex){
-            UniqueError500 UniEx = new UniqueError500();
-            res.status(UniEx.getErrorCode()) ;
-            return new Gson().toJson(UniEx.getErrorMessage());
+       catch(Exception ex){
+            UniqueError500 uniEx = new UniqueError500();
+            res.status(uniEx.getErrorCode()) ;
+            return new Gson().toJson(uniEx.getErrorMessage());
         }
     }
     public Object joinGameHandle(Request req, Response res) {
@@ -133,26 +133,25 @@ public class Handler {
             res.status(200);
             return "{}" ;
         }
-        catch(BadRequest400 BadEx){
-            res.status(BadEx.getErrorCode()) ;
-            return new Gson().toJson(BadEx.getErrorMessage()) ;
+        catch(BadRequest400 badEx){
+            res.status(badEx.getErrorCode()) ;
+            return new Gson().toJson(badEx.getErrorMessage()) ;
         }
-        catch(Taken403 TakeEx){
-            res.status(TakeEx.getErrorCode()) ;
-            return new Gson().toJson(TakeEx.getErrorMessage()) ;
+        catch(Taken403 takeEx){
+            res.status(takeEx.getErrorCode()) ;
+            return new Gson().toJson(takeEx.getErrorMessage()) ;
         }
-        catch(Unauthorized401 UnAuthEx){
-            res.status(UnAuthEx.getErrorCode()) ;
-            return new Gson().toJson(UnAuthEx.getErrorMessage()) ;
+        catch(Unauthorized401 unAuthEx){
+            res.status(unAuthEx.getErrorCode()) ;
+            return new Gson().toJson(unAuthEx.getErrorMessage()) ;
         }
-        catch(Exception Ex){
-            UniqueError500 UniEx = new UniqueError500();
-            res.status(UniEx.getErrorCode()) ;
-            return new Gson().toJson(UniEx.getErrorMessage());
+        catch(Exception ex){
+            UniqueError500 uniEx = new UniqueError500();
+            res.status(uniEx.getErrorCode()) ;
+            return new Gson().toJson(uniEx.getErrorMessage());
         }
     }
 
- //throw new BadREquest400 which will will trigger Catch(BadRequest400);
 
 
 }

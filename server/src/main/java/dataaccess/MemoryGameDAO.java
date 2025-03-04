@@ -1,13 +1,9 @@
 package dataaccess;
 
 import chess.ChessGame;
-import model.AuthData;
 import model.Game;
-import model.JoinData;
-import model.User;
 import responses.errors.Taken403;
 
-import java.util.Collection;
 import java.util.HashMap;
 
 public class MemoryGameDAO implements GameDAO{
@@ -17,8 +13,8 @@ public class MemoryGameDAO implements GameDAO{
     public HashMap<Integer, Game> listAllGames() {
         return gameDatas ;
     }
-    public Game getGame(Integer ID){
-        return gameDatas.get(ID) ;
+    public Game getGame(Integer id){
+        return gameDatas.get(id) ;
     }
 
 

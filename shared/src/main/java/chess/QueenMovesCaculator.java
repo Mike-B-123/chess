@@ -4,9 +4,9 @@ import java.util.Collection;
 
 public class QueenMovesCaculator implements PieceMovesCaculator{
     public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition startPosition) {
-        Collection<ChessMove>  OverallPossibilities = new BishopMovesCaculator().calculateMoves(board, startPosition) ;
-        Collection<ChessMove> RooKPossibilities = new RookMovesCaculator().calculateMoves(board, startPosition) ;
-        OverallPossibilities.addAll(RooKPossibilities) ;
-        return OverallPossibilities ;
+        Collection<ChessMove>  overallPossibilities = new BishopMovesCaculator().calculateMoves(board, startPosition) ;
+        Collection<ChessMove> rooKPossibilities = new RookMovesCaculator().calculateMoves(board, startPosition) ;
+        overallPossibilities.addAll(rooKPossibilities) ;
+        return overallPossibilities ;
     }
 }

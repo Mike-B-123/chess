@@ -323,20 +323,20 @@ public class ChessGame {
     public boolean kingIsInCheck(TeamColor teamColor) {
         int row = currentBoard.getKingPosition(teamColor).getRow();
         int col = currentBoard.getKingPosition(teamColor).getColumn();
-        int[][] KingOne = {{row, col + 1}, {row, col + 2}};
-        int[][] KingTwo = {{row, col - 1}, {row, col - 2}};
-        for (int i = 0; i < KingOne.length; i++) {
-            if(KingOne[i][0] < 1 || KingOne[i][1] < 1){
+        int[][] kingOne = {{row, col + 1}, {row, col + 2}};
+        int[][] kingTwo = {{row, col - 1}, {row, col - 2}};
+        for (int i = 0; i < kingOne.length; i++) {
+            if(kingOne[i][0] < 1 || kingOne[i][1] < 1){
                 continue ;
             }
-            if (checkMoveLoop(teamColor, KingOne[i][0], KingOne[i][1]))
+            if (checkMoveLoop(teamColor, kingOne[i][0], kingOne[i][1]))
                 return true;
         }
-        for (int i = 0; i < KingTwo.length; i++) {
-            if(KingTwo[i][0] < 1 || KingTwo[i][1] < 1){
+        for (int i = 0; i < kingTwo.length; i++) {
+            if(kingTwo[i][0] < 1 || kingTwo[i][1] < 1){
                 continue ;
             }
-            if (checkMoveLoop(teamColor, KingTwo[i][0], KingTwo[i][1]))
+            if (checkMoveLoop(teamColor, kingTwo[i][0], kingTwo[i][1]))
                 return true;
         }
         return false ;

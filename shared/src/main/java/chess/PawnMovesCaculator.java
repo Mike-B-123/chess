@@ -21,13 +21,13 @@ public class PawnMovesCaculator implements PieceMovesCaculator {
         }
         int[][] captures = {{row + color*1, col + color*1}, {row + color*1, col - color*1}};
         for (int[] capture : captures) {
-            ChessPosition current_position = new ChessPosition(capture[0], capture[1]);
+            ChessPosition currentPosition = new ChessPosition(capture[0], capture[1]);
             if (capture[0] > 8 || capture[1] > 8 || capture[0] < 1 || capture[1] < 1) {
                 continue;
             }
-            if (board.getPiece(current_position) != null) {
-                if (board.getPiece(current_position).getTeamColor() != board.getPiece(startPosition).getTeamColor()) {
-                    ChessMove singleMove = new ChessMove(startPosition, current_position, null);
+            if (board.getPiece(currentPosition) != null) {
+                if (board.getPiece(currentPosition).getTeamColor() != board.getPiece(startPosition).getTeamColor()) {
+                    ChessMove singleMove = new ChessMove(startPosition, currentPosition, null);
                     capturePossibilities.add(singleMove);
                 }
             }
@@ -36,13 +36,13 @@ public class PawnMovesCaculator implements PieceMovesCaculator {
         ChessPosition currentPosition = new ChessPosition(row + color*1, col);
         if(board.getPiece(currentPosition) == null
                 && currentPosition.getRow() < 9 && currentPosition.getColumn() < 9 && currentPosition.getRow() > 0 && currentPosition.getColumn() > 0) {
-            ChessMove SingleMove = new ChessMove(startPosition, currentPosition, null);
-            forwardPossibilities.add(SingleMove) ;
+            ChessMove singleMove = new ChessMove(startPosition, currentPosition, null);
+            forwardPossibilities.add(singleMove) ;
             currentPosition = new ChessPosition(row + color*2, col);
             if(row == start && currentPosition.getRow() < 9 && currentPosition.getColumn() < 9 && currentPosition.getRow() > 0 && currentPosition.getColumn() > 0
             && board.getPiece(currentPosition) == null){
-                SingleMove = new ChessMove(startPosition, currentPosition, null);
-                forwardPossibilities.add(SingleMove) ;
+                singleMove = new ChessMove(startPosition, currentPosition, null);
+                forwardPossibilities.add(singleMove) ;
             }
         }
         overallPossibilities.addAll(promotionHelper(forwardPossibilities, end)) ;
