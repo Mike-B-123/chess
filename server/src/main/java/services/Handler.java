@@ -8,6 +8,7 @@ import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
 import spark.* ;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 // make a spark. exception to make the try and catch easier
@@ -85,8 +86,10 @@ public class Handler {
     public Object listGames(Request req, Response res) {
         try{
             String authToken = req.headers("Authorization") ;
-            HashMap<Integer,Game> games = listGamesService.listGames(authToken) ; // this might need to become deep copy?
+            HashMap<Integer,Game> gamesHash = listGamesService.listGames(authToken) ; // this might need to become deep copy?
             res.status(200) ;
+            Collection<Game> gameCollection = gamesHash.values() ;
+            GamesList games = new GamesList(gameCollection) ;
             return new Gson().toJson(games) ;
         }
         catch(Unauthorized401 UnAuthEx){
