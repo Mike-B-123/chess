@@ -22,8 +22,8 @@ public class RookMovesCaculator implements PieceMovesCaculator {
                 ChessPosition currentPosition = new ChessPosition(currentRow, currentCol);
                 if (board.getPiece(currentPosition) != null) {
                     if(board.getPiece(currentPosition).getTeamColor() != board.getPiece(startPosition).getTeamColor()){
-                        ChessMove SingleMove = new ChessMove(startPosition, currentPosition, null);
-                        movePossibilities.add(SingleMove);}
+                        ChessMove singleMove = new ChessMove(startPosition, currentPosition, null);
+                        movePossibilities.add(singleMove);}
                     break;
                 }
 

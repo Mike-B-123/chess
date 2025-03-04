@@ -55,14 +55,14 @@ public class PawnMovesCaculator implements PieceMovesCaculator {
         Collection<ChessMove> helperPossibilities = new ArrayList<>();
         for (ChessMove move : possibilities) {
             if(move.getEndPosition().getRow() == end){
-                ChessMove SingleMove = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.QUEEN) ;
-                helperPossibilities.add(SingleMove) ;
-                SingleMove = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.ROOK) ;
-                helperPossibilities.add(SingleMove) ;
-                SingleMove = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.KNIGHT) ;
-                helperPossibilities.add(SingleMove) ;
-                SingleMove = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.BISHOP) ;
-                helperPossibilities.add(SingleMove) ;
+                ChessMove singleMove = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.QUEEN) ;
+                helperPossibilities.add(singleMove) ;
+                singleMove = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.ROOK) ;
+                helperPossibilities.add(singleMove) ;
+                singleMove = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.KNIGHT) ;
+                helperPossibilities.add(singleMove) ;
+                singleMove = new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.BISHOP) ;
+                helperPossibilities.add(singleMove) ;
             } else {
                 helperPossibilities.add(move) ;
             }
@@ -70,12 +70,5 @@ public class PawnMovesCaculator implements PieceMovesCaculator {
         return helperPossibilities ;
     }
 
-    // public Collection<ChessMove> EnPas(Collection<ChessMove> possinilities, int end){}
 }
 
-//public Collection<ChessMove> Enpas(Collection<ChessMove> possibilities, int end){
-//
-//}
-
-// can use ternary for Blakc and white variable using ?
-// then compare row to start

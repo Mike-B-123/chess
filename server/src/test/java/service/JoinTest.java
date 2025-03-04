@@ -26,8 +26,8 @@ public class JoinTest {
         Game outputGame = CreateGamesService.create(authData.authToken(), "newTestGame") ;
         JoinData joinData = new JoinData(ChessGame.TeamColor.BLACK, outputGame.gameID()) ;
         JoinGameService.joinGame(authData.authToken(), joinData);
-        MemoryGameDAO GameDao = MemoryGameDAO.getInstance() ;
-        Assertions.assertEquals("testUserName", GameDao.getGame(joinData.gameID()).blackUsername());
+        MemoryGameDAO gameDAO = MemoryGameDAO.getInstance() ;
+        Assertions.assertEquals("testUserName", gameDAO.getGame(joinData.gameID()).blackUsername());
     }
 
     @Test
