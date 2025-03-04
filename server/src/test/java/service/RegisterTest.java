@@ -11,7 +11,7 @@ import services.clearService;
 import services.registerService;
 
 public class RegisterTest {
-    String testClear = "{}" ;
+
     @Test
     public void positiveRegister() throws UniqueError500, BadRequest400, Taken403 {
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
