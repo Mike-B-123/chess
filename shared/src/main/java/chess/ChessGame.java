@@ -151,11 +151,12 @@ public class ChessGame {
             for (int col = 1; col < 9; col++) {
                 ChessPosition myPosition = new ChessPosition(row, col);
                 ChessPiece piece = hypotheticalBoard.getPiece(myPosition);
-                if (piece != null && piece.getTeamColor() != teamColor) {
-                    for (ChessMove move : piece.pieceMoves(hypotheticalBoard, myPosition)) {
-                        if (Objects.equals(move.getEndPosition(), kingPosition)) {
-                            return true; // double check logic
-                        }
+                if (piece == null || piece.getTeamColor() == teamColor) {
+                    continue;
+                }
+                for (ChessMove move : piece.pieceMoves(hypotheticalBoard, myPosition)) {
+                    if (Objects.equals(move.getEndPosition(), kingPosition)) {
+                        return true;
                     }
                 }
             }
