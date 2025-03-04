@@ -224,10 +224,6 @@ public class ChessGame {
     }
 
 
-//    public boolean isInStalemate(TeamColor teamColor) {
-//        return isInStalemate(teamColor, current_board) ;
-//    }
-
 
     /**
      * Sets this game's chessboard with a given board
@@ -236,7 +232,6 @@ public class ChessGame {
      */
     public void setBoard(ChessBoard board) {
         this.currentBoard = board;
-        // this.team = TeamColor.WHITE  maybe have to set board
         for (int row = 1; row < 9; row++) {
             for (int col = 1; col < 9; col++) {
                 ChessPosition myPosition = new ChessPosition(row, col);

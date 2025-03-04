@@ -91,28 +91,28 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> MovePossibilities = new ArrayList<> () ;
+        Collection<ChessMove> movePossibilities = new ArrayList<> () ;
         if(type == PieceType.KING) {
-           MovePossibilities = new KingMovesCaculator().calculateMoves(board, myPosition) ;
+           movePossibilities = new KingMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.QUEEN) {
-             MovePossibilities = new QueenMovesCaculator().calculateMoves(board, myPosition) ;
+             movePossibilities = new QueenMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.BISHOP) {
-            MovePossibilities = new BishopMovesCaculator().calculateMoves(board, myPosition) ;
+            movePossibilities = new BishopMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.KNIGHT) {
-            MovePossibilities = new KnightMovesCaculator().calculateMoves(board, myPosition) ;
+            movePossibilities = new KnightMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.ROOK) {
-            MovePossibilities = new RookMovesCaculator().calculateMoves(board, myPosition) ;
+            movePossibilities = new RookMovesCaculator().calculateMoves(board, myPosition) ;
         }
         else if (type == PieceType.PAWN) {
-            MovePossibilities = new PawnMovesCaculator().calculateMoves(board, myPosition) ;
+            movePossibilities = new PawnMovesCaculator().calculateMoves(board, myPosition) ;
         }
 
 
-return MovePossibilities ;
+return movePossibilities ;
         // do we check the board at the given position for the type or is the type given?
 
         // this allows pieces to move and need to implement this
