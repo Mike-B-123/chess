@@ -12,34 +12,34 @@ import responses.errors.BadRequest400;
 import responses.errors.Taken403;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
-import services.clearService;
-import services.createGamesService;
-import services.joinGameService;
-import services.registerService;
+import services.ClearService;
+import services.CreateGamesService;
+import services.JoinGameService;
+import services.RegisterService;
 
 public class JoinTest {
     @Test
     public void positiveJoin() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
-        clearService.clear() ;
+        ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
-        AuthData authData = registerService.register(testUser) ;
-        Game outputGame = createGamesService.create(authData.authToken(), "newTestGame") ;
+        AuthData authData = RegisterService.register(testUser) ;
+        Game outputGame = CreateGamesService.create(authData.authToken(), "newTestGame") ;
         JoinData joinData = new JoinData(ChessGame.TeamColor.BLACK, outputGame.gameID()) ;
-        joinGameService.joinGame(authData.authToken(), joinData);
+        JoinGameService.joinGame(authData.authToken(), joinData);
         MemoryGameDAO GameDao = MemoryGameDAO.getInstance() ;
         Assertions.assertEquals("testUserName", GameDao.getGame(joinData.gameID()).blackUsername());
     }
 
     @Test
     public void negitiveJoin() throws UniqueError500, BadRequest400, Taken403 {
-        clearService.clear() ;
+        ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
-        AuthData authData = registerService.register(testUser) ;
+        AuthData authData = RegisterService.register(testUser) ;
         Boolean exceptionThrown = Boolean.FALSE ;
         try{
-            Game outPutErrorGame =createGamesService.create(authData.authToken(), "newTestGame") ;
+            Game outPutErrorGame = CreateGamesService.create(authData.authToken(), "newTestGame") ;
             JoinData testJoinData = new JoinData(ChessGame.TeamColor.BLACK, outPutErrorGame.gameID()) ;
-            joinGameService.joinGame("hdkjfhaskdhf", testJoinData);
+            JoinGameService.joinGame("hdkjfhaskdhf", testJoinData);
         }
         catch(Exception ex){ // double check that this was ok to look up
             exceptionThrown = Boolean.TRUE ;

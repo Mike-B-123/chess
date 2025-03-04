@@ -2,7 +2,7 @@ package services;
 import dataaccess.* ;
 import responses.errors.UniqueError500;
 
-public class clearService {
+public class ClearService {
     public static Object clear() throws UniqueError500{
         try{
         UserDAO userDao = MemoryUserDAO.getInstance() ;

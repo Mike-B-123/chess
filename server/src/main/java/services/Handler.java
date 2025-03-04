@@ -15,7 +15,7 @@ import java.util.HashMap;
 public class Handler {
     public Object clear(Request req, Response res) {
         try{
-            clearService.clear();
+            ClearService.clear();
             res.status(200) ;
             return "{}" ;
             // make sure I am still returning something.
@@ -29,7 +29,7 @@ public class Handler {
     public Object register(Request req, Response res) {
         try {
             User user = new Gson().fromJson(req.body(), User.class);
-            AuthData outAuthData = registerService.register(user); // overarching method needs to be here
+            AuthData outAuthData = RegisterService.register(user); // overarching method needs to be here
             res.status(200) ;
             return new Gson().toJson(outAuthData) ;
         }
@@ -51,7 +51,7 @@ public class Handler {
      public Object login(Request req, Response res) {
         try {
            User user = new Gson().fromJson(req.body(), User.class);
-            AuthData outAuthData = loginService.login(user); // overarching method needs to be here
+            AuthData outAuthData = LoginService.login(user); // overarching method needs to be here
             res.status(200) ;
             return new Gson().toJson(outAuthData);
         }
@@ -69,7 +69,7 @@ public class Handler {
     public Object logoutHandle(Request req, Response res) {
         try {
             String authToken = req.headers("Authorization") ;
-        String result = logoutService.logout(authToken) ;
+        String result = LogoutService.logout(authToken) ;
         res.status(200) ;
         return result ;
         }
@@ -86,7 +86,7 @@ public class Handler {
     public Object listGames(Request req, Response res) {
         try{
             String authToken = req.headers("Authorization") ;
-            HashMap<Integer,Game> gamesHash = listGamesService.listGames(authToken) ; // this might need to become deep copy?
+            HashMap<Integer,Game> gamesHash = ListGamesService.listGames(authToken) ; // this might need to become deep copy?
             res.status(200) ;
             Collection<Game> gameCollection = gamesHash.values() ;
             GamesList games = new GamesList(gameCollection) ;
@@ -106,7 +106,7 @@ public class Handler {
         try{
             CreateGameName gameName = new Gson().fromJson(req.body(), CreateGameName.class);
             String authToken = req.headers("Authorization") ;
-            Game outGame = createGamesService.create(authToken, gameName.gameName()) ;
+            Game outGame = CreateGamesService.create(authToken, gameName.gameName()) ;
             GameID ID = new GameID(outGame.gameID()) ;
             res.status(200) ;
             return new Gson().toJson(ID) ;
@@ -129,7 +129,7 @@ public class Handler {
         try {
             JoinData inputJoinData = new Gson().fromJson(req.body(), JoinData.class);
             String authToken = req.headers("Authorization");
-            joinGameService.joinGame(authToken, inputJoinData);
+            JoinGameService.joinGame(authToken, inputJoinData);
             res.status(200);
             return "{}" ;
         }

@@ -2,8 +2,6 @@ package service;
 
 
 import chess.ChessGame;
-import dataaccess.GameDAO;
-import dataaccess.MemoryGameDAO;
 import model.AuthData;
 import model.Game;
 import model.JoinData;
@@ -20,28 +18,28 @@ public class ListGamesTest {
 
     @Test
     public void positiveList() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
-        clearService.clear() ;
+        ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
-        AuthData authData = registerService.register(testUser) ;
-        Game outputGame = createGamesService.create(authData.authToken(), "newTestGame") ;
+        AuthData authData = RegisterService.register(testUser) ;
+        Game outputGame = CreateGamesService.create(authData.authToken(), "newTestGame") ;
         JoinData joinData = new JoinData(ChessGame.TeamColor.BLACK, outputGame.gameID()) ;
-        joinGameService.joinGame(authData.authToken(), joinData);
-        listGamesService.listGames(authData.authToken()) ;
-        Assertions.assertEquals("testUserName", listGamesService.listGames(authData.authToken()).get(outputGame.gameID()).blackUsername());
+        JoinGameService.joinGame(authData.authToken(), joinData);
+        ListGamesService.listGames(authData.authToken()) ;
+        Assertions.assertEquals("testUserName", ListGamesService.listGames(authData.authToken()).get(outputGame.gameID()).blackUsername());
     }
 
     @Test
     public void negitiveList() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
-        clearService.clear() ;
+        ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
-        AuthData authData = registerService.register(testUser) ;
-        Game outputGame = createGamesService.create(authData.authToken(), "newTestGame") ;
+        AuthData authData = RegisterService.register(testUser) ;
+        Game outputGame = CreateGamesService.create(authData.authToken(), "newTestGame") ;
         JoinData joinData = new JoinData(ChessGame.TeamColor.BLACK, outputGame.gameID()) ;
-        joinGameService.joinGame(authData.authToken(), joinData);
+        JoinGameService.joinGame(authData.authToken(), joinData);
         Boolean exceptionThrown = Boolean.FALSE ;
         try{
-            Game outPutErrorGame =createGamesService.create(authData.authToken(), "newTestGame") ;
-            listGamesService.listGames(null) ;
+            Game outPutErrorGame = CreateGamesService.create(authData.authToken(), "newTestGame") ;
+            ListGamesService.listGames(null) ;
         }
         catch(Exception ex){ // double check that this was ok to look up
             exceptionThrown = Boolean.TRUE ;

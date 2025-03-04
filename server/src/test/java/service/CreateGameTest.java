@@ -9,19 +9,18 @@ import responses.errors.BadRequest400;
 import responses.errors.Taken403;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
-import services.clearService;
-import services.createGamesService;
-import services.loginService;
-import services.registerService;
+import services.ClearService;
+import services.CreateGamesService;
+import services.RegisterService;
 
 public class CreateGameTest {
     @Test
     public void positiveCreate() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
-        clearService.clear() ;
+        ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
-        AuthData authData = registerService.register(testUser) ;
+        AuthData authData = RegisterService.register(testUser) ;
         Boolean test = Boolean.FALSE ;
-        Game outputGame = createGamesService.create(authData.authToken(), "newTestGame") ;
+        Game outputGame = CreateGamesService.create(authData.authToken(), "newTestGame") ;
         if(outputGame.gameID() > -1 ){
             test = Boolean.TRUE ;
         }
@@ -30,12 +29,12 @@ public class CreateGameTest {
 
     @Test
     public void negitiveCreate() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
-        clearService.clear() ;
+        ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
-        AuthData authData = registerService.register(testUser) ;
+        AuthData authData = RegisterService.register(testUser) ;
         Boolean exceptionThrown = Boolean.FALSE ;
         try{
-            createGamesService.create("hasdkfhakjsdhfk", "newTestGame") ;
+            CreateGamesService.create("hasdkfhakjsdhfk", "newTestGame") ;
         }
         catch(Exception ex){ // double check that this was ok to look up
             exceptionThrown = Boolean.TRUE ;

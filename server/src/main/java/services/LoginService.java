@@ -11,7 +11,7 @@ import responses.errors.UniqueError500;
 
 import java.util.Objects;
 
-public class loginService {
+public class LoginService {
     public static AuthData login(User inputUser) throws Unauthorized401, UniqueError500 {
         if (getUser(inputUser) != null) {
             if (!Objects.equals(getUser(inputUser).password(), inputUser.password())) {
