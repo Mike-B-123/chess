@@ -206,14 +206,14 @@ public class ChessGame {
     public boolean isInStalemate(TeamColor teamColor) {
         Collection<ChessMove> endMoves = new ArrayList<>();
         for (int row = 1; row < 9; row++) {
-            for (int col = 1; col < 9; col++) {
-                ChessPosition myPosition = new ChessPosition(row, col);
-                ChessPiece piece = currentBoard.getPiece(myPosition);
+            for (int colomn = 1; colomn < 9; colomn++) {
+                ChessPosition currentPosition = new ChessPosition(row, colomn);
+                ChessPiece piece = currentBoard.getPiece(currentPosition);
                 if (piece != null && piece.getTeamColor() == teamColor) {
-                    for (ChessMove move : piece.pieceMoves(currentBoard, myPosition)) {
-                        ChessBoard hypotheticalBoard = new ChessBoard(currentBoard);
-                        hypotheticalBoard.executeMove(move);
-                        if (isInCheck(piece.getTeamColor(), hypotheticalBoard) == false) {
+                    for (ChessMove move : piece.pieceMoves(currentBoard, currentPosition)) {
+                        ChessBoard tempBoard = new ChessBoard(currentBoard);
+                        tempBoard.executeMove(move);
+                        if (!isInCheck(piece.getTeamColor(), tempBoard)) {
                             endMoves.add(move);
                         }
                     }
