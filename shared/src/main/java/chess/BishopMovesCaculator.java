@@ -16,16 +16,16 @@ public class BishopMovesCaculator implements PieceMovesCaculator {
                 if (positionRow > 8 || positionColumn > 8 || positionRow < 1 || positionColumn < 1) {
                     break;
                 }
-                ChessPosition currentPosition = new ChessPosition(positionRow, positionColumn);
-                if (board.getPiece(currentPosition) != null) {
-                    if(board.getPiece(currentPosition).getTeamColor() != board.getPiece(startPosition).getTeamColor()){
-                        ChessMove singleMove = new ChessMove(startPosition, currentPosition, null);
-                        movePossibilities.add(singleMove);}
+                ChessPosition myCurrentPosition = new ChessPosition(positionRow, positionColumn);
+                if (board.getPiece(myCurrentPosition) != null) {
+                    if(board.getPiece(myCurrentPosition).getTeamColor() != board.getPiece(startPosition).getTeamColor()){
+                        ChessMove oneSingleMove = new ChessMove(startPosition, myCurrentPosition, null);
+                        movePossibilities.add(oneSingleMove);}
                     break;
                 }
 
-                ChessMove singleMove = new ChessMove(startPosition, currentPosition, null);
-                movePossibilities.add(singleMove);
+                ChessMove oneSingleMove = new ChessMove(startPosition, myCurrentPosition, null);
+                movePossibilities.add(oneSingleMove);
             }
         }
         return movePossibilities ;
