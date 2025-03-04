@@ -11,15 +11,15 @@ public class PawnMovesCaculator implements PieceMovesCaculator {
         Collection<ChessMove> overallPossibilities = new ArrayList<>();
         int row = startPosition.getRow();
         int col = startPosition.getColumn();
-        int Color = 1 ;
+        int color = 1 ;
         int start = 2 ;
         int end = 8 ;
         if(board.getPiece(startPosition).getTeamColor() == ChessGame.TeamColor.BLACK){
-            Color = -1;
+            color = -1;
             start = 7;
             end = 1;
         }
-        int[][] captures = {{row + Color*1, col + Color*1}, {row + Color*1, col - Color*1}};
+        int[][] captures = {{row + color*1, col + color*1}, {row + color*1, col - color*1}};
         for (int[] capture : captures) {
             ChessPosition current_position = new ChessPosition(capture[0], capture[1]);
             if (capture[0] > 8 || capture[1] > 8 || capture[0] < 1 || capture[1] < 1) {
@@ -27,21 +27,21 @@ public class PawnMovesCaculator implements PieceMovesCaculator {
             }
             if (board.getPiece(current_position) != null) {
                 if (board.getPiece(current_position).getTeamColor() != board.getPiece(startPosition).getTeamColor()) {
-                    ChessMove SingleMove = new ChessMove(startPosition, current_position, null);
-                    capturePossibilities.add(SingleMove);
+                    ChessMove singleMove = new ChessMove(startPosition, current_position, null);
+                    capturePossibilities.add(singleMove);
                 }
             }
         }
         overallPossibilities.addAll(promotionHelper(capturePossibilities, end)) ;
-        ChessPosition current_position = new ChessPosition(row + Color*1, col);
-        if(board.getPiece(current_position) == null
-                && current_position.getRow() < 9 && current_position.getColumn() < 9 && current_position.getRow() > 0 && current_position.getColumn() > 0) {
-            ChessMove SingleMove = new ChessMove(startPosition, current_position, null);
+        ChessPosition currentPosition = new ChessPosition(row + color*1, col);
+        if(board.getPiece(currentPosition) == null
+                && currentPosition.getRow() < 9 && currentPosition.getColumn() < 9 && currentPosition.getRow() > 0 && currentPosition.getColumn() > 0) {
+            ChessMove SingleMove = new ChessMove(startPosition, currentPosition, null);
             forwardPossibilities.add(SingleMove) ;
-            current_position = new ChessPosition(row + Color*2, col);
-            if(row == start && current_position.getRow() < 9 && current_position.getColumn() < 9 && current_position.getRow() > 0 && current_position.getColumn() > 0
-            && board.getPiece(current_position) == null){
-                SingleMove = new ChessMove(startPosition, current_position, null);
+            currentPosition = new ChessPosition(row + color*2, col);
+            if(row == start && currentPosition.getRow() < 9 && currentPosition.getColumn() < 9 && currentPosition.getRow() > 0 && currentPosition.getColumn() > 0
+            && board.getPiece(currentPosition) == null){
+                SingleMove = new ChessMove(startPosition, currentPosition, null);
                 forwardPossibilities.add(SingleMove) ;
             }
         }
