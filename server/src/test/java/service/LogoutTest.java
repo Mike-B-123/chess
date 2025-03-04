@@ -8,12 +8,14 @@ import responses.errors.BadRequest400;
 import responses.errors.Taken403;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
+import services.clearService;
 import services.logoutService;
 import services.registerService;
 
 public class LogoutTest {
     @Test
     public void positiveLogout() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+        clearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = registerService.register(testUser) ;
         String authToken = authData.authToken();
@@ -22,6 +24,7 @@ public class LogoutTest {
 
     @Test
     public void negitiveLogout() throws UniqueError500, BadRequest400, Taken403 {
+        clearService.clear() ;
         User testUser = new User(null, "testPassWord", "testEmail") ;
         Boolean exceptionThrown = Boolean.FALSE ;
         try{

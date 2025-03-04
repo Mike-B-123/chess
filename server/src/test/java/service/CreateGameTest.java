@@ -9,6 +9,7 @@ import responses.errors.BadRequest400;
 import responses.errors.Taken403;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
+import services.clearService;
 import services.createGamesService;
 import services.loginService;
 import services.registerService;
@@ -16,6 +17,7 @@ import services.registerService;
 public class CreateGameTest {
     @Test
     public void positiveCreate() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+        clearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = registerService.register(testUser) ;
         Boolean test = Boolean.FALSE ;
@@ -28,6 +30,7 @@ public class CreateGameTest {
 
     @Test
     public void negitiveCreate() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+        clearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = registerService.register(testUser) ;
         Boolean exceptionThrown = Boolean.FALSE ;

@@ -14,15 +14,13 @@ import responses.errors.BadRequest400;
 import responses.errors.Taken403;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
-import services.createGamesService;
-import services.joinGameService;
-import services.listGamesService;
-import services.registerService;
+import services.*;
 
 public class ListGamesTest {
 
     @Test
     public void positiveList() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+        clearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = registerService.register(testUser) ;
         Game outputGame = createGamesService.create(authData.authToken(), "newTestGame") ;
@@ -34,6 +32,7 @@ public class ListGamesTest {
 
     @Test
     public void negitiveList() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+        clearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = registerService.register(testUser) ;
         Game outputGame = createGamesService.create(authData.authToken(), "newTestGame") ;

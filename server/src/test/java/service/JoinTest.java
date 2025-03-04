@@ -12,6 +12,7 @@ import responses.errors.BadRequest400;
 import responses.errors.Taken403;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
+import services.clearService;
 import services.createGamesService;
 import services.joinGameService;
 import services.registerService;
@@ -19,6 +20,7 @@ import services.registerService;
 public class JoinTest {
     @Test
     public void positiveJoin() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+        clearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = registerService.register(testUser) ;
         Game outputGame = createGamesService.create(authData.authToken(), "newTestGame") ;
@@ -30,6 +32,7 @@ public class JoinTest {
 
     @Test
     public void negitiveJoin() throws UniqueError500, BadRequest400, Taken403 {
+        clearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = registerService.register(testUser) ;
         Boolean exceptionThrown = Boolean.FALSE ;

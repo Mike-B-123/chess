@@ -14,6 +14,7 @@ public class RegisterTest {
 
     @Test
     public void positiveRegister() throws UniqueError500, BadRequest400, Taken403 {
+        clearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = registerService.register(testUser) ;
         String authToken = authData.authToken();
@@ -24,6 +25,7 @@ public class RegisterTest {
 
     @Test
     public void negitiveRegister() throws UniqueError500, BadRequest400, Taken403 {
+        clearService.clear() ;
         User testUser = new User(null, "testPassWord", "testEmail") ;
         AuthData authData = new AuthData("ashdfjkahsdfkjh", "testUser") ;
         Boolean exceptionThrown = Boolean.FALSE ;

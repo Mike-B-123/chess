@@ -8,6 +8,7 @@ import responses.errors.BadRequest400;
 import responses.errors.Taken403;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
+import services.clearService;
 import services.loginService;
 import services.logoutService;
 import services.registerService;
@@ -15,6 +16,7 @@ import services.registerService;
 public class LoginTest {
     @Test
     public void positiveLogin() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+        clearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         registerService.register(testUser) ;
         AuthData authData = loginService.login(testUser) ;
@@ -24,6 +26,7 @@ public class LoginTest {
 
     @Test
     public void negitiveLogin() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+        clearService.clear() ;
         User testUserOne = new User("testUserName", "PassWord1", "testEmail") ;
         User testUserTwo = new User("testUserName", "PassWord2", "testEmail") ;
         registerService.register(testUserOne) ;
