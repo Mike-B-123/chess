@@ -114,12 +114,17 @@ public class ChessGame {
         if (validMoves(move.getStartPosition()).contains(move)) {
             if(currentBoard.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.KING){
                 currentBoard.getPiece(move.getStartPosition()).setKingPreviousMove();
-                if(move.getStartPosition().getColumn() - move.getEndPosition().getColumn() == 2 || move.getStartPosition().getColumn() - move.getEndPosition().getColumn() == -2 ){
+                int startColumn = move.getStartPosition().getColumn() ;
+                int endColumn = move.getEndPosition().getColumn() ;
+                if(startColumn - endColumn == 2 || move.getStartPosition().getColumn() - move.getEndPosition().getColumn() == -2 ){
                     ChessMove rookMove ;
-                    if(move.getEndPosition().getColumn() == 7)
-                        rookMove = new ChessMove(new ChessPosition(move.getStartPosition().getRow(), 8), new ChessPosition(move.getEndPosition().getRow(), 6), null);
-                    else{
-                            rookMove = new ChessMove(new ChessPosition(move.getStartPosition().getRow(), 1), new ChessPosition(move.getEndPosition().getRow(), 4), null);
+                    if(move.getEndPosition().getColumn() == 7) {
+                        ChessPosition startingMove = new ChessPosition(move.getStartPosition().getRow(), 8) ;
+                                rookMove = new ChessMove(startingMove, new ChessPosition(move.getEndPosition().getRow(), 6), null);
+                    }
+                        else{
+                        ChessPosition startingMove = new ChessPosition(move.getStartPosition().getRow(), 1) ;
+                            rookMove = new ChessMove(startingMove, new ChessPosition(move.getEndPosition().getRow(), 4), null);
                         }
                     currentBoard.getPiece(rookMove.getStartPosition()).setRook();
                     currentBoard.executeMove(rookMove);
