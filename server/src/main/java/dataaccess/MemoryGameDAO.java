@@ -32,12 +32,12 @@ public class MemoryGameDAO implements GameDAO{
         Game game = gameDatas.get(gameID) ;
         String username = authDao.getUsernameFromAuth(authToken) ;
         if(color == ChessGame.TeamColor.BLACK){
-            Game newGameData = new Game(gameID, game.whiteUsername(), username, game.gameName(), game.game()) ;
-            gameDatas.replace(game.gameID(), game, newGameData) ;
+            gameDatas.put(gameID, gameDatas.get(gameID).setBlack(username)) ;
         }
         else{
-            Game newGameData = new Game(gameID, username, game.blackUsername(), game.gameName(), game.game()) ;
-            gameDatas.replace(game.gameID(), game, newGameData) ;
+            gameDatas.put(gameID, gameDatas.get(gameID).setWhite(username)) ;
+            {
+            }
         }
     }
     public Boolean availableGame(ChessGame.TeamColor color, Integer gameID) throws Taken403 {

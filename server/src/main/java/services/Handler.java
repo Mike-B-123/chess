@@ -89,15 +89,14 @@ public class Handler {
             res.status(200) ;
             return new Gson().toJson(games) ;
         }
-        catch(UniqueError500 UniEx){
-            res.status(UniEx.getErrorCode()) ;
-            res.body(UniEx.getMessage());
-            return res ;
+        catch(Unauthorized401 UnAuthEx){
+            res.status(UnAuthEx.getErrorCode()) ;
+            return new Gson().toJson(UnAuthEx.getErrorMessage()) ;
         }
-        catch(Unauthorized401 UnauthEx){
-            res.status(UnauthEx.getErrorCode()) ;
-            res.body(UnauthEx.getMessage());
-            return res ;
+        catch(Exception Ex){
+            UniqueError500 UniEx = new UniqueError500();
+            res.status(UniEx.getErrorCode()) ;
+            return new Gson().toJson(UniEx.getErrorMessage());
         }
     }
     public Object createNewGame(Request req, Response res) {
@@ -117,39 +116,36 @@ public class Handler {
             res.status(UnAuthEx.getErrorCode()) ;
             return new Gson().toJson(UnAuthEx.getErrorMessage()) ;
         }
-//        catch(Exception Ex){
-//            UniqueError500 UniEx = new UniqueError500();
-//            res.status(UniEx.getErrorCode()) ;
-//            return new Gson().toJson(UniEx.getErrorMessage());
-//        }
+       catch(Exception Ex){
+            UniqueError500 UniEx = new UniqueError500();
+            res.status(UniEx.getErrorCode()) ;
+            return new Gson().toJson(UniEx.getErrorMessage());
+        }
     }
-    public Object joinGame(Request req, Response res) {
+    public Object joinGameHandle(Request req, Response res) {
         try {
             JoinData inputJoinData = new Gson().fromJson(req.body(), JoinData.class);
-            String authToken = req.headers("authorization:");
+            String authToken = req.headers("Authorization");
             joinGameService.joinGame(authToken, inputJoinData);
             res.status(200);
-            return res;
+            return "{}" ;
         }
-        catch(UniqueError500 UniEx){
-            res.status(UniEx.getErrorCode()) ;
-            res.body(UniEx.getMessage());
-            return res ;
-        }
-        catch(Unauthorized401 UnauthEx){
-            res.status(UnauthEx.getErrorCode()) ;
-            res.body(UnauthEx.getMessage());
-            return res ;
-        }
-        catch (BadRequest400 Badreq){
-            res.status(Badreq.getErrorCode()) ;
-            res.body(new Gson().toJson(Badreq.getErrorMessage()));
-            return res ;
+        catch(BadRequest400 BadEx){
+            res.status(BadEx.getErrorCode()) ;
+            return new Gson().toJson(BadEx.getErrorMessage()) ;
         }
         catch(Taken403 TakeEx){
             res.status(TakeEx.getErrorCode()) ;
-            res.body(TakeEx.getMessage());
-            return res ;
+            return new Gson().toJson(TakeEx.getErrorMessage()) ;
+        }
+        catch(Unauthorized401 UnAuthEx){
+            res.status(UnAuthEx.getErrorCode()) ;
+            return new Gson().toJson(UnAuthEx.getErrorMessage()) ;
+        }
+        catch(Exception Ex){
+            UniqueError500 UniEx = new UniqueError500();
+            res.status(UniEx.getErrorCode()) ;
+            return new Gson().toJson(UniEx.getErrorMessage());
         }
     }
 
