@@ -5,18 +5,18 @@ import java.util.Collection;
 
 public class BishopMovesCaculator implements PieceMovesCaculator {
     public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition startPosition) {
-        int[][] numbers = {{1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
+        int[][] spots = {{1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
         Collection<ChessMove> movePossibilities = new ArrayList<>();
-        for(int [] number : numbers) {
-            int currentRow = startPosition.getRow();
-            int currentCol = startPosition.getColumn();
+        for(int [] ints : spots) {
+            int positionRow = startPosition.getRow();
+            int positionColumn = startPosition.getColumn();
             while (true) {
-                currentRow += number[0];
-                currentCol += number[1];
-                if (currentRow > 8 || currentCol > 8 || currentRow < 1 || currentCol < 1) {
+                positionRow += ints[0];
+                positionColumn += ints[1];
+                if (positionRow > 8 || positionColumn > 8 || positionRow < 1 || positionColumn < 1) {
                     break;
                 }
-                ChessPosition currentPosition = new ChessPosition(currentRow, currentCol);
+                ChessPosition currentPosition = new ChessPosition(positionRow, positionColumn);
                 if (board.getPiece(currentPosition) != null) {
                     if(board.getPiece(currentPosition).getTeamColor() != board.getPiece(startPosition).getTeamColor()){
                         ChessMove singleMove = new ChessMove(startPosition, currentPosition, null);

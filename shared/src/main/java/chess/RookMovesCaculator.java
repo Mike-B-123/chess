@@ -9,7 +9,6 @@ public class RookMovesCaculator implements PieceMovesCaculator {
     public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition startPosition) {
         int[][] numbers = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
         Collection<ChessMove> movePossibilities = new ArrayList<>();
-        // create an array list with all possible directions ex: ( v = 1, h = 0; v=0, h=1; v= -1, h=0; v=-1, h=0)
         for(int [] number : numbers) {
             int currentRow = startPosition.getRow();
             int currentCol = startPosition.getColumn();
