@@ -27,8 +27,9 @@ public class RegisterService {
     }
     public static void createUser(User user){
         UserDAO userDao = MemoryUserDAO.getInstance() ;
-        if(getUser(user) == null)
-            userDao.addUser(user) ;
+        if(getUser(user) == null) {
+            userDao.addUser(user);
+        }
     }
     public static AuthData createAuth(User user){
         AuthDAO authDao = MemoryAuthDAO.getInstance() ;

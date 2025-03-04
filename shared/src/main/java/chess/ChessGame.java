@@ -134,8 +134,9 @@ public class ChessGame {
                 currentBoard.getPiece(move.getStartPosition()).setRook();
             }
             currentBoard.executeMove(move);
-            if (team == TeamColor.BLACK)
+            if (team == TeamColor.BLACK) {
                 setTeamTurn(TeamColor.WHITE);
+            }
             else {
                 setTeamTurn(TeamColor.BLACK);
             }
@@ -337,15 +338,17 @@ public class ChessGame {
             if(kingOne[i][0] < 1 || kingOne[i][1] < 1){
                 continue ;
             }
-            if (checkMoveLoop(teamColor, kingOne[i][0], kingOne[i][1]))
+            if (checkMoveLoop(teamColor, kingOne[i][0], kingOne[i][1])) {
                 return true;
+            }
         }
         for (int i = 0; i < kingTwo.length; i++) {
             if(kingTwo[i][0] < 1 || kingTwo[i][1] < 1){
                 continue ;
             }
-            if (checkMoveLoop(teamColor, kingTwo[i][0], kingTwo[i][1]))
+            if (checkMoveLoop(teamColor, kingTwo[i][0], kingTwo[i][1])) {
                 return true;
+            }
         }
         return false ;
     }
