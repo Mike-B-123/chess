@@ -34,12 +34,15 @@ public class PawnMovesCaculator implements PieceMovesCaculator {
         }
         overallPossibilities.addAll(promotionHelper(capturePossibilities, end)) ;
         ChessPosition currentPosition = new ChessPosition(row + color*1, col);
-        if(board.getPiece(currentPosition) == null
-                && currentPosition.getRow() < 9 && currentPosition.getColumn() < 9 && currentPosition.getRow() > 0 && currentPosition.getColumn() > 0) {
+        Boolean checkOne = board.getPiece(currentPosition) == null ;
+        Boolean checkTwo = currentPosition.getRow() < 9 && currentPosition.getColumn() < 9 ;
+        if(checkOne && checkTwo && currentPosition.getRow() > 0 && currentPosition.getColumn() > 0) {
             ChessMove singleMove = new ChessMove(startPosition, currentPosition, null);
             forwardPossibilities.add(singleMove) ;
             currentPosition = new ChessPosition(row + color*2, col);
-            if(row == start && currentPosition.getRow() < 9 && currentPosition.getColumn() < 9 && currentPosition.getRow() > 0 && currentPosition.getColumn() > 0
+            checkOne = row == start && currentPosition.getRow() < 9 ;
+            checkTwo = currentPosition.getColumn() < 9 ;
+            if(checkOne && checkTwo && currentPosition.getRow() > 0 && currentPosition.getColumn() > 0
             && board.getPiece(currentPosition) == null){
                 singleMove = new ChessMove(startPosition, currentPosition, null);
                 forwardPossibilities.add(singleMove) ;

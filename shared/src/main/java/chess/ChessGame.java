@@ -325,7 +325,8 @@ public class ChessGame {
         return currentBoard.getPiece(onePosition) == null && currentBoard.getPiece(twoPosition) == null;
     }
     public boolean checkingThreeSpaces(ChessPosition onePosition, ChessPosition twoPosition, ChessPosition threePosition){
-        return currentBoard.getPiece(onePosition) == null && currentBoard.getPiece(twoPosition) == null && currentBoard.getPiece(threePosition) == null;
+        Boolean checkOne = currentBoard.getPiece(onePosition) == null ;
+        return checkOne && currentBoard.getPiece(twoPosition) == null && currentBoard.getPiece(threePosition) == null;
     }
     public boolean kingIsInCheck(TeamColor teamColor) {
         int row = currentBoard.getKingPosition(teamColor).getRow();
