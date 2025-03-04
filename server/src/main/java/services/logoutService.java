@@ -12,7 +12,8 @@ public class logoutService {
     public static String logout(String authToken) throws Unauthorized401{
             AuthDAO authDao = MemoryAuthDAO.getInstance();
             if (authDao.verifyAuth(authToken) == Boolean.TRUE) {
-                return authDao.deleteAuth(authToken);
+                authDao.deleteAuth(authToken);
+                return "{}" ;
             }
             throw new Unauthorized401();
     }

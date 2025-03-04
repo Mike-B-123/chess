@@ -68,9 +68,9 @@ public class Handler {
     public Object logoutHandle(Request req, Response res) {
         try {
             String authToken = req.headers("Authorization") ;
-        logoutService.logout(authToken) ;
+        String result = logoutService.logout(authToken) ;
         res.status(200) ;
-        return "{}" ;
+        return result ;
         }
         catch(Unauthorized401 UnauthEx){
             res.status(UnauthEx.getErrorCode()) ;
