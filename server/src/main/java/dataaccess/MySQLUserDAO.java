@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import model.User;
 import org.mindrot.jbcrypt.BCrypt;
 import responses.errors.* ;
+
+import javax.lang.model.element.VariableElement;
+
 import static java.sql.Types.NULL;
 import java.sql.*;
 import java.sql.ResultSet;
@@ -27,7 +30,7 @@ public class MySQLUserDAO implements UserDAO {
         }
     }
 
-    private void executeNoReturn(String statement, Object... params) throws DataAccessException, SQLException {
+    private void executeNoReturn(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var ps = conn.prepareStatement(statement);
             for (var i = 0; i < params.length; i++) {
@@ -39,36 +42,42 @@ public class MySQLUserDAO implements UserDAO {
                     ps.setNull(i + 1, NULL);
                 }
 
-                ps.executeUpdate();
             }
+            ps.executeUpdate();
+        }
+        catch (Exception ex){
+            throw new DataAccessException(ex.getMessage()) ;
         }
     }
 
-    private ResultSet executeReturn(String statement, Object... params) throws DataAccessException, SQLException {
-        try (var conn = DatabaseManager.getConnection()) {
-            var ps = conn.prepareStatement(statement);
+    private PreparedStatement executeReturn(String statement, Connection connection, Object... params) throws DataAccessException {
+        try{
+            var ps = connection.prepareStatement(statement);
             for (var i = 0; i < params.length; i++) {
                 var param = params[i];
                 if (param instanceof String p) {
                     ps.setString(i + 1, p);
                 }
             }
-            return ps.executeQuery();
+            return ps ;
+        }
+        catch (Exception ex){
+            throw new DataAccessException(ex.getMessage()) ;
         }
     }
 
 
-    public User findUser(User inputUser) throws DataAccessException, Unauthorized401{
-        try {
-            var statement = "SELECT * FROM userInfo WHERE username = ?" ;
-                var resultSet = executeReturn(statement, inputUser.username()) ;
-                if(!verifyUser(inputUser.username(), inputUser.password())) {
-                    throw new Exception("could not verify password"); // Is this how I should be using verify?
+    public User findUser(User inputUser) throws DataAccessException{
+        try(var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM userInfo WHERE username = ?";
+            ResultSet resultSet;
+            try (var ps = executeReturn(statement, conn, inputUser.username())) {
+                resultSet = ps.executeQuery();
+                if (resultSet.next()) {
+                    return readUser(resultSet);
                 }
-                return readUser(resultSet);
-        }
-        catch(Unauthorized401 UnAuth){
-            throw new Unauthorized401() ;
+                return null;
+            }
         }
         catch (Exception ex) {
             throw new DataAccessException(ex.getMessage()) ;
@@ -80,8 +89,7 @@ public class MySQLUserDAO implements UserDAO {
             String username = rs.getString("username");
             String password = rs.getString("password") ;
             String email = rs.getString("email") ;
-            User user = new User(username, password, email) ;
-            return user ;
+            return new User(username, password, email) ;
         }
         catch(Exception ex){
             throw new DataAccessException(ex.getMessage()) ;
@@ -91,12 +99,18 @@ public class MySQLUserDAO implements UserDAO {
         String hashedPassword = BCrypt.hashpw(inputUser.password(), BCrypt.gensalt());
         return new User(inputUser.username(), hashedPassword, inputUser.email());
     }
-    boolean verifyUser(String inputUsername, String providedClearTextPassword) throws DataAccessException {
-        try {
-            var statement = "SELECT * FROM userInfo WHERE username = ?" ;
-            var resultSet = executeReturn(statement, inputUsername) ;
-            var hashedPassword = readUser(resultSet).password() ;
-            return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
+    public boolean verifyUser(String inputUsername, String providedClearTextPassword) throws DataAccessException {
+        try(var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM userInfo WHERE username = ?";
+            ResultSet resultSet;
+            try (var preparedStatement = executeReturn(statement, conn, inputUsername)) {
+                resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    var hashedPassword = readUser(resultSet).password();
+                    return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
+                }
+                return false ;
+            }
         }
         catch (Exception ex) {
             throw new DataAccessException(ex.getMessage()) ;
@@ -107,7 +121,7 @@ public class MySQLUserDAO implements UserDAO {
         var statement = "DELETE FROM userInfo"; // if there a problem?
         try (var conn = DatabaseManager.getConnection()) {
             var preparedStatement = conn.prepareStatement(statement);
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
         }
         catch(Exception ex){
             throw new DataAccessException(ex.getMessage());
@@ -117,9 +131,9 @@ public class MySQLUserDAO implements UserDAO {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  userInfo (
-              `username` varchar(256) NOT NULL,
-              `password` varchar(256) NOT NULL,
-              `email` varchar(256) NOT NULL,
+              `username` varchar(256) NULL,
+              `password` varchar(256) NULL,
+              `email` varchar(256) NULL,
               PRIMARY KEY (`username`)
             )
             """

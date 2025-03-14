@@ -7,6 +7,9 @@ public class MemoryUserDAO implements UserDAO {
     private HashMap<String, User> users = new HashMap<>();
     private static MemoryUserDAO instance ;
 
+    public boolean verifyUser(String inputUsername, String providedClearTextPassword) throws DataAccessException {
+        return false;
+    }
     public void addUser(User inputUser) {
         users.put(inputUser.username(), inputUser);
     }

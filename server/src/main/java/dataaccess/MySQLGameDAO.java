@@ -130,7 +130,7 @@ public class MySQLGameDAO implements GameDAO{
         var statement = "DELETE FROM gameInfo"; // is this a problem?
         try (var conn = DatabaseManager.getConnection()) {
             var preparedStatement = conn.prepareStatement(statement);
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
         } catch (Exception ex) {
             throw new DataAccessException(ex.getMessage());
         }
@@ -141,10 +141,10 @@ public class MySQLGameDAO implements GameDAO{
             """
             CREATE TABLE IF NOT EXISTS  gameInfo (
               `gameID` int NOT NULL auto_increment,
-              `whiteUsername` string,
-              `blackUsername` string,
-              `gameName` string NOT NULL,
-              'chessGame' json NOT Null,
+              `whiteUsername` varchar(256),
+              `blackUsername` varchar(256),
+              `gameName` varchar(256) NOT NULL,
+              `chessGame` json NOT Null,
               PRIMARY KEY (`gameID`)
             )"""
     };

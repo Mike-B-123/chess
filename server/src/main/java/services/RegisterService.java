@@ -7,10 +7,12 @@ import responses.errors.Taken403;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
 
+import java.sql.SQLException;
+
 
 public class RegisterService {
 
-    public static AuthData register(User inputUser) throws BadRequest400, Taken403, UniqueError500, DataAccessException, Unauthorized401 {
+    public static AuthData register(User inputUser) throws BadRequest400, Taken403, UniqueError500, DataAccessException, Unauthorized401{
             if (inputUser.username() == null || inputUser.password() == null) {
                 throw new BadRequest400();
             }

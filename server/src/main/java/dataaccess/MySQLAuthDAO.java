@@ -23,10 +23,15 @@ public class MySQLAuthDAO implements AuthDAO {
     }
 
     public Boolean verifyAuth(String authToken) throws DataAccessException {
-        try {
-            var statement = "SELECT * FROM authInfo WHERE authToken = ?" ;
-            var resultSet = executeReturn(statement, authToken) ;
-            return readAuth(resultSet).authToken() != null ;
+        try(var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM authInfo WHERE authToken = ?";
+            try (var ps = executeReturn(statement, conn, authToken)) {
+                var resultSet = ps.executeQuery() ;
+                if (resultSet.next()) {
+                    return readAuth(resultSet).authToken() != null;
+                }
+                return null;
+            }
         }
         catch (Exception ex) {
             throw new DataAccessException(ex.getMessage()) ;
@@ -37,8 +42,8 @@ public class MySQLAuthDAO implements AuthDAO {
         String authString = generateToken();
         try {
             var statement = "INSERT INTO authInfo (authToken, username) VALUES (?, ?)";
-            var ResultSet = executeReturn(statement, authString, inputUser.username());
-            return readAuth(ResultSet);
+            executeNoReturn(statement, authString, inputUser.username());
+            return new AuthData(authString, inputUser.username()) ;
         }
         catch(Exception ex){
             throw new DataAccessException(ex.getMessage()) ;
@@ -57,22 +62,27 @@ public class MySQLAuthDAO implements AuthDAO {
     }
 
     public String getUsernameFromAuth(String authToken) throws DataAccessException {
-        try {
-            var statement = "SELECT * FROM authInfo WHERE authToken = ?" ;
-            var resultSet = executeReturn(statement, authToken) ;
-            return readAuth(resultSet).username() ;
+            try(var conn = DatabaseManager.getConnection()) {
+                var statement = "SELECT * FROM authInfo WHERE authToken = ?" ;
+                try (var ps = executeReturn(statement, conn, authToken)) {
+                    ResultSet resultSet = ps.executeQuery();
+                    if (resultSet.next()) {
+                        return readAuth(resultSet).username();
+                    }
+                    return null;
+                }
+            }
+            catch (Exception ex) {
+                throw new DataAccessException(ex.getMessage()) ;
+            }
         }
-        catch (Exception ex) {
-            throw new DataAccessException(ex.getMessage()) ;
-        }
-    }
 
 
     private AuthData readAuth(ResultSet rs) throws DataAccessException {
         try {
             String authToken = rs.getString("authToken");
-            String userrname = rs.getString("username") ;
-            AuthData authData = new AuthData(authToken, userrname) ;
+            String username = rs.getString("username") ;
+            AuthData authData = new AuthData(authToken, username) ;
             return authData;
         } catch (Exception ex) {
             throw new DataAccessException(ex.getMessage());
@@ -84,7 +94,7 @@ public class MySQLAuthDAO implements AuthDAO {
         var statement = "DELETE FROM authInfo"; // is this a problem?
         try (var conn = DatabaseManager.getConnection()) {
             var preparedStatement = conn.prepareStatement(statement);
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
         } catch (Exception ex) {
             throw new DataAccessException(ex.getMessage());
         }
@@ -93,8 +103,8 @@ public class MySQLAuthDAO implements AuthDAO {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  authInfo (
-              `authToken` string NOT NULL primary key,
-              `username` string NOT NULL,
+              `authToken` varchar(256) NOT NULL,
+              `username` varchar(256) NOT NULL,
               PRIMARY KEY (`authToken`)
             )"""
     };
@@ -112,7 +122,7 @@ public class MySQLAuthDAO implements AuthDAO {
         }
     }
 
-    private void executeNoReturn(String statement, Object... params) throws DataAccessException, SQLException {
+    private void executeNoReturn(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var ps = conn.prepareStatement(statement);
             for (var i = 0; i < params.length; i++) {
@@ -124,21 +134,27 @@ public class MySQLAuthDAO implements AuthDAO {
                     ps.setNull(i + 1, NULL);
                 }
 
-                ps.executeUpdate();
             }
+            ps.executeUpdate();
+        }
+        catch (Exception ex){
+            throw new DataAccessException(ex.getMessage()) ;
         }
     }
 
-    private ResultSet executeReturn(String statement, Object... params) throws DataAccessException, SQLException {
-        try (var conn = DatabaseManager.getConnection()) {
-            var ps = conn.prepareStatement(statement);
+    private PreparedStatement executeReturn(String statement, Connection connection, Object... params) throws DataAccessException{
+        try {
+            var ps = connection.prepareStatement(statement);
             for (var i = 0; i < params.length; i++) {
                 var param = params[i];
                 if (param instanceof String p) {
                     ps.setString(i + 1, p);
                 }
             }
-            return ps.executeQuery();
+            return ps ;
+        }
+        catch (Exception ex){
+            throw new DataAccessException(ex.getMessage()) ;
         }
     }
     public static MySQLAuthDAO getInstance() throws DataAccessException {

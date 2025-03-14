@@ -2,6 +2,8 @@ package dataaccess;
 
 import model.*;
 
+import java.sql.SQLException;
+
 public interface AuthDAO {
     public AuthData createAuth(User inputUser) throws DataAccessException;
     public Boolean verifyAuth(String authToken) throws DataAccessException;

@@ -6,12 +6,14 @@ import model.User;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
 
+import java.sql.SQLException;
 import java.util.Objects;
 
 public class LoginService {
-    public static AuthData login(User inputUser) throws Unauthorized401, UniqueError500, DataAccessException {
+    public static AuthData login(User inputUser) throws Unauthorized401, UniqueError500, DataAccessException{
+        UserDAO userDAO = MySQLUserDAO.getInstance() ;
         if (getUser(inputUser) != null) {
-            if (!Objects.equals(getUser(inputUser).password(), inputUser.password())) {
+            if (!userDAO.verifyUser(inputUser.username(), inputUser.password())) {
                 throw new Unauthorized401();
             }
             return createAuth(inputUser);
