@@ -140,11 +140,12 @@ public class MySQLGameDAO implements GameDAO{
             // fixme: double check nulls
             """
             CREATE TABLE IF NOT EXISTS  gameInfo (
-              `gameID` int NOT NULL primary key auto_increment,
+              `gameID` int NOT NULL auto_increment,
               `whiteUsername` string,
               `blackUsername` string,
               `gameName` string NOT NULL,
-              'chessGame' json NOT Null
+              'chessGame' json NOT Null,
+              PRIMARY KEY (`gameID`)
             )"""
     };
     private void configureDatabase() throws DataAccessException {
