@@ -1,10 +1,10 @@
 package dataaccess;
 
 import model.User ;
-import java.util.Collection;
+import responses.errors.Unauthorized401;
 
 public interface UserDAO {
-        public void addUser(User inputUser) ;
-        public User findUser(User inputUser) ;
-        public void clearUsers() ;
+        public void addUser(User inputUser) throws DataAccessException ;
+        public User findUser(User inputUser) throws DataAccessException, Unauthorized401;
+        public void clearUsers() throws DataAccessException;
     }

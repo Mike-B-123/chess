@@ -1,9 +1,6 @@
 package services;
 
-import dataaccess.AuthDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.User;
 import responses.errors.Unauthorized401;
@@ -12,7 +9,7 @@ import responses.errors.UniqueError500;
 import java.util.Objects;
 
 public class LoginService {
-    public static AuthData login(User inputUser) throws Unauthorized401, UniqueError500 {
+    public static AuthData login(User inputUser) throws Unauthorized401, UniqueError500, DataAccessException {
         if (getUser(inputUser) != null) {
             if (!Objects.equals(getUser(inputUser).password(), inputUser.password())) {
                 throw new Unauthorized401();
@@ -22,7 +19,7 @@ public class LoginService {
         throw new Unauthorized401() ;
     }
 
-    public static User getUser(User inputUser){
+    public static User getUser(User inputUser) throws DataAccessException, Unauthorized401 {
         UserDAO userDao = MemoryUserDAO.getInstance() ;
         return userDao.findUser(inputUser) ;
     }
