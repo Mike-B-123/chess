@@ -20,12 +20,12 @@ public class LoginService {
     }
 
     public static User getUser(User inputUser) throws DataAccessException, Unauthorized401 {
-        UserDAO userDao = MemoryUserDAO.getInstance() ;
+        UserDAO userDao = MySQLUserDAO.getInstance() ;
         return userDao.findUser(inputUser) ;
     }
 
-    public static AuthData createAuth(User user){
-        AuthDAO authDao = MemoryAuthDAO.getInstance() ;
+    public static AuthData createAuth(User user) throws DataAccessException {
+        AuthDAO authDao = MySQLAuthDAO.getInstance() ;
         return authDao.createAuth(user) ;
     }
 }

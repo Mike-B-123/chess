@@ -26,7 +26,7 @@ public class MemoryGameDAO implements GameDAO{
         return newGameData ;
 
     }
-    public void modifyInsert(String authToken, ChessGame.TeamColor color, Integer gameID){
+    public void modifyInsert(String authToken, ChessGame.TeamColor color, Integer gameID) throws DataAccessException {
         AuthDAO authDao = MemoryAuthDAO.getInstance();
         Game game = gameDatas.get(gameID) ;
         String username = authDao.getUsernameFromAuth(authToken) ;

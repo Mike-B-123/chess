@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DataAccessException;
 import model.AuthData;
 import model.User;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +15,7 @@ import services.RegisterService;
 
 public class LogoutTest {
     @Test
-    public void positiveLogout() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+    public void positiveLogout() throws UniqueError500, BadRequest400, Taken403, Unauthorized401, DataAccessException {
         ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = RegisterService.register(testUser) ;
@@ -23,7 +24,7 @@ public class LogoutTest {
     }
 
     @Test
-    public void negitiveLogout() throws UniqueError500, BadRequest400, Taken403 {
+    public void negitiveLogout() throws UniqueError500, BadRequest400, Taken403, DataAccessException{
         ClearService.clear() ;
         User testUser = new User(null, "testPassWord", "testEmail") ;
         Boolean exceptionThrown = Boolean.FALSE ;

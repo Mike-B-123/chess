@@ -7,9 +7,9 @@ import responses.errors.Unauthorized401;
 import java.util.HashMap;
 
 public class ListGamesService {
-    public static HashMap<Integer, Game> listGames(String authToken) throws Unauthorized401{
-        AuthDAO authDao = MemoryAuthDAO.getInstance();
-        GameDAO gameDAO = MemoryGameDAO.getInstance();
+    public static HashMap<Integer, Game> listGames(String authToken) throws Unauthorized401, DataAccessException {
+        AuthDAO authDao = MySQLAuthDAO.getInstance();
+        GameDAO gameDAO = MySQLGameDAO.getInstance();
         if (authDao.verifyAuth(authToken) == Boolean.TRUE) {
             return gameDAO.listAllGames() ;
         }

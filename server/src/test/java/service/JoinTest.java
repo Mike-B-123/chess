@@ -1,6 +1,7 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 import dataaccess.MemoryGameDAO;
 import model.AuthData;
 import model.Game;
@@ -19,7 +20,7 @@ import services.RegisterService;
 
 public class JoinTest {
     @Test
-    public void positiveJoin() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+    public void positiveJoin() throws UniqueError500, BadRequest400, Taken403, Unauthorized401, DataAccessException {
         ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = RegisterService.register(testUser) ;
@@ -31,7 +32,7 @@ public class JoinTest {
     }
 
     @Test
-    public void negitiveJoin() throws UniqueError500, BadRequest400, Taken403 {
+    public void negitiveJoin() throws UniqueError500, BadRequest400, Taken403, Unauthorized401, DataAccessException {
         ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = RegisterService.register(testUser) ;

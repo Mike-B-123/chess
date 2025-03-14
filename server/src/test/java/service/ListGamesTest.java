@@ -2,6 +2,7 @@ package service;
 
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 import model.AuthData;
 import model.Game;
 import model.JoinData;
@@ -17,7 +18,7 @@ import services.*;
 public class ListGamesTest {
 
     @Test
-    public void positiveList() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+    public void positiveList() throws UniqueError500, BadRequest400, Taken403, Unauthorized401, DataAccessException {
         ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = RegisterService.register(testUser) ;
@@ -29,7 +30,7 @@ public class ListGamesTest {
     }
 
     @Test
-    public void negitiveList() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+    public void negitiveList() throws UniqueError500, BadRequest400, Taken403, Unauthorized401, DataAccessException {
         ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = RegisterService.register(testUser) ;

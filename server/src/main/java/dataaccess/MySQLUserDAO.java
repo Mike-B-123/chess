@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 
 
 public class MySQLUserDAO implements UserDAO {
-
+    private static MySQLUserDAO instance;
     public MySQLUserDAO() throws DataAccessException{
         configureDatabase() ;
     }
@@ -135,5 +135,11 @@ public class MySQLUserDAO implements UserDAO {
         } catch (Exception ex) {
             throw new DataAccessException(ex.getMessage()) ;
         }
+    }
+    public static MySQLUserDAO getInstance() throws DataAccessException {
+        if(instance == null){
+            return instance = new MySQLUserDAO() ;
+        }
+        return instance ;
     }
 }

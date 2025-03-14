@@ -1,9 +1,6 @@
 package services;
 
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
+import dataaccess.*;
 import model.JoinData;
 import responses.errors.BadRequest400;
 import responses.errors.Taken403;
@@ -12,9 +9,9 @@ import responses.errors.UniqueError500;
 
 
 public class JoinGameService {
-    public static void joinGame(String authToken, JoinData joinData) throws UniqueError500, Unauthorized401, Taken403, BadRequest400 {
-            AuthDAO authDao = MemoryAuthDAO.getInstance();
-            GameDAO gameDAO = MemoryGameDAO.getInstance();
+    public static void joinGame(String authToken, JoinData joinData) throws UniqueError500, Unauthorized401, Taken403, BadRequest400, DataAccessException {
+            AuthDAO authDao = MySQLAuthDAO.getInstance();
+            GameDAO gameDAO = MySQLGameDAO.getInstance();
             if(authToken == null || joinData.gameID() == null || joinData.playerColor() == null){
                 throw new BadRequest400();
             }

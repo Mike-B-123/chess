@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DataAccessException;
 import model.AuthData;
 import model.Game;
 import model.User;
@@ -15,7 +16,7 @@ import services.RegisterService;
 
 public class CreateGameTest {
     @Test
-    public void positiveCreate() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+    public void positiveCreate() throws UniqueError500, BadRequest400, Taken403, Unauthorized401, DataAccessException {
         ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = RegisterService.register(testUser) ;
@@ -28,7 +29,7 @@ public class CreateGameTest {
     }
 
     @Test
-    public void negitiveCreate() throws UniqueError500, BadRequest400, Taken403, Unauthorized401 {
+    public void negitiveCreate() throws UniqueError500, BadRequest400, Taken403, Unauthorized401, DataAccessException {
         ClearService.clear() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         AuthData authData = RegisterService.register(testUser) ;

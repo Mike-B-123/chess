@@ -11,7 +11,7 @@ import java.util.UUID;
 import static java.sql.Types.NULL;
 
 public class MySQLAuthDAO implements AuthDAO {
-
+    private static MySQLAuthDAO instance ;
 
     public MySQLAuthDAO() throws DataAccessException{
         configureDatabase() ;
@@ -139,5 +139,11 @@ public class MySQLAuthDAO implements AuthDAO {
             }
             return ps.executeQuery();
         }
+    }
+    public static MySQLAuthDAO getInstance() throws DataAccessException {
+        if(instance == null){
+            return instance = new MySQLAuthDAO() ;
+        }
+        return instance ;
     }
 }

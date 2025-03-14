@@ -7,9 +7,9 @@ import responses.errors.BadRequest400;
 import responses.errors.Unauthorized401;
 
 public class CreateGamesService {
-    public static Game create(String authToken, String gameName) throws BadRequest400, Unauthorized401 {
-        AuthDAO authDao = MemoryAuthDAO.getInstance();
-        GameDAO gameDAO = MemoryGameDAO.getInstance();
+    public static Game create(String authToken, String gameName) throws BadRequest400, Unauthorized401, DataAccessException {
+        AuthDAO authDao = MySQLAuthDAO.getInstance();
+        GameDAO gameDAO = MySQLGameDAO.getInstance();
         if(authToken == null || gameName == null){
                 throw new BadRequest400() ;
             }
