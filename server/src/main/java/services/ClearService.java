@@ -12,7 +12,6 @@ public class ClearService {
         authDao.clearAuths();
         gameDao.clearGame();}
         catch(Exception ex){
-            ex.printStackTrace();
             throw new UniqueError500() ;
         }
         return "{}" ;
