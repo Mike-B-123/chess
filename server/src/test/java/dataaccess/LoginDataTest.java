@@ -23,6 +23,7 @@ public class LoginDataTest {
         AuthData authData = authDao.createAuth(testUser) ;
         String username = authDao.getUsernameFromAuth(authData.authToken()) ;
         userDao.verifyUser(username, testUser.password());
+        authDao.verifyAuth(authData.authToken()) ;
         Assertions.assertEquals(testUser.username(), username);
         Assertions.assertNotNull(authData.authToken());
     }
@@ -35,10 +36,11 @@ public class LoginDataTest {
         User testUserOne = new User("testUserName", "PassWord1", "testEmail") ;
         User testUserTwo = new User("testUserName2", "PassWord2647", "testEmail") ;
         userDao.addUser(testUserOne);
-        authDao.createAuth(testUserOne) ;
+        AuthData authData = authDao.createAuth(testUserOne) ;
         Boolean exceptionThrown = Boolean.FALSE ;
         try{
-            if(!userDao.verifyUser(testUserTwo.username(), testUserTwo.password())){
+            Boolean checkTwo = authDao.verifyAuth(authData.authToken()) ;
+            if(!userDao.verifyUser(testUserTwo.username(), testUserTwo.password()) && checkTwo){
                 throw new DataAccessException("wrong password") ;
             }
             return;
