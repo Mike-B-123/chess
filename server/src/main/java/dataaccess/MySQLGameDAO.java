@@ -104,8 +104,6 @@ public class MySQLGameDAO implements GameDAO{
             String blackUsername = rs.getString("blackUsername") ;
             String gameName = rs.getString("gameName") ;
             ChessGame chessGame = new Gson().fromJson(rs.getString("chessGame"), ChessGame.class);
-                    //rs.getObject("chessGame", ChessGame.class) ;
-            // is this chessGame correct?
             Game newGame = new Game(gameID, whiteUsername, blackUsername, gameName, chessGame) ;
             return newGame ;
         } catch (Exception ex) {

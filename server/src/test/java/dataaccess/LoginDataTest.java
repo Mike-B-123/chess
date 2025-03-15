@@ -22,6 +22,7 @@ public class LoginDataTest {
         userDao.addUser(testUser);
         AuthData authData = authDao.createAuth(testUser) ;
         String username = authDao.getUsernameFromAuth(authData.authToken()) ;
+        userDao.verifyUser(username, testUser.password());
         Assertions.assertEquals(testUser.username(), username);
         Assertions.assertNotNull(authData.authToken());
     }

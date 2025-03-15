@@ -37,6 +37,7 @@ public class LogoutDataTest {
         try{
             userDao.addUser(testUser);
             authDao.createAuth(testUser) ;
+            authDao.deleteAuth("nhnuhnuhn");
         }
         catch(Exception ex){ // double check that this was ok to look up
             exceptionThrown = Boolean.TRUE ;
