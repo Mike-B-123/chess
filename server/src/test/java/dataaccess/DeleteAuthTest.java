@@ -11,11 +11,12 @@ import responses.errors.UniqueError500;
 import services.ClearService;
 
 public class DeleteAuthTest {
+    @Test
     public void positiveDelete() throws UniqueError500, BadRequest400, Taken403, Unauthorized401, DataAccessException {
         ClearService.clear() ;
         AuthDAO authDao = MySQLAuthDAO.getInstance() ;
         UserDAO userDao = MySQLUserDAO.getInstance() ;
-        User testUser = new User("testUserName", "testPassWord", "testEmail") ;
+        User testUser = new User("testUserName1", "testPassWord1", "testEmail1") ;
         userDao.addUser(testUser);
         AuthData authData = authDao.createAuth(testUser) ;
         String authToken = authData.authToken();
@@ -29,7 +30,7 @@ public class DeleteAuthTest {
         AuthDAO authDao = MySQLAuthDAO.getInstance() ;
         Boolean exceptionThrown = Boolean.FALSE ;
         try{
-            String authToken = "nhnuhnuhn";
+            String authToken = "nope";
             authDao.deleteAuth(authToken);
             if(authDao.getUsernameFromAuth(authToken) == null){
                 throw new DataAccessException("did not delete") ;
