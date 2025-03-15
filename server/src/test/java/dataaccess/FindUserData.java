@@ -1,6 +1,5 @@
 package dataaccess;
 
-import model.AuthData;
 import model.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -9,34 +8,24 @@ import responses.errors.Taken403;
 import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
 import services.ClearService;
-import services.RegisterService;
 
-public class RegisterDataTest {
+public class FindUserData {
     @Test
-    public void positiveRegister() throws UniqueError500, BadRequest400, Taken403, Unauthorized401, DataAccessException {
+    public void positiveFindUser() throws UniqueError500, BadRequest400, Taken403, Unauthorized401, DataAccessException {
         ClearService.clear() ;
-        AuthDAO authDao = MySQLAuthDAO.getInstance() ;
         UserDAO userDao = MySQLUserDAO.getInstance() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         userDao.addUser(testUser);
-        userDao.findUser(testUser) ;
-        AuthData authData = authDao.createAuth(testUser);
-        Assertions.assertEquals(authData.username(), testUser.username());
-        Assertions.assertNotNull(authData.authToken());
+        Assertions.assertEquals(userDao.findUser(testUser).username(), testUser);
     }
 
     @Test
-    public void negitiveRegister() throws UniqueError500, BadRequest400, Taken403, DataAccessException {
+    public void negitiveFindUser() throws UniqueError500, BadRequest400, Taken403, DataAccessException {
         ClearService.clear() ;
-        AuthDAO authDao = MySQLAuthDAO.getInstance() ;
         UserDAO userDao = MySQLUserDAO.getInstance() ;
-        User testUser = new User("testUserName", "testPassWord", "testEmail") ;
-        userDao.addUser(testUser);
         Boolean exceptionThrown = Boolean.FALSE ;
         try{
-            userDao.addUser(testUser);
-            authDao.createAuth(testUser);
-            userDao.findUser(testUser) ;
+            userDao.findUser(null) ;
         }
         catch(Exception ex){ // double check that this was ok to look up
             exceptionThrown = Boolean.TRUE ;
