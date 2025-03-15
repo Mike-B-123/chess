@@ -45,7 +45,8 @@ public class ListGamesDataTest {
         Boolean exceptionThrown = Boolean.FALSE ;
         try{
             Game outPutErrorGame = gameDao.createGame("newTestGame") ;
-            ListGamesService.listGames(null) ;
+            gameDao.clearGame();
+            gameDao.listAllGames().get(joinData.gameID()).whiteUsername() ;
         }
         catch(Exception ex){ // double check that this was ok to look up
             exceptionThrown = Boolean.TRUE ;

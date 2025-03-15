@@ -27,6 +27,7 @@ public class JoinDataTest {
         userDao.addUser(testUser);
         AuthData authData = authDao.createAuth(testUser) ;
         Game outputGame = gameDao.createGame("newTestGame") ;
+        gameDao.getGame(outputGame.gameID()) ;
         gameDao.availableGame(ChessGame.TeamColor.BLACK, outputGame.gameID()) ;
         JoinData joinData = new JoinData(ChessGame.TeamColor.BLACK, outputGame.gameID()) ;
         gameDao.modifyInsert(authData.authToken(), joinData.playerColor(), joinData.gameID());
@@ -45,6 +46,7 @@ public class JoinDataTest {
         Boolean exceptionThrown = Boolean.FALSE ;
         try{
             Game outPutErrorGame = CreateGamesService.create(authData.authToken(), "newTestGame") ;
+            gameDao.getGame(outPutErrorGame.gameID()) ;
             gameDao.modifyInsert(authData.authToken(), ChessGame.TeamColor.BLACK, outPutErrorGame.gameID());
             JoinData testJoinData = new JoinData(ChessGame.TeamColor.BLACK, outPutErrorGame.gameID()) ;
             gameDao.availableGame(ChessGame.TeamColor.BLACK, testJoinData.gameID()) ;

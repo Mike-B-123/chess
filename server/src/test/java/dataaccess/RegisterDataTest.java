@@ -19,6 +19,7 @@ public class RegisterDataTest {
         UserDAO userDao = MySQLUserDAO.getInstance() ;
         User testUser = new User("testUserName", "testPassWord", "testEmail") ;
         userDao.addUser(testUser);
+        userDao.findUser(testUser) ;
         AuthData authData = authDao.createAuth(testUser);
         Assertions.assertEquals(authData.username(), testUser.username());
         Assertions.assertNotNull(authData.authToken());
@@ -35,6 +36,7 @@ public class RegisterDataTest {
         try{
             userDao.addUser(testUser);
             authDao.createAuth(testUser);
+            userDao.findUser(testUser) ;
         }
         catch(Exception ex){ // double check that this was ok to look up
             exceptionThrown = Boolean.TRUE ;

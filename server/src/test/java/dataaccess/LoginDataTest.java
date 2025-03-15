@@ -37,6 +37,7 @@ public class LoginDataTest {
         User testUserTwo = new User("testUserName2", "PassWord2647", "testEmail") ;
         userDao.addUser(testUserOne);
         AuthData authData = authDao.createAuth(testUserOne) ;
+        String username = authDao.getUsernameFromAuth(authData.authToken()) ;
         Boolean exceptionThrown = Boolean.FALSE ;
         try{
             Boolean checkTwo = authDao.verifyAuth(authData.authToken()) ;
