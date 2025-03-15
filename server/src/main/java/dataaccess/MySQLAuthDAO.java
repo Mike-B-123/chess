@@ -4,8 +4,6 @@ import model.AuthData;
 import model.User;
 import java.sql.*;
 
-import org.mindrot.jbcrypt.BCrypt;
-
 import java.util.UUID;
 
 import static java.sql.Types.NULL;
@@ -124,18 +122,18 @@ public class MySQLAuthDAO implements AuthDAO {
 
     private void executeNoReturn(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var ps = conn.prepareStatement(statement);
+            var statement1 = conn.prepareStatement(statement);
             for (var i = 0; i < params.length; i++) {
 
                 var param = params[i];
-                if (param instanceof String p) {
-                    ps.setString(i + 1, p);
+                if (param instanceof String part) {
+                    statement1.setString(i + 1, part);
                 } else if (param == null) {
-                    ps.setNull(i + 1, NULL);
+                    statement1.setNull(i + 1, NULL);
                 }
 
             }
-            ps.executeUpdate();
+            statement1.executeUpdate();
         }
         catch (Exception ex){
             throw new DataAccessException(ex.getMessage()) ;

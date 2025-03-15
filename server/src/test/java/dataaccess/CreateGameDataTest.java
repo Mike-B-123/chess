@@ -17,14 +17,14 @@ public class CreateGameDataTest {
     @Test
     public void positiveCreate() throws UniqueError500, BadRequest400, Taken403, Unauthorized401, DataAccessException {
         ClearService.clear() ;
-        User testUser = new User("testUserName", "testPassWord", "testEmail") ;
+        User testUser = new User("testUserName1", "testPassWord1", "testEmail1") ;
         AuthData authData = RegisterService.register(testUser) ;
-        Boolean test = Boolean.FALSE ;
+        Boolean testData = Boolean.FALSE ;
         Game outputGame = CreateGamesService.create(authData.authToken(), "newTestGame") ;
         if(outputGame.gameID() > -1 ){
-            test = Boolean.TRUE ;
+            testData = Boolean.TRUE ;
         }
-        Assertions.assertEquals(Boolean.TRUE, test);
+        Assertions.assertEquals(Boolean.TRUE, testData);
     }
 
     @Test
