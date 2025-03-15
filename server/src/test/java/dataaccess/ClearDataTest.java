@@ -39,14 +39,3 @@ public class ClearDataTest {
     }
 }
 
-//    @Test
-//    public void positiveClearAuth() throws UniqueError500, DataAccessException {
-//        AuthDAO authDao = MySQLAuthDAO.getInstance() ;
-//        UserDAO userDao = MySQLUserDAO.getInstance() ;
-//        User inputUser = new User("username","pass", "email") ;
-//        userDao.addUser(inputUser);
-//        AuthData authData = authDao.createAuth(inputUser) ;
-//        authDao.clearAuths();
-//        Assertions.assertEquals(testClear, authDao.getUsernameFromAuth(authData.authToken()));
-//    }
-//}

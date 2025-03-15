@@ -142,14 +142,14 @@ public class MySQLAuthDAO implements AuthDAO {
 
     private PreparedStatement executeReturn(String statement, Connection connection, Object... params) throws DataAccessException{
         try {
-            var ps = connection.prepareStatement(statement);
-            for (var i = 0; i < params.length; i++) {
-                var param = params[i];
+            var preparedStatement = connection.prepareStatement(statement);
+            for (var index = 0; index < params.length; index++) {
+                var param = params[index];
                 if (param instanceof String p) {
-                    ps.setString(i + 1, p);
+                    preparedStatement.setString(index + 1, p);
                 }
             }
-            return ps ;
+            return preparedStatement ;
         }
         catch (Exception ex){
             throw new DataAccessException(ex.getMessage()) ;

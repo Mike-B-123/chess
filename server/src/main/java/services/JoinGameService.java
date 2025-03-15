@@ -12,7 +12,8 @@ public class JoinGameService {
     public static void joinGame(String authToken, JoinData joinData) throws UniqueError500, Unauthorized401, Taken403, BadRequest400, DataAccessException {
             AuthDAO authDao = MySQLAuthDAO.getInstance();
             GameDAO gameDAO = MySQLGameDAO.getInstance();
-            if(authToken == null || joinData.gameID() == null || joinData.playerColor() == null){
+            Boolean check1 = joinData.playerColor() == null ;
+            if(authToken == null || joinData.gameID() == null || check1){
                 throw new BadRequest400();
             }
             if (authDao.verifyAuth(authToken) == Boolean.TRUE) {
