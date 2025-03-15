@@ -9,7 +9,7 @@ import responses.errors.UniqueError500;
 
 
 public class JoinGameService {
-    public static void joinGame(String authToken, JoinData joinData) throws UniqueError500, Unauthorized401, Taken403, BadRequest400, DataAccessException {
+    public static void joinGame(String authToken, JoinData joinData) throws Unauthorized401, Taken403, BadRequest400, DataAccessException {
             AuthDAO authDao = MySQLAuthDAO.getInstance();
             GameDAO gameDAO = MySQLGameDAO.getInstance();
             Boolean check1 = joinData.playerColor() == null ;
