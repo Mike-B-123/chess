@@ -2,13 +2,16 @@ package dataaccess;
 
 import chess.ChessGame;
 import model.Game;
+import model.User;
 import responses.errors.Taken403;
+import com.google.gson.Gson;
 
 import javax.xml.transform.Result;
 import java.sql.*;
 
 import java.util.HashMap;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class MySQLGameDAO implements GameDAO{
@@ -20,22 +23,29 @@ public class MySQLGameDAO implements GameDAO{
 
 
     public Game getGame(Integer id) throws DataAccessException{
-        try {
-            var statement = "SELECT * FROM gameInfo WHERE gameID = ?" ;
-            var resultSet = executeQueryReturn(statement, id) ;
-            return readGame(resultSet);
+        try(var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM gameInfo WHERE gameID = ?";
+            ResultSet resultSet ;
+            try (var ps = executeQueryReturn(statement, conn, id)) {
+                resultSet = ps.executeQuery();
+                if (resultSet.next()) {
+                    return readGame(resultSet);
+                }
+                return null;
+            }
         }
         catch (Exception ex) {
-            throw new DataAccessException(ex.getMessage()) ;
+                throw new DataAccessException(ex.getMessage());
         }
 
     }
 
     public HashMap<Integer, Game> listAllGames() throws DataAccessException{
-        HashMap<Integer, Game> resultMap = new HashMap<>();
-        try {
+        HashMap<Integer, Game> resultMap ;
+        try(var conn = DatabaseManager.getConnection()){
             var statement = "SELECT * FROM gameInfo" ;
-            ResultSet resultSet = executeQueryReturn(statement);
+            var ps = executeQueryReturn(statement, conn);
+            ResultSet resultSet = ps.executeQuery();
             resultMap = readGames(resultSet) ;
             return resultMap ;
         }
@@ -46,20 +56,16 @@ public class MySQLGameDAO implements GameDAO{
     }
 
 
-    public Game createGame(String inputGameName) throws DataAccessException {
+    public Game createGame(String gameName) throws DataAccessException {
         try {
-            var countStatement = "SELECT COUNT(*)";
-            int rows = executeUpdateReturn(countStatement) ;
-            rows ++;
-            ChessGame inputChessGame = new ChessGame();
-            var statement = "INSERT INTO gameInfo (whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ?)";
-            var ResultSet = executeQueryReturn(statement, null, null, inputGameName, inputChessGame);
-            return readGame(ResultSet);
+            String chessGame = new Gson().toJson(new ChessGame()) ;
+            var statement = "INSERT INTO gameInfo (gameName, chessGame) VALUES (?, ?)";
+            int id = executeUpdateReturn(statement, gameName, chessGame);
+            return getGame(id) ;
         }
         catch(Exception ex){
             throw new DataAccessException(ex.getMessage()) ;
         }
-
     }
     public void modifyInsert(String authToken, ChessGame.TeamColor color, Integer gameID) throws DataAccessException {
         try{
@@ -70,8 +76,8 @@ public class MySQLGameDAO implements GameDAO{
             executeUpdateReturn(blackStatement, authDao.getUsernameFromAuth(authToken), gameID) ;
         }
         else{
-            var whiteStatement = "UPDATE gameInfo SET blackUsername= ? WHERE gameID = ?" ;
-            executeUpdateReturn(whiteStatement, gameID, authDao.getUsernameFromAuth(authToken), storedGame.blackUsername(), storedGame.game()) ;
+            var whiteStatement = "UPDATE gameInfo SET whiteUsername= ? WHERE gameID = ?" ;
+            executeUpdateReturn(whiteStatement, authDao.getUsernameFromAuth(authToken), gameID) ;
             }
         }
         catch (Exception ex){
@@ -97,7 +103,8 @@ public class MySQLGameDAO implements GameDAO{
             String whiteUsername = rs.getString("whiteUsername");
             String blackUsername = rs.getString("blackUsername") ;
             String gameName = rs.getString("gameName") ;
-            ChessGame chessGame = rs.getObject("chessGame", ChessGame.class) ;
+            ChessGame chessGame = new Gson().fromJson(rs.getString("chessGame"), ChessGame.class);
+                    //rs.getObject("chessGame", ChessGame.class) ;
             // is this chessGame correct?
             Game newGame = new Game(gameID, whiteUsername, blackUsername, gameName, chessGame) ;
             return newGame ;
@@ -114,8 +121,7 @@ public class MySQLGameDAO implements GameDAO{
                 String whiteUsername = rs.getString("whiteUsername");
                 String blackUsername = rs.getString("blackUsername");
                 String gameName = rs.getString("gameName");
-                ChessGame chessGame = rs.getObject("chessGame", ChessGame.class);
-                // is this chessGame correct?
+                ChessGame chessGame = new Gson().fromJson(rs.getString("chessGame"), ChessGame.class);
                 Game newGame = new Game(gameID, whiteUsername, blackUsername, gameName, chessGame);
                 resultMap.put(newGame.gameID(), newGame);
             }
@@ -137,14 +143,13 @@ public class MySQLGameDAO implements GameDAO{
     }
 
     private final String[] createStatements = {
-            // fixme: double check nulls
             """
             CREATE TABLE IF NOT EXISTS  gameInfo (
               `gameID` int NOT NULL auto_increment,
-              `whiteUsername` varchar(256),
-              `blackUsername` varchar(256),
+              `whiteUsername` varchar(256) NULL,
+              `blackUsername` varchar(256) NULL,
               `gameName` varchar(256) NOT NULL,
-              `chessGame` json NOT Null,
+              `chessGame` json NOT NULL,
               PRIMARY KEY (`gameID`)
             )"""
     };
@@ -163,9 +168,8 @@ public class MySQLGameDAO implements GameDAO{
 
     private int executeUpdateReturn(String statement, Object... params) throws DataAccessException, SQLException {
         try (var conn = DatabaseManager.getConnection()) {
-            var ps = conn.prepareStatement(statement);
+            var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS);
             for (var i = 0; i < params.length; i++) {
-
                 var param = params[i];
                 if (param instanceof String p) {
                     ps.setString(i + 1, p);
@@ -173,15 +177,15 @@ public class MySQLGameDAO implements GameDAO{
                     ps.setNull(i + 1, NULL);
                 } else if (param instanceof Integer p) {
                     ps.setInt(i + 1, p);
+                } else if (param instanceof ChessGame p) {
+                    ps.setString(i + 1, p.toString());
                 }
+            }
                 ps.executeUpdate();
-
                 var rs = ps.getGeneratedKeys();
                 if (rs.next()) {
                     return rs.getInt(1);
                 }
-            }
-
                 return 0;
             }
         catch (Exception ex){
@@ -190,9 +194,9 @@ public class MySQLGameDAO implements GameDAO{
     }
 
 
-    private ResultSet executeQueryReturn(String statement, Object... params) throws DataAccessException, SQLException {
-        try (var conn = DatabaseManager.getConnection()) {
-            var ps = conn.prepareStatement(statement);
+    private PreparedStatement executeQueryReturn(String statement, Connection connection, Object... params) throws DataAccessException, SQLException {
+        try {
+            var ps = connection.prepareStatement(statement) ;
             for (var i = 0; i < params.length; i++) {
                 var param = params[i];
                 if (param instanceof String p) {
@@ -203,7 +207,7 @@ public class MySQLGameDAO implements GameDAO{
                     ps.setNull(i + 1, NULL);
                 }
             }
-            return ps.executeQuery();
+            return ps ;
         }
         catch(Exception ex){
             throw new DataAccessException(ex.getMessage());
