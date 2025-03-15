@@ -20,10 +20,11 @@ public class Handler {
             return "{}" ;
             // make sure I am still returning something.
         }
-        catch(UniqueError500 uniQue){
-            res.status(uniQue.getErrorCode()) ;
-            res.body(uniQue.getMessage());
-            return res ;
+        catch(Exception ex){
+            UniqueError500 uniEx = new UniqueError500();
+            res.status(uniEx.getErrorCode()) ;
+            return new Gson().toJson(uniEx.getErrorMessage());
+
         }
     }
     public Object register(Request req, Response res) {
