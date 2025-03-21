@@ -13,10 +13,8 @@ import responses.errors.Unauthorized401;
 import responses.errors.UniqueError500;
 import services.ClearService;
 import services.CreateGamesService;
-import services.JoinGameService;
-import services.RegisterService;
 
-public class JoinDataTest {
+public class ModifyTest {
     @Test
     public void positiveJoin() throws UniqueError500, BadRequest400, Taken403, Unauthorized401, DataAccessException {
         ClearService.clear() ;
