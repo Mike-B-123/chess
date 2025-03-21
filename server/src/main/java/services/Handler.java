@@ -30,7 +30,7 @@ public class Handler {
     public Object register(Request req, Response res) {
         try {
             User user = new Gson().fromJson(req.body(), User.class);
-            AuthData outAuthData = RegisterService.register(user); // overarching method needs to be here
+            AuthData outAuthData = RegisterService.register(user);
             res.status(200) ;
             return new Gson().toJson(outAuthData) ;
         }
