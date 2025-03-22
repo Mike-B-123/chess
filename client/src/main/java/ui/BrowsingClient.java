@@ -1,4 +1,4 @@
-package websocket;
+package ui;
 
 public class BrowsingClient {
 }

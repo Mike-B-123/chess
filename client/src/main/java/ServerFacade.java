@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import model.CreateGameName;
 import model.JoinData;
+import model.Message;
 import model.User;
 import java.io.*;
 import java.net.*;
@@ -11,9 +12,9 @@ public class ServerFacade {
         this.serverURL = serverURL ;
     }
 
-    public String clearCall() throws Exception {
+    public Object clearCall() throws Exception {
         var path = "/db";
-        return this.makeRequest("DELETE", path, null, String.class);
+        return this.makeRequest("DELETE", path, null, Object.class);
     }
     public Object registerCall(User user) throws Exception {
         var path = "/user";
@@ -46,7 +47,7 @@ public class ServerFacade {
            http.setRequestMethod(method); // adds the GET/POST/DELETE part
            http.setDoOutput(true); // ask what this does, but it's important for request bodies!
 
-           writeBody(request, http);
+           writeBody(requestObject, http);
            http.connect(); // this is where the request gets sent to the server. How does it know where the server is?
            throwIfNotSuccessful(http); // checking for 200 status code
            return readBody(http, responseClass); // deserilize response body
@@ -65,15 +66,16 @@ public class ServerFacade {
         }
     }
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, Exception {
-        var status = http.getResponseCode();
-        if (status != 200) { // checking for a successful 200 response
+        if (http.getResponseCode() != HttpURLConnection.HTTP_OK) {
             try (InputStream respErr = http.getErrorStream()) {
-                if (respErr != null) {
-                    throw new Exception(respErr.toString()) ; // is this allowed?
+                InputStreamReader reader = new InputStreamReader(respErr);
+                if (reader != null) {
+                    Message errorResponse = new Gson().fromJson(reader, Message.class);
+                    throw new Exception(errorResponse.message()) ;
                 }
             }
 
-            throw new Exception("other failure: " + status); // is this ok?
+            throw new Exception("other failure"); // is this ok?
         }
     }
 
@@ -83,7 +85,7 @@ public class ServerFacade {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
-                    response = new Gson().fromJson(reader, responseClass);
+                    response = new Gson().fromJson(reader, responseClass); // turns into GSON from Json
                 }
             }
         }
