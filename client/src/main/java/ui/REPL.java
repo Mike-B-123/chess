@@ -1,6 +1,8 @@
 package ui;
 
+import java.util.Arrays;
 import java.util.Scanner;
+import static ui.EscapeSequences.*;
 
 public class REPL {
     //private final JoinClient joinClient ;
@@ -17,9 +19,18 @@ public class REPL {
         System.out.print(help()) ;
         Scanner scanner = new Scanner(System.in);
         var result = "";
-
+        while (!result.equals("quit")) {
+            printPrompt();
+            String line = scanner.next();
+            try {
+                result = eval(line);
+                System.out.print(BLUE + result);
+            } catch (Throwable e) {
+                var msg = e.toString();
+                System.out.print(msg);
+            }
         }
-
+        System.out.println();
     }
 
     public enum State{
@@ -29,7 +40,7 @@ public class REPL {
     public String help() {
         if (state == State.SIGNEDOUT) {
             return """
-                    - signIn <yourname>
+                    - signIn
                     - quit
                     """;
         }
@@ -44,11 +55,8 @@ public class REPL {
     }
 public String eval(String input) {
     try {
-        var tokens = input.toLowerCase().split(" ");
-        var cmd = (tokens.length > 0) ? tokens[0] : "help";
-        var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-        return switch (cmd) {
-            case "signin" -> signIn(params);
+        return switch (input.toLowerCase()) {
+            case "signin" -> RegisterClient.register();
             case "rescue" -> rescuePet(params);
             case "list" -> listPets();
             case "signout" -> signOut();
@@ -57,8 +65,11 @@ public String eval(String input) {
             case "quit" -> "quit";
             default -> help();
         };
-    } catch (ResponseException ex) {
+    } catch (Exception ex) {
         return ex.getMessage();
     }
 }
+    private void printPrompt() {
+        System.out.print("\n" + RESET + ">>> " + GREEN);
+    }
 }

@@ -1,3 +1,5 @@
+package ServerFacade;
+
 import com.google.gson.Gson;
 import model.CreateGameName;
 import model.JoinData;
