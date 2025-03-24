@@ -13,7 +13,7 @@ public class REPL {
         registerClient = new RegisterClient(serverURL) ;
     }
     public void run(String serverURL){
-        System.out.println("\uD83D\uDC36 Ready to play some Chess? First sign in.");
+        System.out.println("\uD83D\uDC36 Ready to play some Chess? First sign in! :)");
         System.out.print(help()) ;
         Scanner scanner = new Scanner(System.in);
         var result = "";
