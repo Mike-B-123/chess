@@ -5,14 +5,12 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class REPL {
-    //private final JoinClient joinClient ;
+    //private final GameClient gameClient ;
     private final RegisterClient registerClient ;
-    //private final BrowsingClient browsingClient ;
     private State state = State.SIGNEDOUT ;
     public REPL(String serverURL){
-        //joinClient = new JoinClient(serverURL, this) ;
+        //gameClient = new GameClient(serverURL, this) ;
         registerClient = new RegisterClient(serverURL) ;
-        //browsingClient = new BrowsingClient(serverURL, this) ;
     }
     public void run(String serverURL){
         System.out.println("\uD83D\uDC36 Ready to play some Chess? First sign in.");
@@ -24,7 +22,7 @@ public class REPL {
             String line = scanner.next();
             try {
                 result = eval(line);
-                System.out.print(BLUE + result);
+                System.out.print(result + SET_TEXT_COLOR_BLUE);
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -40,28 +38,32 @@ public class REPL {
     public String help() {
         if (state == State.SIGNEDOUT) {
             return """
-                    - signIn
+                    - help
+                    - register
+                    - login
                     - quit
                     """;
         }
         return """
-                - list
-                - joinGame <gameID>
-                - rescue <name> <CAT|DOG|FROG|FISH>
-                - adoptAll
-                - signOut
+                - help
+                - logout
+                - createGame
+                - listGames
+                - play
+                - observe
                 - quit
                 """;
     }
 public String eval(String input) {
     try {
         return switch (input.toLowerCase()) {
-            case "signin" -> RegisterClient.register();
-            case "rescue" -> rescuePet(params);
-            case "list" -> listPets();
-            case "signout" -> signOut();
-            case "adopt" -> adoptPet(params);
-            case "adoptall" -> adoptAllPets();
+            case "register" -> RegisterClient.register();
+            //case "login" -> RegisterClient.login() ;
+            // case "logout" -> RegisterClient.logout() ;
+            // case "createGame" -> RegisterClient.createGame() ;
+            //case "listGames" -> GameClient.listGames();
+            //case "play" -> GameClient.play() ;
+            //case "observe" -> GameClient.observeGame();
             case "quit" -> "quit";
             default -> help();
         };
@@ -70,6 +72,6 @@ public String eval(String input) {
     }
 }
     private void printPrompt() {
-        System.out.print("\n" + RESET + ">>> " + GREEN);
+        System.out.print("\n" + RESET + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 }
