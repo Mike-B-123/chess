@@ -60,7 +60,7 @@ public class GameClient {
             }
             JoinData joinData = new JoinData(teamColor, gameID) ;
             server.joinGameCall(joinData) ;
-            return String.format("You are now apart of the game ' %s. ' ", gameName);
+            return String.format("Congrats! You are now apart of the game!");
         } catch (Exception ex) {
             throw new Exception();
         }

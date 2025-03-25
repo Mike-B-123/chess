@@ -10,7 +10,6 @@ public class ServerFacade {
     private final String serverURL ;
     private String username ;
     private String authToken ;
-
     public ServerFacade(String serverURL) {
         this.serverURL = serverURL ;
     }
@@ -24,7 +23,7 @@ public class ServerFacade {
         var path = "/db";
         return this.makeRequest("DELETE", path, null, Object.class);
     }
-    public Object registerCall(User user) throws Exception {
+    public AuthData registerCall(User user) throws Exception {
         var path = "/user";
         AuthData response = this.makeRequest("POST", path, user, AuthData.class);
         authToken = response.authToken();

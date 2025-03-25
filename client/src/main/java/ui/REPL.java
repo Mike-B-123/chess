@@ -65,8 +65,8 @@ public String eval(String input) {
             case "logout" -> registerClient.logout() ;
             case "createGame" -> gameClient.createGame() ;
             //case "listGames" -> GameClient.listGames();
-            //case "play" -> GameClient.play() ;
-            //case "observe" -> GameClient.observeGame();
+            case "play" -> gameClient.play() ;
+            //case "observe" -> GameClient.observeGame(); // how in the world do we do this?
             case "quit" -> "quit";
             default -> help();
         };
