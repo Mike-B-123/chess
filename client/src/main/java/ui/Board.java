@@ -12,6 +12,10 @@ public class Board {
         private static final int[] rowHeaders = {8,7,6,5,4,3,2,1} ;
         private static String squareColor = SET_BG_COLOR_WHITE ;
         private static String[] headers = { "a", "b", "c", "d", "e", "f", "g", "h" };
+        private static String teamColor = null; // how do I fix the static aspect?
+        public Board(String teamColor){
+            this.teamColor = teamColor ;
+        }
 
         // Padded characters.
         private static final String EMPTY = "   ";
@@ -35,14 +39,20 @@ public class Board {
 
         private static void drawHeaders(PrintStream out) {
 
-            setBlack(out);
-
-            for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                drawHeader(out, headers[boardCol]);
+            if (teamColor.equalsIgnoreCase("white")) {
+                for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+                    setBlack(out);
+                    drawHeader(out, headers[boardCol]);
+                }
+            } else {
+                for (int boardCol = 8; boardCol != 0; --boardCol) {
+                    setWhite(out);
+                    drawHeader(out, headers[boardCol]);
+                }
             }
-
             out.println();
         }
+
 
         private static void drawHeader(PrintStream out, String headerText) {
             int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
