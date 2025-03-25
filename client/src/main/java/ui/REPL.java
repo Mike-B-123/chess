@@ -6,12 +6,10 @@ import static ui.EscapeSequences.*;
 
 public class REPL {
     //private final GameClient gameClient ;
-    private final RegisterClient registerClient ;
+    RegisterClient registerClient = RegisterClient.getInstance();
+    GameClient gameClient = GameClient.getInstance();
     private State state = State.SIGNEDOUT ;
-    public REPL(String serverURL){
-        //gameClient = new GameClient(serverURL, this) ;
-        registerClient = new RegisterClient(serverURL) ;
-    }
+    public REPL(String serverURL){}
     public void run(String serverURL){
         System.out.println("\uD83D\uDC36 Ready to play some Chess? First sign in! :)");
         System.out.print(help()) ;
@@ -35,6 +33,11 @@ public class REPL {
         SIGNEDOUT ,
         SIGNEDIN
     }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
     public String help() {
         if (state == State.SIGNEDOUT) {
             return """
@@ -57,9 +60,9 @@ public class REPL {
 public String eval(String input) {
     try {
         return switch (input.toLowerCase()) {
-            case "register" -> RegisterClient.register();
-            //case "login" -> RegisterClient.login() ;
-            // case "logout" -> RegisterClient.logout() ;
+            case "register" -> registerClient.register();
+            case "login" -> registerClient.login() ;
+            case "logout" -> registerClient.logout() ;
             // case "createGame" -> RegisterClient.createGame() ;
             //case "listGames" -> GameClient.listGames();
             //case "play" -> GameClient.play() ;
