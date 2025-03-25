@@ -2,9 +2,7 @@ package ui;
 
 import ServerFacade.ServerFacade;
 import chess.ChessGame;
-import model.CreateGameName;
-import model.JoinData;
-import model.User;
+import model.*;
 import ui.HelperMethods ;
 
 import java.util.Scanner;
@@ -24,9 +22,14 @@ public class GameClient {
     public String listGames() throws Exception {
         try {
             System.out.println("Let's get you those games!");
-            server.listCall(server.getAuthToken()) ;
-            // how should I list the games?
-            // And do we actually observe in this phase?
+            GamesList gamesList= server.listCall(server.getAuthToken()) ;
+            for(Game game: gamesList.games()){
+                System.out.println("Game Name"+ game.gameName()) ;
+                System.out.println("GameID"+ game.gameID()) ;
+                System.out.println("White Player"+ game.whiteUsername()) ;
+                System.out.println("Black Player"+ game.blackUsername()) ;
+                System.out.println("Please join or observe a specific game to see its current board. What's your next move? :)") ;// This has to be the wrong way to do this?
+            }
             return String.format("What's your next 'move'? ;) ");
         } catch (Exception ex) {
             throw new Exception();
