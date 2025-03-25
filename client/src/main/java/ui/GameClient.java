@@ -1,7 +1,9 @@
 package ui;
 
 import ServerFacade.ServerFacade;
+import chess.ChessGame;
 import model.CreateGameName;
+import model.JoinData;
 import model.User;
 import ui.HelperMethods ;
 
@@ -40,23 +42,29 @@ public class GameClient {
         } catch (Exception ex) {
             throw new Exception();
         }
-
     }
-    public User logout() throws Exception {
+    public String play() throws Exception {
         try {
-            String[] variables = new String[3] ;
-            String[] outPrompts = {"What's your username?", "What's your password?", "Finally, what's your email?"};
-            for (int count = 0; count != 3; count++) {
-                System.out.println(outPrompts[count]);
-                Scanner scanner = new Scanner(System.in); // this is an input stream and can be read from, and can take in a ton of different things like files
-                variables[count] = scanner.next() ; // {john password email}
+            ChessGame.TeamColor teamColor = null;
+            System.out.println("Please provide the game ID for the game you want to join?");
+            Scanner scanner = new Scanner(System.in);
+            int gameID = Integer.getInteger(scanner.next()); // will this work?
+            System.out.println("What team color do you want to be? (Black or White)");
+            scanner = new Scanner(System.in);
+            String color = scanner.next();
+            if(color.toLowerCase() == "black"){
+                teamColor = ChessGame.TeamColor.BLACK ;
             }
-            User outputUser = new User(variables[0], variables[1], variables[2]) ;
-            // server.logoutCall() needs an auth Token how do we get that?
-            return outputUser ;
+            else if (color.toLowerCase() == "white") {
+                teamColor = ChessGame.TeamColor.WHITE ;
+            }
+            JoinData joinData = new JoinData(teamColor, gameID) ;
+            server.joinGameCall(joinData) ;
+            return String.format("You are now apart of the game ' %s. ' ", gameName);
         } catch (Exception ex) {
             throw new Exception();
         }
+
 
     }
     public static GameClient getInstance(){
