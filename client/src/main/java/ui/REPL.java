@@ -75,6 +75,6 @@ public String eval(String input) {
     }
 }
     private void printPrompt() {
-        System.out.print("\n" + RESET + ">>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n" + ">>> " + SET_TEXT_COLOR_GREEN); // should I keep the RESET thing?
     }
 }

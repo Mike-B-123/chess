@@ -20,15 +20,16 @@ public class GameClient {
     public String listGames() throws Exception {
         try {
             System.out.println("Let's get you those games!");
-            //server.listCall() again need the authtoken, where should I store this?
-            return String.format("You signed in as %s.", outputUser.username());
+            server.listCall(server.getAuthToken()) ;
+            // how should I list the games?
+            return String.format("What's your next 'move'? ;) ");
         } catch (Exception ex) {
             throw new Exception();
         }
 
     }
 
-    public String login() throws Exception {
+    public String createGame() throws Exception {
         try {
             String[] variables = new String[3] ;
             String[] outPrompts = {"What's your username?", "What's your password?", "Finally, what's your email?"};

@@ -51,9 +51,10 @@ public class RegisterClient {
     }
     public String logout() throws Exception {
         try {
-            server.
+            String authToken = server.getAuthToken() ; // is this redudant or ok?
+            server.logoutCall(authToken);
             repl.setState(State.SIGNEDOUT);
-            return String.format("%s is signed out.", outputUser.username());
+            return String.format("%s is signed out! Hope to see you again soon!", server.getUsername());
         } catch (Exception ex) {
             throw new Exception();
         }
