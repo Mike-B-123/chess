@@ -5,11 +5,13 @@ import model.*;
 
 import java.io.*;
 import java.net.*;
+import java.util.HashMap;
 
 public class ServerFacade {
     private final String serverURL ;
     private String username ;
     private String authToken ;
+    private HashMap<String, Integer> gameNameList;
     public ServerFacade(String serverURL) {
         this.serverURL = serverURL ;
     }
@@ -18,6 +20,9 @@ public class ServerFacade {
     }
     public String getAuthToken() {
         return authToken;
+    }
+    public HashMap<String, Integer> getGameNameList() {
+        return gameNameList;
     }
     public Object clearCall() throws Exception {
         var path = "/db";
@@ -41,9 +46,13 @@ public class ServerFacade {
         var path = "/session";
         return this.makeRequest("DELETE", path, authToken, Object.class);
     }
-    public Object listCall(String authToken) throws Exception {
+    public GamesList listCall(String authToken) throws Exception {
         var path = "/game";
-        return this.makeRequest("GET", path, authToken, Object.class);
+        GamesList response = this.makeRequest("GET", path, authToken, GamesList.class);
+        for(Game game: response.games()){
+            gameNameList.put(game.gameName(), game.gameID()) ;
+        }
+        return response ;
     }
     public Object createGameCall(CreateGameName gameName) throws Exception {
         var path = "/game";

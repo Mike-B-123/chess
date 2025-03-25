@@ -11,10 +11,11 @@ public class Board {
         private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
         private static final int[] rowHeaders = {8,7,6,5,4,3,2,1} ;
         private static String squareColor = SET_BG_COLOR_WHITE ;
+        private static String[] headers = { "a", "b", "c", "d", "e", "f", "g", "h" };
 
         // Padded characters.
         private static final String EMPTY = "   ";
-
+// How should I set the position of each piece?
 
         private static Random rand = new Random();
 
@@ -36,7 +37,6 @@ public class Board {
 
             setBlack(out);
 
-            String[] headers = { "a", "b", "c", "d", "e", "f", "g", "h" };
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
                 drawHeader(out, headers[boardCol]);
             }
@@ -75,6 +75,7 @@ public class Board {
         private static void drawRowOfSquares(PrintStream out) {
 
             for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_PADDED_CHARS; ++squareRow) {
+                out.print(rowHeaders[squareRow]) ;
                 for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
                     out.print(squareColor);
                     if(Objects.equals(squareColor, SET_BG_COLOR_WHITE)){

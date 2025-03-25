@@ -13,6 +13,7 @@ public class GameClient {
     private final ServerFacade server;
     public String serverUrl;
     private static GameClient instance ;
+    private static HelperMethods helperMethods = HelperMethods.getInstance();
 
 
     public GameClient(String serverUrl) {
@@ -25,6 +26,7 @@ public class GameClient {
             System.out.println("Let's get you those games!");
             server.listCall(server.getAuthToken()) ;
             // how should I list the games?
+            // And do we actually observe in this phase?
             return String.format("What's your next 'move'? ;) ");
         } catch (Exception ex) {
             throw new Exception();
@@ -45,27 +47,37 @@ public class GameClient {
     }
     public String play() throws Exception {
         try {
-            ChessGame.TeamColor teamColor = null;
-            System.out.println("Please provide the game ID for the game you want to join?");
+            System.out.println("Please provide the game name for the game you want to join?");
             Scanner scanner = new Scanner(System.in);
-            int gameID = Integer.getInteger(scanner.next()); // will this work?
+            String gameName = scanner.next() ;
+            int gameID = server.getGameNameList().get(gameName) ; // will this work?
             System.out.println("What team color do you want to be? (Black or White)");
             scanner = new Scanner(System.in);
             String color = scanner.next();
-            if(color.toLowerCase() == "black"){
-                teamColor = ChessGame.TeamColor.BLACK ;
-            }
-            else if (color.toLowerCase() == "white") {
-                teamColor = ChessGame.TeamColor.WHITE ;
-            }
-            JoinData joinData = new JoinData(teamColor, gameID) ;
+            JoinData joinData = new JoinData(helperMethods.colorVerificationHelp(color), gameID) ;
             server.joinGameCall(joinData) ;
-            return String.format("Congrats! You are now apart of the game!");
+            return String.format("Congrats! You are now apart of %s !", gameName);
         } catch (Exception ex) {
             throw new Exception();
         }
 
 
+    }
+    public String observeGame() throws Exception {
+        try {
+            System.out.println("Please provide the game name for the game you want to observe?");
+            Scanner scanner = new Scanner(System.in);
+            String gameName = scanner.next() ;
+            int gameID = server.getGameNameList().get(gameName) ;
+            System.out.println("What team color do you want to observe? (Black or White)");
+            scanner = new Scanner(System.in);
+            String color = scanner.next();
+            JoinData joinData = new JoinData(helperMethods.colorVerificationHelp(color) , gameID) ;
+            server.joinGameCall(joinData) ;
+            return String.format("Congrats! You are now observing %s !", gameName);
+        } catch (Exception ex) {
+            throw new Exception();
+        }
     }
     public static GameClient getInstance(){
         if(instance == null){

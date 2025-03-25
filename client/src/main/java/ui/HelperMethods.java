@@ -1,5 +1,7 @@
 package ui;
 
+import chess.ChessGame;
+
 import java.util.Scanner;
 
 public class HelperMethods {
@@ -18,5 +20,16 @@ public class HelperMethods {
             return instance = new HelperMethods() ;
         }
         return instance ;
+    }
+
+    public ChessGame.TeamColor colorVerificationHelp(String color){
+        ChessGame.TeamColor teamColor = null;
+        if(color.toLowerCase() == "black"){
+            teamColor = ChessGame.TeamColor.BLACK ;
+        }
+        else if (color.toLowerCase() == "white") {
+            teamColor = ChessGame.TeamColor.WHITE ;
+        }
+        return teamColor ;
     }
 }
