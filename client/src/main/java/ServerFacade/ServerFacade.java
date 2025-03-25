@@ -1,15 +1,14 @@
 package ServerFacade;
 
 import com.google.gson.Gson;
-import model.CreateGameName;
-import model.JoinData;
-import model.Message;
-import model.User;
+import model.*;
+
 import java.io.*;
 import java.net.*;
 
 public class ServerFacade {
     private final String serverURL ;
+
     public ServerFacade(String serverURL) {
         this.serverURL = serverURL ;
     }
@@ -20,7 +19,9 @@ public class ServerFacade {
     }
     public Object registerCall(User user) throws Exception {
         var path = "/user";
-        return this.makeRequest("POST", path, user, Object.class); // should the response acutually be returning a user even though it returns an object/
+        AuthData response = this.makeRequest("POST", path, user, AuthData.class);
+        // how should I properly make this into a authdata?
+        return response ;
     }
     public Object loginCall(User user) throws Exception {
         var path = "/session";
