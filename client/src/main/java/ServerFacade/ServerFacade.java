@@ -8,11 +8,18 @@ import java.net.*;
 
 public class ServerFacade {
     private final String serverURL ;
+    private String username ;
+    private String authToken ;
 
     public ServerFacade(String serverURL) {
         this.serverURL = serverURL ;
     }
-
+    public String getUsername() {
+        return username;
+    }
+    public String getAuthToken() {
+        return authToken;
+    }
     public Object clearCall() throws Exception {
         var path = "/db";
         return this.makeRequest("DELETE", path, null, Object.class);
@@ -20,12 +27,16 @@ public class ServerFacade {
     public Object registerCall(User user) throws Exception {
         var path = "/user";
         AuthData response = this.makeRequest("POST", path, user, AuthData.class);
-        // how should I properly make this into a authdata?
+        authToken = response.authToken();
+        username = response.username() ;
         return response ;
     }
     public Object loginCall(User user) throws Exception {
         var path = "/session";
-        return this.makeRequest("POST", path, user, Object.class);
+        AuthData response = this.makeRequest("POST", path, user, AuthData.class); // will changing the response class to AuthData mess things up?
+        authToken = response.authToken();
+        username = response.username() ;
+        return response ;
     }
     public Object logoutCall(String authToken) throws Exception {
         var path = "/session";

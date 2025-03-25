@@ -51,7 +51,7 @@ public class RegisterClient {
     }
     public String logout() throws Exception {
         try {
-
+            server.
             repl.setState(State.SIGNEDOUT);
             return String.format("%s is signed out.", outputUser.username());
         } catch (Exception ex) {
