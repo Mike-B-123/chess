@@ -63,7 +63,7 @@ public String eval(String input) {
             case "register" -> registerClient.register();
             case "login" -> registerClient.login() ;
             case "logout" -> registerClient.logout() ;
-            // case "createGame" -> RegisterClient.createGame() ;
+            case "createGame" -> gameClient.createGame() ;
             //case "listGames" -> GameClient.listGames();
             //case "play" -> GameClient.play() ;
             //case "observe" -> GameClient.observeGame();

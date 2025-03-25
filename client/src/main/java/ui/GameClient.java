@@ -1,6 +1,7 @@
 package ui;
 
 import ServerFacade.ServerFacade;
+import model.CreateGameName;
 import model.User;
 import ui.HelperMethods ;
 
@@ -31,12 +32,11 @@ public class GameClient {
 
     public String createGame() throws Exception {
         try {
-            String[] variables = new String[3] ;
-            String[] outPrompts = {"What's your username?", "What's your password?", "Finally, what's your email?"};
-
-            User outputUser = new User(variables[0], variables[1], variables[2]) ;
-            server.loginCall(outputUser) ;
-            return String.format("You signed in as %s.", outputUser.username());
+            System.out.println("What do you want to name this new game?");
+            Scanner scanner = new Scanner(System.in); // this is an input stream and can be read from, and can take in a ton of different things like files
+            CreateGameName gameName = new CreateGameName(scanner.next()) ;
+            server.createGameCall(gameName) ;
+            return String.format("You have created the new Game ' %s. ' ", gameName);
         } catch (Exception ex) {
             throw new Exception();
         }
@@ -65,5 +65,4 @@ public class GameClient {
         }
         return instance ;
     }
-}
 }
