@@ -47,13 +47,13 @@ public class EscapeSequences {
     public static final String SET_BG_COLOR_WHITE = SET_BG_COLOR + "15m";
     public static final String RESET_BG_COLOR = UNICODE_ESCAPE + "[49m";
 
-    public static final String KING = " K ";
-    public static final String QUEEN = " Q ";
-    public static final String BISHOP = " B ";
-    public static final String KNIGHT = " N ";
-    public static final String ROOK = " R ";
-    public static final String PAWN = " P ";
-    public static final String EMPTY = "   ";
+    public static final String KING = "K";
+    public static final String QUEEN = "Q";
+    public static final String BISHOP = "B";
+    public static final String KNIGHT = "N";
+    public static final String ROOK = "R";
+    public static final String PAWN = "P";
+    public static final String EMPTY = " ";
 
 
 //    public static final String WHITE_KING = " ♔ ";

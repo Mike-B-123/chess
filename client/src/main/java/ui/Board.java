@@ -46,6 +46,8 @@ public class Board {
 
     private static void drawHeaders(PrintStream out) {
         out.print(SET_BG_COLOR_LIGHT_GREY);
+        out.print(SET_TEXT_COLOR_LIGHT_GREY);
+        out.print("1");
         if (teamColor.equalsIgnoreCase("white")) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
                 drawHeader(out, headers[boardCol]);
@@ -76,39 +78,35 @@ public class Board {
 
     private static void drawChessBoard(PrintStream out) {
             //int inverseRow = 7 ;
-        for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
+//        for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
             out.print(SET_BG_COLOR_LIGHT_GREY);
             //if(teamColor.equalsIgnoreCase("white")){
-
-            out.print(rowHeaders[boardRow]);
            // }
 //            else{
 //                //out.print(rowHeaders[inverseRow]);
 //                inverseRow -= 1;
 //            }
-            drawRowOfSquares(out, boardRow);
+            drawRowOfSquares(out);
 
-            if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
-                out.print(SET_BG_COLOR_BLACK);
-            }
-        }
     }
 
-    private static void drawRowOfSquares(PrintStream out,Integer positionRow) {
-        int leftInt = 0;
+    private static void drawRowOfSquares(PrintStream out) {
         int rightInt = 7;
-        int positionCol = 0 ;
 //        if (teamColor.equalsIgnoreCase("black")) {
 //            leftInt = 7;
 //            rightInt = 0;
 //        }
-        for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_PADDED_CHARS; ++squareRow) {
+        for (int squareRow = 0; squareRow < 8; ++squareRow) {
+            out.print(SET_TEXT_COLOR_WHITE);
+            out.print(SET_BG_COLOR_LIGHT_GREY);
+            out.print(rowHeaders[squareRow]);
+            int positionCol = 0 ;
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
                 out.print(squareColor);
                     int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
                     int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
                     out.print(EMPTY.repeat(prefixLength));
-                    printPiece(positionRow, positionCol, out);
+                    printPiece(squareRow, positionCol, out);
                     out.print(EMPTY.repeat(suffixLength));
 
                 if (boardCol < BOARD_SIZE_IN_SQUARES - 1) {
@@ -119,11 +117,13 @@ public class Board {
 //                if (teamColor.equalsIgnoreCase("black")) {
 //                    leftInt--;
 //                } else {
-                    leftInt++;
+
 //                }
             }
-            out.print(SET_BG_COLOR_DARK_GREY) ;
+            out.print(SET_BG_COLOR_LIGHT_GREY) ;
+            out.print(SET_TEXT_COLOR_WHITE) ;
             out.print(rowHeaders[rightInt]);
+            rightInt -- ;
             out.print(SET_BG_COLOR_BLACK) ;
             out.println();
         }
@@ -131,12 +131,16 @@ public class Board {
 
     private static void drawFooter(PrintStream out) {
         out.print(SET_BG_COLOR_DARK_GREY);
+        out.print(SET_BG_COLOR_LIGHT_GREY);
+        out.print(SET_TEXT_COLOR_LIGHT_GREY);
+        out.print("1");
         if (teamColor.equalsIgnoreCase("black")) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
                 drawHeader(out, headers[boardCol]);
             }
         } else {
-            for (int boardCol = 8; boardCol != 0; --boardCol) {
+            for (int boardCol = 7; boardCol != 0; --boardCol) {
+
                 drawHeader(out, headers[boardCol]);
             }
         }
@@ -155,7 +159,7 @@ public class Board {
                 out.print(pieceMap.get(piece.getPieceType()));
             }
         } else {
-            out.print(squareColor);
+            out.print(" ");
         }
     }
 
