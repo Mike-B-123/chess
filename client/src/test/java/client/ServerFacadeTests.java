@@ -1,8 +1,10 @@
 package client;
 
 import ServerFacade.ServerFacade;
+import com.google.gson.Gson;
 import model.User;
 import org.junit.jupiter.api.*;
+import responses.errors.UniqueError500;
 import server.Server;
 
 
@@ -30,19 +32,26 @@ public class ServerFacadeTests {
 
     @Test
     public void clearSuccessTest() throws Exception{
-        Assertions.assertEquals("{}", facade.clearCall());
+        Assertions.assertEquals("{}", new Gson().toJson(facade.clearCall()));
     }
 
 
     @Test
     public void registerSuccessTest() throws Exception {
         User user = new User("username", "password", "email@email.com") ;
-        Assertions.assertEquals("{}", facade.registerCall(user));
+        Assertions.assertTrue(new Gson().toJson(facade.registerCall(user).authToken()).length() > 1);
+        // is this ok that I'm checking length and converting from Gson
     }
     @Test
     public void registerFailTest() throws Exception {
-        Exception Exception = new Exception("good job! you failed!");
-        Assertions.assertEquals(Exception, facade.registerCall(null));
+        try{
+            facade.registerCall(null);
+            Assertions.assertTrue(false);
+        }
+        catch(Exception ex){
+            Assertions.assertTrue(true);
+        }
+
     }
 
 
@@ -50,24 +59,36 @@ public class ServerFacadeTests {
     public void loginSuccessTest() throws Exception {
         User user = new User("username", "password", "email@email.com") ;
         facade.registerCall(user);
-        Assertions.assertEquals(facade.getAuthToken(), facade.loginCall(user).authToken());
+        Assertions.assertTrue(new Gson().toJson(facade.loginCall(user).authToken()).length() == 38);
     }
     @Test
     public void loginFailTest() throws Exception {
-        User user = new User("username", "password", "email@email.com") ;
-        facade.registerCall(user);
-        Exception Exception = new Exception("good job! you failed!");
-        Assertions.assertEquals(Exception, facade.loginCall(null).authToken());
+        User user = new User("fakeuser", "fakeword", "email@email.com") ;
+        try{
+            facade.loginCall(user);
+            Assertions.assertTrue(false);
+        }
+        catch(Exception ex){
+            Assertions.assertTrue(true);
+        }
     }
 
 
     @Test
     public void logoutSucessTest() {
-        Assertions.assertTrue(true);
+        User user = new User("fakeuser", "fakeword", "email@email.com") ;
+            facade.logoutCall("faketoken");
+            Assertions.assertTrue(false);
     }
     @Test
     public void logoutFailTest() {
-        Assertions.assertTrue(true);
+        try{
+            facade.logoutCall("faketoken");
+            Assertions.assertTrue(false);
+        }
+        catch(Exception ex){
+            Assertions.assertTrue(true);
+        }
     }
 
     @Test
