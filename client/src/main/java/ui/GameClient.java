@@ -14,9 +14,8 @@ public class GameClient {
     private static HelperMethods helperMethods = HelperMethods.getInstance();
 
 
-    public GameClient(String serverUrl) {
-        server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
+    public GameClient() {
+        server = new ServerFacade(8080);
     }
 
     public String listGames() throws Exception {
@@ -45,7 +44,7 @@ public class GameClient {
             Scanner scanner = new Scanner(System.in); // this is an input stream and can be read from, and can take in a ton of different things like files
             CreateGameName gameName = new CreateGameName(scanner.next()) ;
             server.createGameCall(gameName) ;
-            return String.format("You have created the new Game ' %s. ' ", gameName);
+            return String.format("You have created the new Game: %s .  ", gameName);
         } catch (Exception ex) {
             throw new Exception();
         }
@@ -83,7 +82,7 @@ public class GameClient {
     }
     public static GameClient getInstance(){
         if(instance == null){
-            return instance = new GameClient(instance.serverUrl) ;
+            return instance = new GameClient() ;
         }
         return instance ;
     }

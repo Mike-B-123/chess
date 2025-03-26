@@ -9,18 +9,24 @@ public class REPL {
     RegisterClient registerClient = RegisterClient.getInstance();
     GameClient gameClient = GameClient.getInstance();
     private State state = State.SIGNEDOUT ;
-    public REPL(String serverURL){}
-    public void run(String serverURL){
-        System.out.println("\uD83D\uDC36 Ready to play some Chess? First sign in! :)");
+    public REPL(){}
+
+    public void run(){
+        System.out.println("Ready to play some Chess? First sign in! :)");
         System.out.print(help()) ;
+        printPrompt();
         Scanner scanner = new Scanner(System.in);
         var result = "";
+//        result = scanner.next() ;
         while (!result.equals("quit")) {
-            printPrompt();
             String line = scanner.next();
             try {
                 result = eval(line);
-                System.out.print(result + SET_TEXT_COLOR_BLUE);
+                if(result.contains("You signed in as")) {
+                    setState(State.SIGNEDIN);
+                }
+                System.out.print(result );
+                printPrompt();
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -50,8 +56,8 @@ public class REPL {
         return """
                 - help
                 - logout
-                - createGame
-                - listGames
+                - create (create a game)
+                - list (list games)
                 - play
                 - observe
                 - quit
@@ -63,8 +69,8 @@ public String eval(String input) {
             case "register" -> registerClient.register();
             case "login" -> registerClient.login() ;
             case "logout" -> registerClient.logout() ;
-            case "createGame" -> gameClient.createGame() ;
-            case "listGames" -> gameClient.listGames();
+            case "create" -> gameClient.createGame() ;
+            case "list" -> gameClient.listGames();
             case "play" -> gameClient.play() ;
             case "observe" -> gameClient.observeGame(); // how in the world do we do this?
             case "quit" -> "quit";

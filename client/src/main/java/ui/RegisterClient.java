@@ -15,9 +15,8 @@ public class RegisterClient {
     private static RegisterClient instance ;
     HelperMethods helperMethods = HelperMethods.getInstance();
 
-    public RegisterClient(String serverUrl) {
-        server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
+    public RegisterClient() {
+        server = new ServerFacade(8080);
     }
 
     public String register() throws Exception {
@@ -27,10 +26,9 @@ public class RegisterClient {
             variables = helperMethods.varLoop(variables, outPrompts) ;
             User outputUser = new User(variables[0], variables[1], variables[2]) ;
             server.registerCall(outputUser) ;
-            repl.setState(State.SIGNEDIN);
             return String.format("You signed in as %s.", outputUser.username());
         } catch (Exception ex) {
-            throw new Exception();
+            throw new Exception(ex.getMessage());
         }
 
     }
@@ -42,8 +40,7 @@ public class RegisterClient {
             variables = helperMethods.varLoop(variables, outPrompts) ;
             User outputUser = new User(variables[0], variables[1], variables[2]) ;
             server.loginCall(outputUser) ;
-            repl.setState(State.SIGNEDIN);
-            return String.format("You signed in as %s.", outputUser.username());
+            return String.format("You signed in as %s .", outputUser.username());
         } catch (Exception ex) {
             throw new Exception();
         }
@@ -62,7 +59,7 @@ public class RegisterClient {
     }
     public static RegisterClient getInstance(){
         if(instance == null){
-            return instance = new RegisterClient(instance.serverUrl) ;
+            return instance = new RegisterClient() ;
         }
         return instance ;
     }

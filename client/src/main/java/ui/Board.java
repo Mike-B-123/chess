@@ -13,7 +13,7 @@ import java.util.Random;
 import static ui.EscapeSequences.*;
 public class Board {
     // Board dimensions.
-    private static ServerFacade server = new ServerFacade("http://localhost:8080");
+    private static ServerFacade server = new ServerFacade(8080);
     public String serverUrl;
     private static final int BOARD_SIZE_IN_SQUARES = 8;
     private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
@@ -25,7 +25,7 @@ public class Board {
 
     public Board(String teamColor, String serverUrl) {
         this.teamColor = teamColor;
-        server = new ServerFacade(serverUrl);
+        server = new ServerFacade(8080);
     }
     // Padded characters.
     private static final String EMPTY = "   ";

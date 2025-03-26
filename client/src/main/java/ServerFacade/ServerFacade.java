@@ -17,8 +17,8 @@ public class ServerFacade {
 
     private ChessBoard currentChessBoard = new ChessBoard() ;
 
-    public ServerFacade(String serverURL) {
-        this.serverURL = serverURL ;
+    public ServerFacade(int port) {
+        this.serverURL ="http://localhost:" + port ;
         this.currentChessBoard.resetBoard();
     }
     public String getUsername() {
@@ -33,6 +33,7 @@ public class ServerFacade {
     public ChessBoard getCurrentChessBoard() {
         return currentChessBoard ;
     }
+
     public Object clearCall() throws Exception {
         var path = "/db";
         return this.makeRequest("DELETE", path, null, Object.class);
@@ -44,7 +45,7 @@ public class ServerFacade {
         username = response.username() ;
         return response ;
     }
-    public Object loginCall(User user) throws Exception {
+    public AuthData loginCall(User user) throws Exception {
         var path = "/session";
         AuthData response = this.makeRequest("POST", path, user, AuthData.class); // will changing the response class to AuthData mess things up?
         authToken = response.authToken();
@@ -75,7 +76,9 @@ public class ServerFacade {
         currentChessBoard = gameList.get(joinData.gameID()).game().getBoard(); ;
         return this.makeRequest("PUT", path, joinData, Object.class);
     }
-    public <T> T makeRequest(String method, String path, Object requestObject, Class<T> responseClass) throws Exception{
+
+
+    private <T> T makeRequest(String method, String path, Object requestObject, Class<T> responseClass) throws Exception{
        try {
            URL url = (new URI(serverURL + path)).toURL(); // what does URI do?
            HttpURLConnection http = (HttpURLConnection) url.openConnection(); // allows for creation of http request (kinda a request and response object in one)
