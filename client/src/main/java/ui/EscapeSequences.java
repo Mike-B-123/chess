@@ -53,12 +53,6 @@ public class EscapeSequences {
     public static final String KNIGHT = " N ";
     public static final String ROOK = " R ";
     public static final String PAWN = " P ";
-    public static final String BLACK_KING = " K ";
-    public static final String BLACK_QUEEN = " Q ";
-    public static final String BLACK_BISHOP = " B ";
-    public static final String BLACK_KNIGHT = " N ";
-    public static final String BLACK_ROOK = " R ";
-    public static final String BLACK_PAWN = " P ";
     public static final String EMPTY = "   ";
 
 

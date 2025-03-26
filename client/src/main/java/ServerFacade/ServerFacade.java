@@ -15,10 +15,11 @@ public class ServerFacade {
     private HashMap<Integer, Integer> gameNumList; // gameNum, gameID
     private HashMap<Integer, Game> gameList;
 
-    private ChessBoard currentChessBoard ;
+    private ChessBoard currentChessBoard = new ChessBoard() ;
 
     public ServerFacade(String serverURL) {
         this.serverURL = serverURL ;
+        this.currentChessBoard.resetBoard();
     }
     public String getUsername() {
         return username;
