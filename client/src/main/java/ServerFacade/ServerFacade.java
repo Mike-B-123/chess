@@ -1,5 +1,6 @@
 package ServerFacade;
 
+import chess.ChessBoard;
 import com.google.gson.Gson;
 import model.*;
 
@@ -11,7 +12,11 @@ public class ServerFacade {
     private final String serverURL ;
     private String username ;
     private String authToken ;
-    private HashMap<Integer, Integer> gameNameList; // gameNum, gameID
+    private HashMap<Integer, Integer> gameNumList; // gameNum, gameID
+    private HashMap<Integer, Game> gameList;
+
+    private ChessBoard currentChessBoard ;
+
     public ServerFacade(String serverURL) {
         this.serverURL = serverURL ;
     }
@@ -21,8 +26,11 @@ public class ServerFacade {
     public String getAuthToken() {
         return authToken;
     }
-    public HashMap<Integer, Integer> getGameNameList() {
-        return gameNameList;
+    public HashMap<Integer, Integer> getGameNumList() {
+        return gameNumList;
+    }
+    public ChessBoard getCurrentChessBoard() {
+        return currentChessBoard ;
     }
     public Object clearCall() throws Exception {
         var path = "/db";
@@ -51,7 +59,8 @@ public class ServerFacade {
         GamesList response = this.makeRequest("GET", path, authToken, GamesList.class);
         int counter = 1 ;
         for(Game game: response.games()){
-            gameNameList.put(counter, game.gameID()) ;
+            gameNumList.put(counter, game.gameID()) ;
+            gameList.put(game.gameID(), game) ;
             counter ++ ;
         }
         return response ;
@@ -62,6 +71,7 @@ public class ServerFacade {
     }
     public Object joinGameCall(JoinData joinData) throws Exception {
         var path = "/game";
+        currentChessBoard = gameList.get(joinData.gameID()).game().getBoard(); ;
         return this.makeRequest("PUT", path, joinData, Object.class);
     }
     public <T> T makeRequest(String method, String path, Object requestObject, Class<T> responseClass) throws Exception{

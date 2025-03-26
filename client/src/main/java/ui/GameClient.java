@@ -55,7 +55,7 @@ public class GameClient {
             System.out.println("Please provide the game list number for the game you want to join?");
             Scanner scanner = new Scanner(System.in);
             Integer gameNum = Integer.getInteger(scanner.next()) ;
-            int gameID = server.getGameNameList().get(gameNum) ; // will this work?
+            int gameID = server.getGameNumList().get(gameNum) ; // will this work?
             System.out.println("What team color do you want to be? (Black or White)");
             scanner = new Scanner(System.in);
             String color = scanner.next();
@@ -73,7 +73,7 @@ public class GameClient {
             System.out.println("Please provide the game list number for the game you want to observe?");
             Scanner scanner = new Scanner(System.in);
             Integer gameNum = Integer.getInteger(scanner.next()) ;
-            int gameID = server.getGameNameList().get(gameNum) ;
+            int gameID = server.getGameNumList().get(gameNum) ;
             JoinData joinData = new JoinData(ChessGame.TeamColor.WHITE , gameID) ;
             server.joinGameCall(joinData) ;
             return String.format("Congrats! You are now observing game # %s !", gameNum);
