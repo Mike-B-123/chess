@@ -53,7 +53,7 @@ public class Board {
                 drawHeader(out, headers[boardCol]);
             }
         } else {
-            for (int boardCol = 8; boardCol != 0; --boardCol) {
+            for (int boardCol = 7; boardCol != -1; --boardCol) {
                 drawHeader(out, headers[boardCol]);
             }
         }
@@ -76,30 +76,20 @@ public class Board {
         out.print(character);
     }
 
+
     private static void drawChessBoard(PrintStream out) {
-            //int inverseRow = 7 ;
-//        for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
-            out.print(SET_BG_COLOR_LIGHT_GREY);
-            //if(teamColor.equalsIgnoreCase("white")){
-           // }
-//            else{
-//                //out.print(rowHeaders[inverseRow]);
-//                inverseRow -= 1;
-//            }
-            drawRowOfSquares(out);
-
-    }
-
-    private static void drawRowOfSquares(PrintStream out) {
+        out.print(SET_BG_COLOR_LIGHT_GREY);
         int rightInt = 7;
-//        if (teamColor.equalsIgnoreCase("black")) {
-//            leftInt = 7;
-//            rightInt = 0;
-//        }
+        int leftInt = 0;
+        if (teamColor.equalsIgnoreCase("black")) {
+            leftInt = 7;
+            rightInt = 0;
+        }
         for (int squareRow = 0; squareRow < 8; ++squareRow) {
             out.print(SET_TEXT_COLOR_WHITE);
             out.print(SET_BG_COLOR_LIGHT_GREY);
-            out.print(rowHeaders[squareRow]);
+            out.print(rowHeaders[leftInt]);
+            leftInt = leftIntMath(leftInt);
             int positionCol = 0 ;
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
                 out.print(squareColor);
@@ -139,11 +129,12 @@ public class Board {
                 drawHeader(out, headers[boardCol]);
             }
         } else {
-            for (int boardCol = 7; boardCol != 0; --boardCol) {
+            for (int boardCol = 7; boardCol != -1; --boardCol) {
 
                 drawHeader(out, headers[boardCol]);
             }
         }
+        out.print(SET_BG_COLOR_BLACK);
         out.println();
     }
     private static void printPiece(int positionRow , int positionCol, PrintStream out) {
@@ -171,6 +162,27 @@ public class Board {
             squareColor = SET_BG_COLOR_BLACK;
         }
     }
+
+    private static int leftIntMath(int leftInt){
+        if(teamColor.equalsIgnoreCase("white")){
+            leftInt ++ ;
+        }
+        else{
+           leftInt -- ;
+        }
+        return leftInt ;
+    }
+
+    private static int rightIntMath(int rightInt){
+        if(teamColor.equalsIgnoreCase("white")){
+            rightInt -- ;
+        }
+        else{
+            rightInt ++ ;
+        }
+        return rightInt ;
+    }
+
     public static void setPieceMap(){
         pieceMap.put(ChessPiece.PieceType.KING, KING);
         pieceMap.put(ChessPiece.PieceType.QUEEN, QUEEN);
