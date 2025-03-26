@@ -66,7 +66,7 @@ public class Board {
 
         out.print(EMPTY.repeat(prefixLength));
         printHeaderText(out, headerText);
-        out.print(EMPTY.repeat(suffixLength)); // what is suffix length and prefix length?
+        out.print(EMPTY.repeat(suffixLength));
     }
 
     private static void printHeaderText(PrintStream out, String character) {
@@ -76,9 +76,16 @@ public class Board {
     }
 
     private static void drawChessBoard(PrintStream out) {
-
+            int inverseRow = 7 ;
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
-
+            out.print(SET_BG_COLOR_DARK_GREY);
+            if(teamColor.equalsIgnoreCase("white")){
+            out.print(rowHeaders[boardRow]);
+            }
+            else{
+                out.print(rowHeaders[inverseRow]);
+                -- inverseRow;
+            }
             drawRowOfSquares(out, boardRow);
 
             if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
