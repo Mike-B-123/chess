@@ -35,6 +35,9 @@ public class Board {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         setPieceMap();
         out.print(ERASE_SCREEN);
+        if(teamColor.equalsIgnoreCase("black")){
+            squareColor = SET_BG_COLOR_BLACK ;
+        }
 
         drawHeaders(out);
         drawChessBoard(out);
@@ -104,16 +107,11 @@ public class Board {
                     positionCol += 1 ;
                     changeSquareColor();
                 }
-//                if (teamColor.equalsIgnoreCase("black")) {
-//                    leftInt--;
-//                } else {
-
-//                }
             }
             out.print(SET_BG_COLOR_LIGHT_GREY) ;
             out.print(SET_TEXT_COLOR_WHITE) ;
             out.print(rowHeaders[rightInt]);
-            rightInt -- ;
+            rightInt = rightIntMath(rightInt) ;
             out.print(SET_BG_COLOR_BLACK) ;
             out.println();
         }
