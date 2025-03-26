@@ -11,7 +11,7 @@ public class ServerFacade {
     private final String serverURL ;
     private String username ;
     private String authToken ;
-    private HashMap<String, Integer> gameNameList;
+    private HashMap<Integer, Integer> gameNameList; // gameNum, gameID
     public ServerFacade(String serverURL) {
         this.serverURL = serverURL ;
     }
@@ -21,7 +21,7 @@ public class ServerFacade {
     public String getAuthToken() {
         return authToken;
     }
-    public HashMap<String, Integer> getGameNameList() {
+    public HashMap<Integer, Integer> getGameNameList() {
         return gameNameList;
     }
     public Object clearCall() throws Exception {
@@ -49,8 +49,10 @@ public class ServerFacade {
     public GamesList listCall(String authToken) throws Exception {
         var path = "/game";
         GamesList response = this.makeRequest("GET", path, authToken, GamesList.class);
+        int counter = 1 ;
         for(Game game: response.games()){
-            gameNameList.put(game.gameName(), game.gameID()) ;
+            gameNameList.put(counter, game.gameID()) ;
+            counter ++ ;
         }
         return response ;
     }
