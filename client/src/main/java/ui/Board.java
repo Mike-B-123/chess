@@ -1,5 +1,5 @@
 package ui;
-import serverFacade.ServerFacade;
+import serverfacade.ServerFacade;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;

@@ -1,6 +1,6 @@
 package ui;
 
-import serverFacade.ServerFacade;
+import serverfacade.ServerFacade;
 import chess.ChessGame;
 import model.*;
 
@@ -42,7 +42,7 @@ public class GameClient {
     public String createGame() throws Exception {
         try {
             System.out.println("What do you want to name this new game?");
-            Scanner scanner = new Scanner(System.in); // this is an input stream and can be read from, and can take in a ton of different things like files
+            Scanner scanner = new Scanner(System.in);
             CreateGameName gameName = new CreateGameName(scanner.next()) ;
             server.createGameCall(gameName) ;
             return String.format("You have created the new Game: %s .  ", gameName.gameName());

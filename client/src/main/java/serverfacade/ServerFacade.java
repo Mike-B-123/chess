@@ -1,4 +1,4 @@
-package serverFacade;
+package serverfacade;
 
 import chess.ChessBoard;
 import com.google.gson.Gson;
@@ -83,7 +83,7 @@ public class ServerFacade {
     private <T> T makeRequest(String method, String path, Object requestObject, Class<T> responseClass) throws Exception{
        try {
            URL url = (new URI(serverURL + path)).toURL(); // what does URI do?
-           HttpURLConnection http = (HttpURLConnection) url.openConnection(); // allows for creation of http request (kinda a request and response object in one)
+           HttpURLConnection http = (HttpURLConnection) url.openConnection();
            http.setRequestMethod(method);// adds the GET/POST/DELETE part
            http.setDoOutput(true); // ask what this does, but it's important for request bodies!
 

@@ -1,6 +1,6 @@
 package client;
 
-import serverFacade.ServerFacade;
+import serverfacade.ServerFacade;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.CreateGameName;
