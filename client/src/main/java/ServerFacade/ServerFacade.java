@@ -70,9 +70,9 @@ public class ServerFacade {
         }
         return response ;
     }
-    public Object createGameCall(CreateGameName gameName) throws Exception {
+    public GameID createGameCall(CreateGameName gameName) throws Exception {
         var path = "/game";
-        return this.makeRequest("POST", path, gameName, Object.class);
+        return this.makeRequest("POST", path, gameName, GameID.class);
     }
     public Object joinGameCall(JoinData joinData) throws Exception {
         var path = "/game";

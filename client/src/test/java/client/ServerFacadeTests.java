@@ -1,9 +1,11 @@
 package client;
 
 import ServerFacade.ServerFacade;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.CreateGameName;
 import model.Game;
+import model.JoinData;
 import model.User;
 import org.junit.jupiter.api.*;
 import responses.errors.UniqueError500;
@@ -96,31 +98,59 @@ public class ServerFacadeTests {
     @Test
     public void listSuccessTest() throws Exception {
         CreateGameName gameName = new CreateGameName("testGame") ;
-        facade.createGameCall(gameName) ;
+        User user = new User("logoutuser1", "logoutword1", "email@email.com") ;
         String authToken = facade.registerCall(user).authToken();
-        Assertions.assertEquals("{}", new Gson().toJson(facade.logoutCall(authToken)));
+        facade.createGameCall(gameName) ;
+        Assertions.assertTrue(facade.listCall(authToken).toString().length() > 1);
     }
     @Test
     public void listFailTest() {
-        Assertions.assertTrue(true);
+        try{
+            facade.listCall("faketoken");
+            Assertions.assertTrue(false);
+        }
+        catch(Exception ex){
+            Assertions.assertTrue(true);
+        }
     }
 
     @Test
-    public void createGameSuccessTest() {
-        Assertions.assertTrue(true);
+    public void createGameSuccessTest() throws Exception {
+        CreateGameName gameName = new CreateGameName("testGame") ;
+        User user = new User("logoutuser1", "logoutword1", "email@email.com") ;
+       facade.registerCall(user).authToken();
+        Assertions.assertTrue(facade.createGameCall(gameName).gameID() > 0);
     }
     @Test
     public void createGameFailTest() {
-        Assertions.assertTrue(true);
+        try{
+            facade.createGameCall(null) ;
+            Assertions.assertTrue(false);
+        }
+        catch(Exception ex){
+            Assertions.assertTrue(true);
+        }
     }
 
     @Test
-    public void joinSuccessTest() {
-        Assertions.assertTrue(true);
+    public void joinSuccessTest() throws Exception {
+        CreateGameName gameName = new CreateGameName("testGame") ;
+        User user = new User("logoutuser1", "logoutword1", "email@email.com") ;
+        String authToken = facade.registerCall(user).authToken();
+        facade.createGameCall(gameName);
+        facade.listCall(authToken) ;
+        JoinData joinData = new JoinData(ChessGame.TeamColor.WHITE, facade.getGameNumList().get(1)) ;
+        Assertions.assertEquals("{}", new Gson().toJson(facade.joinGameCall(joinData)));
     }
     @Test
     public void joinFailTest() {
-        Assertions.assertTrue(true);
+        try{
+            facade.joinGameCall(null) ;
+            Assertions.assertTrue(false);
+        }
+        catch(Exception ex){
+            Assertions.assertTrue(true);
+        }
     }
 
 }
