@@ -9,14 +9,12 @@ import model.User;
 import ui.REPL.* ;
 
 public class RegisterClient {
-    private final ServerFacade server;
-    String serverUrl;
-    private REPL repl ;
+    private final ServerFacade server;;
     private static RegisterClient instance ;
     HelperMethods helperMethods = HelperMethods.getInstance();
 
-    public RegisterClient() {
-        server = new ServerFacade(8080);
+    public RegisterClient(ServerFacade inputServer) {
+        this.server = inputServer ;
     }
 
     public String register() throws Exception {
@@ -50,16 +48,15 @@ public class RegisterClient {
         try {
             String authToken = server.getAuthToken() ; // is this redudant or ok?
             server.logoutCall(authToken);
-            repl.setState(State.SIGNEDOUT);
             return String.format("%s is signed out! Hope to see you again soon!", server.getUsername());
         } catch (Exception ex) {
             throw new Exception();
         }
 
     }
-    public static RegisterClient getInstance(){
+    public static RegisterClient getInstance(ServerFacade server){
         if(instance == null){
-            return instance = new RegisterClient() ;
+            return instance = new RegisterClient(server) ;
         }
         return instance ;
     }

@@ -75,10 +75,10 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void logoutSucessTest() {
-        User user = new User("fakeuser", "fakeword", "email@email.com") ;
-            facade.logoutCall("faketoken");
-            Assertions.assertTrue(false);
+    public void logoutSucessTest() throws Exception {
+        User user = new User("logoutuser1", "logoutword1", "email@email.com") ;
+        String authToken = new Gson().toJson(facade.registerCall(user).authToken());
+        Assertions.assertEquals("{}", new Gson().toJson(facade.logoutCall(authToken)));
     }
     @Test
     public void logoutFailTest() {

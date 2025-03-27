@@ -1,31 +1,34 @@
 package ui;
 
+import ServerFacade.ServerFacade;
+
 import java.util.Arrays;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class REPL {
-    //private final GameClient gameClient ;
-    RegisterClient registerClient = RegisterClient.getInstance();
-    GameClient gameClient = GameClient.getInstance();
-    private State state = State.SIGNEDOUT ;
-    public REPL(){}
 
+    private State state = State.SIGNEDOUT ;
+    ServerFacade serverFacade = ServerFacade.getInstance(8080);
+    public REPL(){}
+    RegisterClient registerClient = RegisterClient.getInstance(serverFacade);
+    GameClient gameClient = GameClient.getInstance(serverFacade);
     public void run(){
         System.out.println("Ready to play some Chess? First sign in! :)");
         System.out.print(help()) ;
         printPrompt();
         Scanner scanner = new Scanner(System.in);
         var result = "";
-//        result = scanner.next() ;
         while (!result.equals("quit")) {
             String line = scanner.next();
             try {
                 result = eval(line);
                 if(result.contains("You signed in as")) {
                     setState(State.SIGNEDIN);
+                } else if (result.contains("signed out")) {
+                    setState(State.SIGNEDOUT);
                 }
-                System.out.print(result );
+                System.out.print(result);
                 printPrompt();
             } catch (Throwable e) {
                 var msg = e.toString();

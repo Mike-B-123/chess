@@ -9,28 +9,27 @@ import java.util.Scanner;
 
 public class GameClient {
     private final ServerFacade server;
-    public String serverUrl;
     private static GameClient instance ;
     private static HelperMethods helperMethods = HelperMethods.getInstance();
 
 
-    public GameClient() {
-        server = new ServerFacade(8080);
+    public GameClient(ServerFacade inputServer) {
+        this.server = inputServer ;
     }
 
     public String listGames() throws Exception {
         try {
             System.out.println("Let's get you those games!");
-            GamesList gamesList= server.listCall(server.getAuthToken()) ;
+            GamesList gamesList = server.listCall(server.getAuthToken()) ;
             int counter = 1 ; // use game number and not game name for hashmap in server facade
             for(Game game: gamesList.games()){
                 System.out.println(counter);
                 counter++ ;
                 System.out.println("Game Name"+ game.gameName()) ;
                 System.out.println("White Player"+ game.whiteUsername()) ;
-                System.out.println("Black Player"+ game.blackUsername()) ;
-                System.out.println("Please join or observe a specific game to see its current board. What's your next move? :)") ;// This has to be the wrong way to do this?
+                System.out.println("Black Player"+ game.blackUsername()) ;// This has to be the wrong way to do this?
             }
+            System.out.println("Please join or observe a specific game to see its current board. What's your next move? :)") ;
             return String.format("What's your next 'move'? ;) ");
         } catch (Exception ex) {
             throw new Exception();
@@ -44,7 +43,7 @@ public class GameClient {
             Scanner scanner = new Scanner(System.in); // this is an input stream and can be read from, and can take in a ton of different things like files
             CreateGameName gameName = new CreateGameName(scanner.next()) ;
             server.createGameCall(gameName) ;
-            return String.format("You have created the new Game: %s .  ", gameName);
+            return String.format("You have created the new Game: %s .  ", gameName.gameName());
         } catch (Exception ex) {
             throw new Exception();
         }
@@ -80,9 +79,9 @@ public class GameClient {
             throw new Exception();
         }
     }
-    public static GameClient getInstance(){
+    public static GameClient getInstance(ServerFacade server){
         if(instance == null){
-            return instance = new GameClient() ;
+            return instance = new GameClient(server) ;
         }
         return instance ;
     }

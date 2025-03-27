@@ -3,6 +3,7 @@ package ServerFacade;
 import chess.ChessBoard;
 import com.google.gson.Gson;
 import model.*;
+import ui.GameClient;
 
 import java.io.*;
 import java.net.*;
@@ -10,10 +11,11 @@ import java.util.HashMap;
 
 public class ServerFacade {
     private final String serverURL ;
+    private static ServerFacade instance ;
     private String username ;
     private String authToken ;
-    private HashMap<Integer, Integer> gameNumList; // gameNum, gameID
-    private HashMap<Integer, Game> gameList;
+    private HashMap<Integer, Integer> gameNumList = new HashMap<>();; // gameNum, gameID
+    private HashMap<Integer, Game> gameList = new HashMap<>();;
 
     private ChessBoard currentChessBoard = new ChessBoard() ;
 
@@ -52,13 +54,14 @@ public class ServerFacade {
         username = response.username() ;
         return response ;
     }
-    public Object logoutCall(String authToken) throws Exception {
+    public Object logoutCall(String reqAuthToken) throws Exception {
         var path = "/session";
-        return this.makeRequest("DELETE", path, authToken, Object.class);
+        authToken = reqAuthToken ;
+        return this.makeRequest("DELETE", path, reqAuthToken, Object.class);
     }
     public GamesList listCall(String authToken) throws Exception {
         var path = "/game";
-        GamesList response = this.makeRequest("GET", path, authToken, GamesList.class);
+        GamesList response = this.makeRequest("GET", path, null, GamesList.class);
         int counter = 1 ;
         for(Game game: response.games()){
             gameNumList.put(counter, game.gameID()) ;
@@ -82,7 +85,7 @@ public class ServerFacade {
        try {
            URL url = (new URI(serverURL + path)).toURL(); // what does URI do?
            HttpURLConnection http = (HttpURLConnection) url.openConnection(); // allows for creation of http request (kinda a request and response object in one)
-           http.setRequestMethod(method); // adds the GET/POST/DELETE part
+           http.setRequestMethod(method);// adds the GET/POST/DELETE part
            http.setDoOutput(true); // ask what this does, but it's important for request bodies!
 
            writeBody(requestObject, http);
@@ -95,9 +98,14 @@ public class ServerFacade {
     }
 }
     private void writeBody(Object request, HttpURLConnection http) throws IOException {
+        if(authToken != null){
+            http.addRequestProperty("Authorization", authToken);
+        }
+        http.addRequestProperty("Content-Type", "application/json") ;
         if (request != null) {
-            http.addRequestProperty("Content-Type", "application/json"); // letting server know we are sending Json data in reqBody
-            String reqInfo = new Gson().toJson(request) ; // serializes
+            // letting server know we are sending Json data in reqBody
+            String reqInfo = new Gson().toJson(request) ;
+            // serializes
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqInfo.getBytes()); // puts Json data into req body
             }
@@ -129,5 +137,10 @@ public class ServerFacade {
         }
         return response;
     }
-
+    public static ServerFacade getInstance(int port){
+        if(instance == null){
+            return instance = new ServerFacade(port) ;
+        }
+        return instance ;
+    }
 }
