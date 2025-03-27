@@ -14,11 +14,13 @@ public class GameClient {
     private final ServerFacade server;
     private static GameClient instance ;
     private static HelperMethods helperMethods = HelperMethods.getInstance();
+    private static Board board ;
 
 
     public GameClient(ServerFacade inputServer) {
         this.server = inputServer ;
     }
+
 
     public String listGames() throws Exception {
         try {
@@ -63,7 +65,8 @@ public class GameClient {
             String color = scanner.next();
             JoinData joinData = new JoinData(helperMethods.colorVerificationHelp(color), gameID) ;
             server.joinGameCall(joinData) ;
-            new Board(color) ;
+            board = Board.getInstance("white");
+            board.main();
             return String.format("Congrats! You are now apart of game # %s !", gameNum);
         } catch (Exception ex) {
             throw new Exception();

@@ -2,6 +2,8 @@ package client;
 
 import ServerFacade.ServerFacade;
 import com.google.gson.Gson;
+import model.CreateGameName;
+import model.Game;
 import model.User;
 import org.junit.jupiter.api.*;
 import responses.errors.UniqueError500;
@@ -77,7 +79,7 @@ public class ServerFacadeTests {
     @Test
     public void logoutSucessTest() throws Exception {
         User user = new User("logoutuser1", "logoutword1", "email@email.com") ;
-        String authToken = new Gson().toJson(facade.registerCall(user).authToken());
+        String authToken = facade.registerCall(user).authToken();
         Assertions.assertEquals("{}", new Gson().toJson(facade.logoutCall(authToken)));
     }
     @Test
@@ -92,8 +94,11 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void listSuccessTest() {
-        Assertions.assertTrue(true);
+    public void listSuccessTest() throws Exception {
+        CreateGameName gameName = new CreateGameName("testGame") ;
+        facade.createGameCall(gameName) ;
+        String authToken = facade.registerCall(user).authToken();
+        Assertions.assertEquals("{}", new Gson().toJson(facade.logoutCall(authToken)));
     }
     @Test
     public void listFailTest() {

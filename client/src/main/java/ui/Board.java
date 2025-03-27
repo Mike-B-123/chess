@@ -14,7 +14,6 @@ import static ui.EscapeSequences.*;
 public class Board {
     // Board dimensions.
     private static ServerFacade server = new ServerFacade(8080);
-    public String serverUrl;
     private static final int BOARD_SIZE_IN_SQUARES = 8;
     private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
     private static final int[] rowHeaders = {8, 7, 6, 5, 4, 3, 2, 1};
@@ -22,6 +21,7 @@ public class Board {
     private static String[] headers = {"a", "b", "c", "d", "e", "f", "g", "h"};
     private static String teamColor = "black"; // how do I fix the static aspect?
     private static HashMap<ChessPiece.PieceType, String> pieceMap = new HashMap<>();
+    private static Board instance ;
 
     public Board(String teamColor) {
         this.teamColor = teamColor;
@@ -30,8 +30,7 @@ public class Board {
     // Padded characters.
     private static final String EMPTY = "   ";
 
-
-    public static void main(String[] args) {
+    public static void main() {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         setPieceMap();
         out.print(ERASE_SCREEN);
@@ -209,5 +208,11 @@ public class Board {
         pieceMap.put(ChessPiece.PieceType.KNIGHT, KNIGHT);
         pieceMap.put(ChessPiece.PieceType.ROOK, ROOK);
         pieceMap.put(ChessPiece.PieceType.PAWN, PAWN);
+    }
+    public static Board getInstance(String color){
+        if(instance == null){
+            return instance = new Board(color) ;
+        }
+        return instance ;
     }
 }
