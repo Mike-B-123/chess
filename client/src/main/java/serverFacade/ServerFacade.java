@@ -1,9 +1,8 @@
-package ServerFacade;
+package serverFacade;
 
 import chess.ChessBoard;
 import com.google.gson.Gson;
 import model.*;
-import ui.GameClient;
 
 import java.io.*;
 import java.net.*;

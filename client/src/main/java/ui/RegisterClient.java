@@ -1,12 +1,7 @@
 package ui;
-import ServerFacade.ServerFacade ;
-import java.io.*;
-import java.net.*;
-import java.util.ArrayList;
-import java.util.Scanner;
+import serverFacade.ServerFacade ;
 
 import model.User;
-import ui.REPL.* ;
 
 public class RegisterClient {
     private final ServerFacade server;;

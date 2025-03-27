@@ -1,10 +1,8 @@
 package ui;
 
-import ServerFacade.ServerFacade;
+import serverFacade.ServerFacade;
 import chess.ChessGame;
 import model.*;
-import com.google.gson.Gson;
-import ui.HelperMethods ;
 
 import java.util.Scanner;
 

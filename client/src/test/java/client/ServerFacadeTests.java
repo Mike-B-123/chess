@@ -1,14 +1,12 @@
 package client;
 
-import ServerFacade.ServerFacade;
+import serverFacade.ServerFacade;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.CreateGameName;
-import model.Game;
 import model.JoinData;
 import model.User;
 import org.junit.jupiter.api.*;
-import responses.errors.UniqueError500;
 import server.Server;
 
 
