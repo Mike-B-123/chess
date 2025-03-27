@@ -23,7 +23,7 @@ public class Board {
     private static String teamColor = "black"; // how do I fix the static aspect?
     private static HashMap<ChessPiece.PieceType, String> pieceMap = new HashMap<>();
 
-    public Board(String teamColor, String serverUrl) {
+    public Board(String teamColor) {
         this.teamColor = teamColor;
         server = new ServerFacade(8080);
     }

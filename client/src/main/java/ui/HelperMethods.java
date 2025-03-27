@@ -24,10 +24,10 @@ public class HelperMethods {
 
     public ChessGame.TeamColor colorVerificationHelp(String color){
         ChessGame.TeamColor teamColor = null;
-        if(color.toLowerCase() == "black"){
+        if(color.equalsIgnoreCase("black")){
             teamColor = ChessGame.TeamColor.BLACK ;
         }
-        else if (color.toLowerCase() == "white") {
+        else if (color.equalsIgnoreCase("white")) {
             teamColor = ChessGame.TeamColor.WHITE ;
         }
         return teamColor ;
