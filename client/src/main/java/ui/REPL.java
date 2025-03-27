@@ -12,7 +12,7 @@ public class REPL {
     public REPL(){}
     RegisterClient registerClient = RegisterClient.getInstance(serverFacade);
     GameClient gameClient = GameClient.getInstance(serverFacade);
-    public void run(){
+    public void run() throws Exception {
         System.out.println("Ready to play some Chess? First sign in! :)");
         System.out.print(help()) ;
         printPrompt();
@@ -30,8 +30,7 @@ public class REPL {
                 System.out.print(result);
                 printPrompt();
             } catch (Throwable e) {
-                var msg = e.toString();
-                System.out.print(msg);
+                System.out.println("An Error has occured. Restart and try again. Tip: Focus on giving the EXACT inputs. :)") ;
             }
         }
         System.out.println();

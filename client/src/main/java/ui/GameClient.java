@@ -75,13 +75,18 @@ public class GameClient {
     public String observeGame() throws Exception {
         try { // should always give White prespective
             System.out.println("Please provide the game list number for the game you want to observe?");
+            printPrompt();
             Scanner scanner = new Scanner(System.in);
-            Integer gameNum = Integer.getInteger(scanner.next()) ;
-            int gameID = server.getGameNumList().get(gameNum) ;
-            JoinData joinData = new JoinData(ChessGame.TeamColor.WHITE , gameID) ;
+            int gameNum = Integer.parseInt(scanner.next()) ;
+            int gameID = server.getGameNumList().get(gameNum) ; // will this work?
+            System.out.println("What team color do you want to observe?");
+            printPrompt();
+            scanner = new Scanner(System.in);
+            JoinData joinData = new JoinData(ChessGame.TeamColor.WHITE, gameID) ;
             server.joinGameCall(joinData) ;
-            new Board("White") ;
-            return String.format("Congrats! You are now observing game # %s !", gameNum);
+            board = Board.getInstance("white");
+            board.main();
+            return String.format("Congrats! You are now apart of game # %s !", gameNum);
         } catch (Exception ex) {
             throw new Exception();
         }
