@@ -63,7 +63,7 @@ public class GameClient {
             String color = scanner.next();
             JoinData joinData = new JoinData(helperMethods.colorVerificationHelp(color), gameID) ;
             server.joinGameCall(joinData) ;
-            board = Board.getInstance("white");
+            board = Board.getInstance(color);
             board.main();
             return String.format("Congrats! You are now apart of game # %s !", gameNum);
         } catch (Exception ex) {
@@ -78,12 +78,7 @@ public class GameClient {
             printPrompt();
             Scanner scanner = new Scanner(System.in);
             int gameNum = Integer.parseInt(scanner.next()) ;
-            int gameID = server.getGameNumList().get(gameNum) ; // will this work?
-            System.out.println("What team color do you want to observe?");
-            printPrompt();
-            scanner = new Scanner(System.in);
-            JoinData joinData = new JoinData(ChessGame.TeamColor.WHITE, gameID) ;
-            server.joinGameCall(joinData) ;
+            int gameID = server.getGameNumList().get(gameNum) ;
             board = Board.getInstance("white");
             board.main();
             return String.format("Congrats! You are now apart of game # %s !", gameNum);
