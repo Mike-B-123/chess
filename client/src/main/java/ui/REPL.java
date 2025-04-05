@@ -3,15 +3,21 @@ package ui;
 import serverfacade.ServerFacade;
 
 import java.util.Scanner;
+import websocket.NotificationHandler ;
+import websocket.messages.ServerMessage;
+
 import static ui.EscapeSequences.*;
 
-public class REPL {
+public class REPL implements NotificationHandler{
 
     private State state = State.SIGNEDOUT ;
     ServerFacade serverFacade = ServerFacade.getInstance(8080);
+
     public REPL(){}
+
     RegisterClient registerClient = RegisterClient.getInstance(serverFacade);
     GameClient gameClient = GameClient.getInstance(serverFacade);
+
     public void run() throws Exception {
         System.out.println("Ready to play some Chess? First sign in! :)");
         System.out.print(help()) ;
@@ -83,5 +89,11 @@ public String eval(String input) {
 }
     private void printPrompt() {
         System.out.print("\n" + ">>> " + SET_TEXT_COLOR_GREEN); // should I keep the RESET thing?
+    }
+
+    @Override
+    public void notify(ServerMessage serverMessage) {
+        System.out.println(SET_TEXT_COLOR_RED + serverMessage) ;
+        printPrompt();
     }
 }

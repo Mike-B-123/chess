@@ -6,7 +6,7 @@ public class WebSocketFacade {
     NotificationHandler notificationHandler;
 
     public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
-    try {
+    try { // the notification Handler handles displaying recieved message, so it deals with UI work. Dont print is WS
         url = url.replace("http", "ws");
         URI socketURI = new URI(url + "/ws");
         this.notificationHandler = notificationHandler;
