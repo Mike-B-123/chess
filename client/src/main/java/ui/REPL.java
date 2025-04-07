@@ -3,12 +3,12 @@ package ui;
 import serverfacade.ServerFacade;
 
 import java.util.Scanner;
-import websocket.NotificationHandler ;
+import websocket.ServerMessageObserver;
 import websocket.messages.ServerMessage;
 
 import static ui.EscapeSequences.*;
 
-public class REPL implements NotificationHandler{
+public class REPL implements ServerMessageObserver {
 
     private State state = State.SIGNEDOUT ;
     ServerFacade serverFacade = ServerFacade.getInstance(8080);
