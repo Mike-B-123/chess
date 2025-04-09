@@ -1,10 +1,14 @@
 package server.websocket;
 
+import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.* ;
+import model.Game;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage ;
 import websocket.commands.UserGameCommand;
@@ -19,8 +23,14 @@ public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
     private GameDAO gameDAO ;
-    public WebSocketHandler(GameDAO inputGameDAO) {
+    private UserDAO userDAO ;
+    private String whiteUserName ;
+    private String blackUserName ;
+    private String currentUserName ;
+    HelperMethods helperMethods = HelperMethods.getInstance();
+    public WebSocketHandler(GameDAO inputGameDAO, UserDAO inputUserDAO) {
         this.gameDAO = inputGameDAO ;
+        this.userDAO = inputUserDAO ;
     }
 
     @OnWebSocketMessage
@@ -36,16 +46,37 @@ public class WebSocketHandler {
 
     private void connect(UserGameCommand command, Session session) throws Exception {
         connections.addAuthMap(command.getAuthToken(), session, command.getGameID());
-        var message = "A new user has connected to the game!" ; // Should I be sending a message along with the notification?
+        var message = "A new user has connected to the game!" ;
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        notification.setMessage(message);// can i change the server message class?
-        connections.broadcast(command, notification);
+        // can i change the server message class?
+        connections.broadcastMultiple(command, notification);
+        message = "You are now connected!" ; // how should I be putting this in the child class?
+        notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        connections.broadcastIndividual(command, notification);
+        // can i change the server message class?
     }
-    private void makeMove(UserGameCommand command) throws Exception {
-        var message = "The other player has made a move! Your turn!";
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        notification.setMessage(message);
-        connections.broadcast(command, notification);
+    // should we not be throwing excveptions? but instead Erros?
+    private void makeMove(UserGameCommand command, MakeMoveCommand moveCommand) throws Exception {
+        ChessGame game = gameDAO.getGame(command.getGameID()).game() ;
+        ChessMove move = moveCommand.getMove() ;
+        if(game.validMoves(move.getStartPosition()).contains(move)) {
+            if()
+                game.makeMove(move); // will this actually update the database?
+                var message = "The other player has made a move!";
+                var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+                notification.setMessage(message);
+                connections.broadcastMultiple(command, notification);
+                message = "nice move!";
+                notification.setMessage(message);
+                connections.broadcastIndividual(command, notification);
+            }
+        // ask about checkmate and so on
+        else{
+            var message = "That is an invalid move. Try again!";
+            var notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            notification.setMessage(message);
+            connections.broadcastIndividual(command, notification);
+        }
     }
     private void leave(UserGameCommand command) throws Exception {
         connections.removeAuthMap(command.getAuthToken());
@@ -75,5 +106,5 @@ public class WebSocketHandler {
         }
     }
 }
-// needs a check for if the perosn is a player or observer
+// needs a check for if the perosn is a player or observer (use GameDAO to do this)
 // Notification should be a server message

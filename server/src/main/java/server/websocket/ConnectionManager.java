@@ -14,22 +14,15 @@ public class ConnectionManager {
     public void removeAuthMap(String inputAuth){
         authMap.remove(inputAuth) ;
     }
-//    public void addGameMap(Integer gameID, String authToken) throws Exception{
-//        gameMap.put(gameID,  authToken) ;
-//    }
-//    public void removeGameMap(Integer gameID){
-//        gameMap.remove(gameID) ;
-//    }
 
-    public void broadcast(UserGameCommand command, ServerMessage message) throws Exception {
+    public void broadcastMultiple(UserGameCommand command, ServerMessage message) throws Exception {
         var removeList = new ArrayList<Connection>();
         for (var con : authMap.values()) {
             if (con.session.isOpen()) {
                 if (!con.authToken.equals(command.getAuthToken()) && con.gameID == command.getGameID()) {
                     con.send(message.toString());
                 }
-            }
-            else {
+            } else {
                 removeList.add(con);
             }
         }
@@ -37,6 +30,17 @@ public class ConnectionManager {
         // Clean up any connections that were left open.
         for (var c : removeList) {
             authMap.remove(c.authToken);
+        }
+    }
+        public void broadcastIndividual(UserGameCommand command, ServerMessage message) throws Exception {
+            // do I need a remove list for this one?
+            for (var con : authMap.values()) {
+                if (con.session.isOpen()) {
+                    if (con.authToken.equals(command.getAuthToken())) {
+                        con.send(message.toString());
+                    }
+                }
+            }
         }
 
     // broadcast let's everyone know if someone has joined the petShop, properly not needed except maybe joining a game
