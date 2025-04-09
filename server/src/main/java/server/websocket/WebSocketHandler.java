@@ -20,23 +20,24 @@ public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException {
+    public void onMessage(Session session, String message) throws Exception {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
-            case CONNECT -> connect(command.getAuthToken(), session);
-            case MAKE_MOVE -> ;
-            case LEAVE ->  ;
-            case RESIGN -> ;
+            case CONNECT -> connect(command, session);
+            case MAKE_MOVE -> makeMove(command.getAuthToken());
+            case LEAVE ->  leave(command.getAuthToken());
+            case RESIGN -> resign(command.getAuthToken());
         }
     }
 
-    private void connect(String visitorName, Session session) throws IOException {
-        connections.add(visitorName, session);
-        var message = String.format("%s is in the shop", visitorName);
-        var notification = new Notification(Notification.Type.ARRIVAL, message);
-        connections.broadcast(visitorName, notification);
+    private void connect(UserGameCommand command, Session session) throws Exception {
+        connections.addAuthMap(command.getAuthToken(), session, command.getGameID());
+        var message = String.format("A new user has connected to the game!"); // Should I be sending a message along with the notification?
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        notification.setMessage(message);// can i change the server message class?
+        connections.broadcast(command, notification);
     }
-
+// make
     private void makeMove(String visitorName) throws IOException {
         connections.remove(visitorName);
         var message = String.format("%s left the shop", visitorName);
@@ -66,3 +67,5 @@ public class WebSocketHandler {
         }
     }
 }
+// needs a check for if the perosn is a player or observer
+// Notification should be a server message

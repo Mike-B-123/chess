@@ -93,6 +93,7 @@ public String eval(String input) {
 
     @Override
     public void notify(ServerMessage serverMessage) {
+        // check for which message it is "load game" "error" "ect."
         System.out.println(SET_TEXT_COLOR_RED + serverMessage) ;
         printPrompt();
     }
