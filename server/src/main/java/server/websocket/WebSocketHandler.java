@@ -53,14 +53,18 @@ public class WebSocketHandler {
         message = "You are now connected!" ; // how should I be putting this in the child class?
         notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         connections.broadcastIndividual(command, notification);
-        // can i change the server message class?
     }
-    // should we not be throwing excveptions? but instead Erros?
     private void makeMove(UserGameCommand command, MakeMoveCommand moveCommand) throws Exception {
         ChessGame game = gameDAO.getGame(command.getGameID()).game() ;
         ChessMove move = moveCommand.getMove() ;
+        String checking = helperMethods.mateCheck(game, move, game.getTeamTurn())
         if(game.validMoves(move.getStartPosition()).contains(move)) {
-            if()
+            if(!checking.contains("False")){
+                var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                notification.setMessage(checking);
+                connections.broadcastMultiple(command, notification);
+                connections.broadcastIndividual(command, notification);
+            }
                 game.makeMove(move); // will this actually update the database?
                 var message = "The other player has made a move!";
                 var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
@@ -106,5 +110,9 @@ public class WebSocketHandler {
         }
     }
 }
+//Questions:
+// 1. How do I set and access the child command and server message class?
+// 2. should we not be throwing excveptions? but instead Errors?
+//3. Am I properly updating the game?
 // needs a check for if the perosn is a player or observer (use GameDAO to do this)
 // Notification should be a server message
