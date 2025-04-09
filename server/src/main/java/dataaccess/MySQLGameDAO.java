@@ -84,6 +84,16 @@ public class MySQLGameDAO implements GameDAO{
             throw new DataAccessException(ex.getMessage()) ;
         }
     }
+    public void updateGame(Game game, Integer gameID) throws DataAccessException {
+        try{
+            var statement = "UPDATE gameInfo SET chessGame= ? WHERE gameID = ?" ;
+            executeUpdateReturn(statement, gameID) ;
+        }
+        catch (Exception ex){
+            throw new DataAccessException(ex.getMessage()) ;
+        }
+    }
+    // this is new so make sure this works!!
     public Boolean availableGame(ChessGame.TeamColor color, Integer gameID) throws Taken403, DataAccessException {
         if (color == ChessGame.TeamColor.BLACK) {
             if (getGame(gameID).blackUsername() != null) {

@@ -10,6 +10,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage ;
 import websocket.commands.UserGameCommand;
 
@@ -23,22 +24,26 @@ public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
     private GameDAO gameDAO ;
-    private UserDAO userDAO ;
+    private AuthDAO authDAO ;
     private String whiteUserName ;
     private String blackUserName ;
     private String currentUserName ;
     HelperMethods helperMethods = HelperMethods.getInstance();
     public WebSocketHandler(GameDAO inputGameDAO, UserDAO inputUserDAO) {
         this.gameDAO = inputGameDAO ;
-        this.userDAO = inputUserDAO ;
+        this.authDAO = inputUserDAO ;
     }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+
+        blackUserName = gameDAO.getGame(command.getGameID()).blackUsername() ;
+        whiteUserName = gameDAO.getGame(command.getGameID()).whiteUsername() ;
+        currentUserName = auth
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
-            case MAKE_MOVE -> makeMove(command);
+            case MAKE_MOVE -> makeMove(message);
             case LEAVE ->  leave(command);
             case RESIGN -> resign(command);
         }
@@ -47,14 +52,14 @@ public class WebSocketHandler {
     private void connect(UserGameCommand command, Session session) throws Exception {
         connections.addAuthMap(command.getAuthToken(), session, command.getGameID());
         var message = "A new user has connected to the game!" ;
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        // can i change the server message class?
+        var notification = new NotificationMessage(message);
         connections.broadcastMultiple(command, notification);
-        message = "You are now connected!" ; // how should I be putting this in the child class?
+        message = "You are now connected!" ;
         notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         connections.broadcastIndividual(command, notification);
     }
-    private void makeMove(UserGameCommand command, MakeMoveCommand moveCommand) throws Exception {
+    private void makeMove(UserGameCommand command) throws Exception {
+
         ChessGame game = gameDAO.getGame(command.getGameID()).game() ;
         ChessMove move = moveCommand.getMove() ;
         String checking = helperMethods.mateCheck(game, move, game.getTeamTurn())
@@ -65,7 +70,8 @@ public class WebSocketHandler {
                 connections.broadcastMultiple(command, notification);
                 connections.broadcastIndividual(command, notification);
             }
-                game.makeMove(move); // will this actually update the database?
+                game.makeMove(move);
+            // will this actually update the database? No, I need to make a method in the game dao that replaces it.
                 var message = "The other player has made a move!";
                 var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
                 notification.setMessage(message);
@@ -74,7 +80,6 @@ public class WebSocketHandler {
                 notification.setMessage(message);
                 connections.broadcastIndividual(command, notification);
             }
-        // ask about checkmate and so on
         else{
             var message = "That is an invalid move. Try again!";
             var notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
@@ -111,8 +116,7 @@ public class WebSocketHandler {
     }
 }
 //Questions:
-// 1. How do I set and access the child command and server message class?
-// 2. should we not be throwing excveptions? but instead Errors?
+// 2. should we not be throwing excveptions? but instead Errors? (do a try catch exception, but instead it return ERROR)
 //3. Am I properly updating the game?
 // needs a check for if the perosn is a player or observer (use GameDAO to do this)
 // Notification should be a server message
