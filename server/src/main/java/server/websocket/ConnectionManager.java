@@ -43,3 +43,4 @@ public class ConnectionManager {
     // change broadcast to broadcast to everyone in one game
 // talk to TA about who we should be broadcasting to and if the joining of players should be broadcasted from here
 } // client is the one that checsk for the observer
+// make sure there is a multiple broad and an individual broadncast

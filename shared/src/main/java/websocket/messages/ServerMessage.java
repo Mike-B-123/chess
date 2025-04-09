@@ -26,13 +26,6 @@ public class ServerMessage {
         return this.serverMessageType;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     @Override
     public boolean equals(Object o) {

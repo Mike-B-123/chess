@@ -18,13 +18,17 @@ import java.util.Timer;
 public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
+    private GameDAO gameDAO ;
+    public WebSocketHandler(GameDAO inputGameDAO) {
+        this.gameDAO = inputGameDAO ;
+    }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
-            case MAKE_MOVE -> makeMove(command.getAuthToken());
+            case MAKE_MOVE -> makeMove(command);
             case LEAVE ->  leave(command);
             case RESIGN -> resign(command);
         }
@@ -37,10 +41,11 @@ public class WebSocketHandler {
         notification.setMessage(message);// can i change the server message class?
         connections.broadcast(command, notification);
     }
-    private void makeMove(String visitorName) throws IOException {
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new Notification(Notification.Type.DEPARTURE, message);
-        connections.broadcast(visitorName, notification);
+    private void makeMove(UserGameCommand command) throws Exception {
+        var message = "The other player has made a move! Your turn!";
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        notification.setMessage(message);
+        connections.broadcast(command, notification);
     }
     private void leave(UserGameCommand command) throws Exception {
         connections.removeAuthMap(command.getAuthToken());
@@ -51,11 +56,19 @@ public class WebSocketHandler {
     }
     private void resign(UserGameCommand command) throws Exception {
         try {
-            connections.removeAuthMap(command.getAuthToken());
-            var message = "The other player has resigned! You won!! :)" ;
-            var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            notification.setMessage(message);
-            connections.broadcast(command, notification);
+            if() {
+                connections.removeAuthMap(command.getAuthToken());
+                var message = "The other player has resigned! You won!! :)";
+                var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                notification.setMessage(message);
+                connections.broadcast(command, notification);
+            }
+            else{
+                var message = "There has been an error please try again";
+                var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                notification.setMessage(message);
+                connections.au
+            }
         }
         catch (Exception ex) {
             throw new Exception(ex.getMessage());
