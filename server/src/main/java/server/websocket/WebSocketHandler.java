@@ -25,45 +25,40 @@ public class WebSocketHandler {
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
             case MAKE_MOVE -> makeMove(command.getAuthToken());
-            case LEAVE ->  leave(command.getAuthToken());
-            case RESIGN -> resign(command.getAuthToken());
+            case LEAVE ->  leave(command);
+            case RESIGN -> resign(command);
         }
     }
 
     private void connect(UserGameCommand command, Session session) throws Exception {
         connections.addAuthMap(command.getAuthToken(), session, command.getGameID());
-        var message = String.format("A new user has connected to the game!"); // Should I be sending a message along with the notification?
+        var message = "A new user has connected to the game!" ; // Should I be sending a message along with the notification?
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         notification.setMessage(message);// can i change the server message class?
         connections.broadcast(command, notification);
     }
-// make
     private void makeMove(String visitorName) throws IOException {
-        connections.remove(visitorName);
         var message = String.format("%s left the shop", visitorName);
         var notification = new Notification(Notification.Type.DEPARTURE, message);
         connections.broadcast(visitorName, notification);
     }
-    private void leave(String visitorName) throws IOException {
-        connections.remove(visitorName);
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new Notification(Notification.Type.DEPARTURE, message);
-        connections.broadcast(visitorName, notification);
+    private void leave(UserGameCommand command) throws Exception {
+        connections.removeAuthMap(command.getAuthToken());
+        var message = "A user has left the Game :(" ;
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        notification.setMessage(message);
+        connections.broadcast(command, notification);
     }
-    private void resign(String visitorName) throws IOException {
-        connections.remove(visitorName);
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new Notification(Notification.Type.DEPARTURE, message);
-        connections.broadcast(visitorName, notification);
-    }
-
-    public void makeNoise(String petName, String sound) throws Exception {
+    private void resign(UserGameCommand command) throws Exception {
         try {
-            var message = String.format("%s says %s", petName, sound);
-            var notification = new Notification(Notification.Type.NOISE, message);
-            connections.broadcast("", notification);
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
+            connections.removeAuthMap(command.getAuthToken());
+            var message = "The other player has resigned! You won!! :)" ;
+            var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            notification.setMessage(message);
+            connections.broadcast(command, notification);
+        }
+        catch (Exception ex) {
+            throw new Exception(ex.getMessage());
         }
     }
 }
