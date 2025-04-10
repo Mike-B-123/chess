@@ -87,7 +87,7 @@ public class MySQLGameDAO implements GameDAO{
     public void updateGame(ChessGame game, Integer gameID) throws DataAccessException {
         try{
             var statement = "UPDATE gameInfo SET chessGame= ? WHERE gameID = ?" ;
-            executeUpdateReturn(statement, gameID) ;
+            executeUpdateReturn(statement, game, gameID) ;
         }
         catch (Exception ex){
             throw new DataAccessException(ex.getMessage()) ;

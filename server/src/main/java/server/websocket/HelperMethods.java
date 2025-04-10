@@ -9,6 +9,7 @@ import dataaccess.GameDAO;
 import model.Game;
 import model.GameID;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 
@@ -44,6 +45,10 @@ public class HelperMethods {
             return true ;
         }
         return false ;
+    }
+
+    public String makeMoveErrors(GameDAO gameDAO, AuthDAO authDAO, MakeMoveCommand command, Session session){
+            return "placeholder" ;
     }
     public static HelperMethods getInstance(){
         if(instance == null){

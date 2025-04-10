@@ -81,8 +81,9 @@ public class WebSocketHandler {
     private void makeMove(String message) throws Exception {
         MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
         try {
-            if(!Objects.equals(currentUserName, whiteUserName) || !Objects.equals(currentUserName, blackUserName)){
+            if(!Objects.equals(currentUserName, whiteUserName) && !Objects.equals(currentUserName, blackUserName)){
                 connections.broadcastIndividual(command, new ErrorMessage("You're an observer and can not make a move."));
+                return ;
             }
             ChessGame game = gameDAO.getGame(command.getGameID()).game();
             ChessMove move = command.getMove();
