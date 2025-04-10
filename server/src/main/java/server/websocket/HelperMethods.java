@@ -2,7 +2,15 @@ package server.websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import com.google.gson.Gson;
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import model.Game;
+import model.GameID;
+import org.eclipse.jetty.websocket.api.Session;
+import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
 
 public class HelperMethods {
     private static HelperMethods instance ;
@@ -23,6 +31,19 @@ public class HelperMethods {
             return String.format("%s is in Check!", teamColor);
         }
         return "False" ;
+    }
+    public Boolean falseInfo(GameDAO gameDAO, AuthDAO authDAO, UserGameCommand command, Session session) throws Exception {
+        if(gameDAO.getGame(command.getGameID()) == null){
+            Connection con = new Connection(command.getAuthToken(), session, command.getGameID());
+            con.send(new Gson().toJson(new ErrorMessage("This game does not exist!")));
+            return true ;
+        }
+        if(authDAO.verifyAuth(command.getAuthToken())== null){
+            Connection con = new Connection(command.getAuthToken(), session, command.getGameID());
+            con.send(new Gson().toJson(new ErrorMessage("This user id not authorized!")));
+            return true ;
+        }
+        return false ;
     }
     public static HelperMethods getInstance(){
         if(instance == null){

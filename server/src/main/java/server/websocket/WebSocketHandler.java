@@ -41,6 +41,9 @@ public class WebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+       if(helperMethods.falseInfo(gameDAO,authDAO,command,session)){
+           return ;
+       }
         blackUserName = gameDAO.getGame(command.getGameID()).blackUsername() ;
         whiteUserName = gameDAO.getGame(command.getGameID()).whiteUsername() ;
         currentUserName = authDAO.getUsernameFromAuth(command.getAuthToken());
