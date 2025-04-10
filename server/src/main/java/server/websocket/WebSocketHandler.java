@@ -62,6 +62,9 @@ public class WebSocketHandler {
     private void connect(UserGameCommand command, Session session) throws Exception {
         try {
             connections.addAuthMap(command.getAuthToken(), session, command.getGameID());
+            if(gameDAO.getGame(command.getGameID()) == null){
+                connections.broadcastIndividual(command, new ErrorMessage("This game does not exist!"));
+            }
             ChessGame game = gameDAO.getGame(command.getGameID()).game();
             var message = "A new user has connected to the game!";
             var noteNotification = new NotificationMessage(message);
@@ -137,7 +140,8 @@ public class WebSocketHandler {
     }
 }
 //Questions:
-// 1. if it's an observer do I need to update the game?
+// 1. How do I format my server message better
+//2. should I have @OnWebSocketError that is connected when an error occurs, but how do I apply unique messages?
 // 2. How do I "end" a game and make it where no one can move?
 
 

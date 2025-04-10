@@ -1,9 +1,12 @@
 package server.websocket;
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
@@ -19,8 +22,8 @@ public class ConnectionManager {
         var removeList = new ArrayList<Connection>();
         for (var con : authMap.values()) {
             if (con.session.isOpen()) {
-                if (!con.authToken.equals(command.getAuthToken()) && con.gameID == command.getGameID()) {
-                    con.send(message.toString());
+                if (!con.authToken.equals(command.getAuthToken()) && Objects.equals(con.gameID, command.getGameID())) {
+                    con.send(new Gson().toJson(message));
                 }
             } else {
                 removeList.add(con);
@@ -37,7 +40,7 @@ public class ConnectionManager {
             for (var con : authMap.values()) {
                 if (con.session.isOpen()) {
                     if (con.authToken.equals(command.getAuthToken())) {
-                        con.send(message.toString());
+                        con.send(new Gson().toJson(message));
                     }
                 }
             }
