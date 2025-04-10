@@ -11,11 +11,13 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage ;
 import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Timer;
 
 
@@ -29,6 +31,7 @@ public class WebSocketHandler {
     private String whiteUserName ;
     private String blackUserName ;
     private String currentUserName ;
+    private String enemy ;
     HelperMethods helperMethods = HelperMethods.getInstance();
     public WebSocketHandler(GameDAO inputGameDAO, AuthDAO inputAuthDAO) {
         this.gameDAO = inputGameDAO ;
@@ -42,6 +45,12 @@ public class WebSocketHandler {
         blackUserName = gameDAO.getGame(command.getGameID()).blackUsername() ;
         whiteUserName = gameDAO.getGame(command.getGameID()).whiteUsername() ;
         currentUserName = authDAO.getUsernameFromAuth(command.getAuthToken());
+        if(currentUserName == whiteUserName){
+            enemy = blackUserName ;
+        }
+        else {
+            enemy = whiteUserName ;
+        }
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
             case MAKE_MOVE -> makeMove(message);
@@ -51,17 +60,26 @@ public class WebSocketHandler {
     }
 
     private void connect(UserGameCommand command, Session session) throws Exception {
-        connections.addAuthMap(command.getAuthToken(), session, command.getGameID());
-        var message = "A new user has connected to the game!" ;
-        var notification = new NotificationMessage(message);
-        connections.broadcastMultiple(command, notification);
-        message = "You are now connected!" ;
-        notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        connections.broadcastIndividual(command, notification);
+        try {
+            connections.addAuthMap(command.getAuthToken(), session, command.getGameID());
+            ChessGame game = gameDAO.getGame(command.getGameID()).game();
+            var message = "A new user has connected to the game!";
+            var noteNotification = new NotificationMessage(message);
+            connections.broadcastMultiple(command, noteNotification);
+            var loadNotification = new LoadGameMessage(game);
+            connections.broadcastIndividual(command, loadNotification);
+        }
+        catch (Exception ex){
+            var error = new ErrorMessage("An error occured while connecting. Try a new input.") ;
+            connections.broadcastIndividual(command, error);
+        }
     }
     private void makeMove(String message) throws Exception {
         MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
         try {
+            if(!Objects.equals(currentUserName, whiteUserName) || !Objects.equals(currentUserName, blackUserName)){
+                connections.broadcastIndividual(command, new ErrorMessage("You're an observer and can not make a move."));
+            }
             ChessGame game = gameDAO.getGame(command.getGameID()).game();
             ChessMove move = command.getMove();
             String checking = helperMethods.mateCheck(game, move, game.getTeamTurn());
@@ -88,11 +106,11 @@ public class WebSocketHandler {
     }
     private void leave(UserGameCommand command) throws Exception {
         try {
-            String enemy = "placeholder";
             connections.removeAuthMap(command.getAuthToken());
-            var notification = new NotificationMessage(String.format(" %s has left the Game :( %s wins!", currentUserName, enemy));
+            var notification = new NotificationMessage(String.format(" %s has left the Game :( wait for a new player!", currentUserName));
             connections.broadcastMultiple(command, notification);
-            connections.broadcastIndividual(command, notification);
+            // probably gonna need to create a DAO method that allows me to update the players to null
+            connections.broadcastIndividual(command, new NotificationMessage("You have successfully left the game!"));
         }
         catch (Exception ex){
             var notification = new ErrorMessage("You are unable to leave the game. Try again!") ;
@@ -102,18 +120,15 @@ public class WebSocketHandler {
     }
     private void resign(UserGameCommand command) throws Exception {
         try {
-            if() {
+            if(Objects.equals(currentUserName, blackUserName) || Objects.equals(currentUserName, whiteUserName)) {
                 connections.removeAuthMap(command.getAuthToken());
-                var message = "The other player has resigned! You won!! :)";
-                var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                notification.setMessage(message);
-                connections.broadcast(command, notification);
+                var notification = new NotificationMessage(String.format(" %s has resigned! %s won!! :)", currentUserName, enemy));
+                connections.broadcastMultiple(command, notification);
+                connections.broadcastIndividual(command, notification);
             }
             else{
-                var message = "There has been an error please try again";
-                var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                notification.setMessage(message);
-                connections.au
+                var notification = new ErrorMessage("You are an Observer and can not resign. Please leave instead.") ;
+                connections.broadcastIndividual(command, notification);
             }
         }
         catch (Exception ex) {
@@ -123,6 +138,7 @@ public class WebSocketHandler {
 }
 //Questions:
 // 1. if it's an observer do I need to update the game?
+// 2. How do I "end" a game and make it where no one can move?
 
 
 // 2. should we not be throwing excveptions? but instead Errors? (do a try catch exception, but instead it return ERROR)

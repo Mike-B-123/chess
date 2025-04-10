@@ -1,5 +1,6 @@
 package websocket;
 import com.google.gson.Gson;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
@@ -7,7 +8,6 @@ import java.io.IOException;
 import java.net.URI;
 
 public class WebSocketFacade {
-
     Session session;
     ServerMessageObserver notificationHandler;
 
@@ -47,13 +47,13 @@ public void enterPetShop(String visitorName) throws Exception {
     }
 }
 
-public void leavePetShop(String visitorName) throws ResponseException {
+public void leavePetShop(String visitorName) throws Exception {
     try {
-        var action = new Action(Action.Type.EXIT, visitorName);
+        var action = new UserGameCommand(UserGameCommand.CommandType.RESIGN, visitorName);
         this.session.getBasicRemote().sendText(new Gson().toJson(action));
         this.session.close();
-    } catch (IOException ex) {
-        throw new ResponseException(500, ex.getMessage());
+    } catch (Exception ex) {
+        throw new Exception(ex.getMessage()) ;
     }
 }
 

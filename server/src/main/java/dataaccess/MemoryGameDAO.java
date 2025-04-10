@@ -34,10 +34,17 @@ public class MemoryGameDAO implements GameDAO{
             gameDatas.put(gameID, gameDatas.get(gameID).setBlack(username)) ;
         }
         else{
-            gameDatas.put(gameID, gameDatas.get(gameID).setWhite(username)) ;
+            gameDatas.put(gameID, gameDatas.get(gameID)) ;
             {
             }
         }
+    }
+    public void updateGame(ChessGame game, Integer gameID) throws DataAccessException {
+        String white = gameDatas.get(gameID).whiteUsername() ;
+        String black = gameDatas.get(gameID).blackUsername() ;
+        String gameName = gameDatas.get(gameID).gameName() ;
+        Game newGame = new Game(gameID,white, black, gameName, game) ;
+        gameDatas.put(gameID, newGame) ;
     }
     public Boolean availableGame(ChessGame.TeamColor color, Integer gameID) throws Taken403 {
         if (color == ChessGame.TeamColor.BLACK) {
