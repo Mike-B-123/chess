@@ -10,6 +10,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage ;
 import websocket.commands.UserGameCommand;
@@ -29,9 +30,9 @@ public class WebSocketHandler {
     private String blackUserName ;
     private String currentUserName ;
     HelperMethods helperMethods = HelperMethods.getInstance();
-    public WebSocketHandler(GameDAO inputGameDAO, UserDAO inputUserDAO) {
+    public WebSocketHandler(GameDAO inputGameDAO, AuthDAO inputAuthDAO) {
         this.gameDAO = inputGameDAO ;
-        this.authDAO = inputUserDAO ;
+        this.authDAO = inputAuthDAO ;
     }
 
     @OnWebSocketMessage
@@ -40,7 +41,7 @@ public class WebSocketHandler {
 
         blackUserName = gameDAO.getGame(command.getGameID()).blackUsername() ;
         whiteUserName = gameDAO.getGame(command.getGameID()).whiteUsername() ;
-        currentUserName = auth
+        currentUserName = authDAO.getUsernameFromAuth(command.getAuthToken());
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
             case MAKE_MOVE -> makeMove(message);
@@ -58,41 +59,46 @@ public class WebSocketHandler {
         notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         connections.broadcastIndividual(command, notification);
     }
-    private void makeMove(UserGameCommand command) throws Exception {
-
-        ChessGame game = gameDAO.getGame(command.getGameID()).game() ;
-        ChessMove move = moveCommand.getMove() ;
-        String checking = helperMethods.mateCheck(game, move, game.getTeamTurn())
-        if(game.validMoves(move.getStartPosition()).contains(move)) {
-            if(!checking.contains("False")){
-                var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                notification.setMessage(checking);
-                connections.broadcastMultiple(command, notification);
-                connections.broadcastIndividual(command, notification);
-            }
+    private void makeMove(String message) throws Exception {
+        MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
+        try {
+            ChessGame game = gameDAO.getGame(command.getGameID()).game();
+            ChessMove move = command.getMove();
+            String checking = helperMethods.mateCheck(game, move, game.getTeamTurn());
+            if (game.validMoves(move.getStartPosition()).contains(move)) {
+                if (!checking.contains("False")) {
+                    var notification = new NotificationMessage(checking);
+                    connections.broadcastMultiple(command, notification);
+                    connections.broadcastIndividual(command, notification);
+                }
                 game.makeMove(move);
-            // will this actually update the database? No, I need to make a method in the game dao that replaces it.
-                var message = "The other player has made a move!";
-                var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-                notification.setMessage(message);
+                gameDAO.updateGame(game, command.getGameID());
+                var notification = new NotificationMessage("The other player has made a move!");
                 connections.broadcastMultiple(command, notification);
-                message = "nice move!";
-                notification.setMessage(message);
+                notification.setNotificationMessage("Nice Move!");
+                connections.broadcastIndividual(command, notification);
+            } else {
+                var notification = new ErrorMessage("That is an invalid move. Try again!");
                 connections.broadcastIndividual(command, notification);
             }
-        else{
-            var message = "That is an invalid move. Try again!";
-            var notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-            notification.setMessage(message);
+        } catch (Exception ex) {
+            var notification = new ErrorMessage("An error occured when attempting the move. Try again!");
             connections.broadcastIndividual(command, notification);
         }
     }
     private void leave(UserGameCommand command) throws Exception {
-        connections.removeAuthMap(command.getAuthToken());
-        var message = "A user has left the Game :(" ;
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        notification.setMessage(message);
-        connections.broadcast(command, notification);
+        try {
+            String enemy = "placeholder";
+            connections.removeAuthMap(command.getAuthToken());
+            var notification = new NotificationMessage(String.format(" %s has left the Game :( %s wins!", currentUserName, enemy));
+            connections.broadcastMultiple(command, notification);
+            connections.broadcastIndividual(command, notification);
+        }
+        catch (Exception ex){
+            var notification = new ErrorMessage("You are unable to leave the game. Try again!") ;
+            connections.broadcastIndividual(command, notification);
+        }
+        // if it's an observer do I need to update the game?
     }
     private void resign(UserGameCommand command) throws Exception {
         try {
@@ -116,7 +122,9 @@ public class WebSocketHandler {
     }
 }
 //Questions:
+// 1. if it's an observer do I need to update the game?
+
+
 // 2. should we not be throwing excveptions? but instead Errors? (do a try catch exception, but instead it return ERROR)
-//3. Am I properly updating the game?
 // needs a check for if the perosn is a player or observer (use GameDAO to do this)
 // Notification should be a server message

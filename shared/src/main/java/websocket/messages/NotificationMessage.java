@@ -9,4 +9,7 @@ public class NotificationMessage extends ServerMessage{
     public String getNotificationMessage() {
         return notificationMessage;
     }
+    public void setNotificationMessage(String inputMessage){
+        this.notificationMessage = inputMessage ;
+    }
 }
