@@ -1,6 +1,7 @@
 package websocket;
 import chess.ChessMove;
 import com.google.gson.Gson;
+import ui.Board;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
@@ -26,6 +27,9 @@ public class WebSocketFacade {
             @Override
             public void onMessage(String message) {
                 ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+                if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
+                    Board.main();
+                }
                 notificationHandler.notify(serverMessage);
             }
         });
@@ -33,6 +37,7 @@ public class WebSocketFacade {
         throw new Exception(ex.getMessage());
     }
 }
+
 
 //Endpoint requires this method, but you don't have to do anything
 @Override // should I get rid of this?

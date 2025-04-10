@@ -41,11 +41,10 @@ public class WebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
-
         blackUserName = gameDAO.getGame(command.getGameID()).blackUsername() ;
         whiteUserName = gameDAO.getGame(command.getGameID()).whiteUsername() ;
         currentUserName = authDAO.getUsernameFromAuth(command.getAuthToken());
-        if(currentUserName == whiteUserName){
+        if(Objects.equals(currentUserName, whiteUserName)){
             enemy = blackUserName ;
         }
         else {
@@ -66,8 +65,7 @@ public class WebSocketHandler {
                 connections.broadcastIndividual(command, new ErrorMessage("This game does not exist!"));
             }
             ChessGame game = gameDAO.getGame(command.getGameID()).game();
-            var message = "A new user has connected to the game!";
-            var noteNotification = new NotificationMessage(message);
+            var noteNotification = new NotificationMessage("A new user has connected to the game!");
             connections.broadcastMultiple(command, noteNotification);
             var loadNotification = new LoadGameMessage(game);
             connections.broadcastIndividual(command, loadNotification);

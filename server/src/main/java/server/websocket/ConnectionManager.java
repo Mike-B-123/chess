@@ -25,15 +25,15 @@ public class ConnectionManager {
                 if (!con.authToken.equals(command.getAuthToken()) && Objects.equals(con.gameID, command.getGameID())) {
                     con.send(new Gson().toJson(message));
                 }
-            } else {
-                removeList.add(con);
+//            } else {
+//                removeList.add(con);
             }
         }
 
         // Clean up any connections that were left open.
-        for (var c : removeList) {
-            authMap.remove(c.authToken);
-        }
+//        for (var c : removeList) {
+//            authMap.remove(c.authToken);
+//        }
     }
         public void broadcastIndividual(UserGameCommand command, ServerMessage message) throws Exception {
             // do I need a remove list for this one?
