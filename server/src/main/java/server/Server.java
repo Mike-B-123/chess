@@ -1,16 +1,27 @@
 package server;
 
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
+import server.websocket.WebSocketHandler;
 import services.Handler;
 import spark.*;
 
 public class Server {
-
+    WebSocketHandler wsh ;
+    public Server() {
+        try {
+            GameDAO gd = MySQLGameDAO.getInstance() ;
+            AuthDAO ad = MySQLAuthDAO.getInstance() ;
+            this.wsh = new WebSocketHandler(gd, ad);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public int run(int desiredPort) {
         Handler handle  = new Handler();
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+        Spark.webSocket("/ws", wsh);
 
         // Register your endpoints and handle exceptions here.
 
