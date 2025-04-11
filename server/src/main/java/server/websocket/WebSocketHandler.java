@@ -32,6 +32,8 @@ public class WebSocketHandler {
     private String blackUserName ;
     private String currentUserName ;
     private String enemy ;
+    private ChessGame.TeamColor color ;
+    private Boolean gameOver = Boolean.FALSE ;
     HelperMethods helperMethods = HelperMethods.getInstance();
     public WebSocketHandler(GameDAO inputGameDAO, AuthDAO inputAuthDAO) {
         this.gameDAO = inputGameDAO ;
@@ -49,9 +51,11 @@ public class WebSocketHandler {
         currentUserName = authDAO.getUsernameFromAuth(command.getAuthToken());
         if(Objects.equals(currentUserName, whiteUserName)){
             enemy = blackUserName ;
+            color = ChessGame.TeamColor.WHITE ;
         }
-        else {
+        else if(Objects.equals(currentUserName, blackUserName)){
             enemy = whiteUserName ;
+            color = ChessGame.TeamColor.BLACK ;
         }
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
@@ -80,6 +84,14 @@ public class WebSocketHandler {
     }
     private void makeMove(String message) throws Exception {
         MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
+        if(color != gameDAO.getGame(command.getGameID()).game().getTeamTurn()){
+            connections.broadcastIndividual(command, new ErrorMessage("You can not move another player's piece!"));
+            return ;
+        }
+        if(gameOver){
+            connections.broadcastIndividual(command, new ErrorMessage("The game is over and no more moves can be made!"));
+            return ;
+        }
         try {
             if(!Objects.equals(currentUserName, whiteUserName) && !Objects.equals(currentUserName, blackUserName)){
                 connections.broadcastIndividual(command, new ErrorMessage("You're an observer and can not make a move."));
@@ -97,9 +109,10 @@ public class WebSocketHandler {
                 game.makeMove(move);
                 gameDAO.updateGame(game, command.getGameID());
                 var notification = new NotificationMessage("The other player has made a move!");
+                var loadNotification = new LoadGameMessage(game) ;
+                connections.broadcastMultiple(command, loadNotification);
                 connections.broadcastMultiple(command, notification);
-                notification.setNotificationMessage("Nice Move!");
-                connections.broadcastIndividual(command, notification);
+                connections.broadcastIndividual(command, loadNotification);
             } else {
                 var notification = new ErrorMessage("That is an invalid move. Try again!");
                 connections.broadcastIndividual(command, notification);
@@ -111,11 +124,12 @@ public class WebSocketHandler {
     }
     private void leave(UserGameCommand command) throws Exception {
         try {
-            connections.removeAuthMap(command.getAuthToken());
             var notification = new NotificationMessage(String.format(" %s has left the Game :( wait for a new player!", currentUserName));
+            if(Objects.equals(currentUserName, blackUserName) || Objects.equals(currentUserName, whiteUserName)){
+                gameDAO.updateUser(color, command.getGameID());
+            }
             connections.broadcastMultiple(command, notification);
-            // probably gonna need to create a DAO method that allows me to update the players to null
-            connections.broadcastIndividual(command, new NotificationMessage("You have successfully left the game!"));
+            connections.removeAuthMap(command.getAuthToken());
         }
         catch (Exception ex){
             var notification = new ErrorMessage("You are unable to leave the game. Try again!") ;
@@ -125,11 +139,17 @@ public class WebSocketHandler {
     }
     private void resign(UserGameCommand command) throws Exception {
         try {
+            if(gameOver){
+                connections.broadcastIndividual(command, new ErrorMessage("You can not resign after the game is over!"));
+                var error = new NotificationMessage(String.format(" %s has resigned! %s won!! :)", currentUserName, enemy));
+                connections.broadcastMultiple(command, error);
+                return ;
+            }
             if(Objects.equals(currentUserName, blackUserName) || Objects.equals(currentUserName, whiteUserName)) {
-                connections.removeAuthMap(command.getAuthToken());
                 var notification = new NotificationMessage(String.format(" %s has resigned! %s won!! :)", currentUserName, enemy));
                 connections.broadcastMultiple(command, notification);
                 connections.broadcastIndividual(command, notification);
+                gameOver = Boolean.TRUE ;
             }
             else{
                 var notification = new ErrorMessage("You are an Observer and can not resign. Please leave instead.") ;

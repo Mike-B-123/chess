@@ -14,4 +14,5 @@ public interface GameDAO {
     public void modifyInsert(String authToken, ChessGame.TeamColor color, Integer gameID) throws DataAccessException;
     public Game getGame(Integer id) throws DataAccessException;
     public void updateGame(ChessGame game, Integer gameID) throws DataAccessException ;
+    public void updateUser(ChessGame.TeamColor teamColor, Integer gameID) throws DataAccessException ;
 }

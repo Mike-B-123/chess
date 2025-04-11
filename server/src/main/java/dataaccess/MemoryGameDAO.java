@@ -26,6 +26,13 @@ public class MemoryGameDAO implements GameDAO{
         return newGameData ;
 
     }
+    public boolean isGameOver(){
+        return true ;
+    };
+    public void setGameOver(boolean gameOver) {
+        return ;
+    };
+
     public void modifyInsert(String authToken, ChessGame.TeamColor color, Integer gameID) throws DataAccessException {
         AuthDAO authDao = MemoryAuthDAO.getInstance();
         Game game = gameDatas.get(gameID) ;
@@ -46,6 +53,12 @@ public class MemoryGameDAO implements GameDAO{
         Game newGame = new Game(gameID,white, black, gameName, game) ;
         gameDatas.put(gameID, newGame) ;
     }
+
+    @Override
+    public void updateUser(ChessGame.TeamColor teamColor, Integer gameID) throws DataAccessException {
+        return ;
+    }
+
     public Boolean availableGame(ChessGame.TeamColor color, Integer gameID) throws Taken403 {
         if (color == ChessGame.TeamColor.BLACK) {
             if (gameDatas.get(gameID).blackUsername() != null) {

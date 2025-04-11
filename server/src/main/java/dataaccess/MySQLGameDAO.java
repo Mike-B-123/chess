@@ -12,6 +12,7 @@ import java.sql.*;
 import java.util.HashMap;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.BOOLEAN;
 import static java.sql.Types.NULL;
 
 public class MySQLGameDAO implements GameDAO{
@@ -86,8 +87,21 @@ public class MySQLGameDAO implements GameDAO{
     }
     public void updateGame(ChessGame game, Integer gameID) throws DataAccessException {
         try{
+            String chessgame = new Gson().toJson(game) ;
             var statement = "UPDATE gameInfo SET chessGame= ? WHERE gameID = ?" ;
-            executeUpdateReturn(statement, game, gameID) ;
+            executeUpdateReturn(statement, chessgame, gameID) ;
+        }
+        catch (Exception ex){
+            throw new DataAccessException(ex.getMessage()) ;
+        }
+    }
+    public void updateUser(ChessGame.TeamColor teamColor, Integer gameID) throws DataAccessException {
+        try {
+            var statement = "UPDATE gameInfo SET blackUsername= ? WHERE gameID = ?" ;
+            if (teamColor == ChessGame.TeamColor.WHITE) {
+                statement = "UPDATE gameInfo SET whiteUsername= ? WHERE gameID = ?";
+            }
+            executeUpdateReturn(statement, null, gameID) ;
         }
         catch (Exception ex){
             throw new DataAccessException(ex.getMessage()) ;

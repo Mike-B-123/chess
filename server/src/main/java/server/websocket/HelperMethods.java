@@ -13,6 +13,8 @@ import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 
+import java.util.Objects;
+
 public class HelperMethods {
     private static HelperMethods instance ;
     public String mateCheck(ChessGame game, ChessMove move, ChessGame.TeamColor teamColor){
@@ -47,9 +49,18 @@ public class HelperMethods {
         return false ;
     }
 
-    public String makeMoveErrors(GameDAO gameDAO, AuthDAO authDAO, MakeMoveCommand command, Session session){
-            return "placeholder" ;
-    }
+//    public Boolean doubleResign(GameDAO gameDAO, UserGameCommand command, ConnectionManager connections, ChessGame.TeamColor color) throws Exception {
+//        if(Objects.equals(gameDAO.getGame(command.getGameID()).whiteUsername(), "null") && color == ChessGame.TeamColor.WHITE){
+//            connections.broadcastIndividual(command, new ErrorMessage("You can not resign twice!"));
+//            return true ;
+//        }
+//        if(Objects.equals(gameDAO.getGame(command.getGameID()).blackUsername(), "null") && color == ChessGame.TeamColor.BLACK){
+//            connections.broadcastIndividual(command, new ErrorMessage("You can not resign twice!"));
+//            return true ;
+//        }
+//        return false;
+//    }
+
     public static HelperMethods getInstance(){
         if(instance == null){
             return instance = new HelperMethods() ;
