@@ -4,6 +4,7 @@ import serverfacade.ServerFacade;
 
 import java.util.Scanner;
 import websocket.ServerMessageObserver;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 import static ui.EscapeSequences.*;
@@ -95,6 +96,9 @@ public String eval(String input) {
     public void notify(ServerMessage serverMessage) {
         // check for which message it is "load game" "error" "ect."
         System.out.println(SET_TEXT_COLOR_RED + serverMessage) ;
+        if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
+            Board.main(serverMessage.hashCode());
+        }
         printPrompt();
     }
 }

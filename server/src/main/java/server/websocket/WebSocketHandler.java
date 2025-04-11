@@ -42,8 +42,9 @@ public class WebSocketHandler {
        if(helperMethods.falseInfo(gameDAO,authDAO,command,session)){
            return ;
        }
-        blackUserName = gameDAO.getGame(command.getGameID()).blackUsername() ;
-        whiteUserName = gameDAO.getGame(command.getGameID()).whiteUsername() ;
+       Game game = gameDAO.getGame(command.getGameID()) ;
+        blackUserName = game.blackUsername() ;
+        whiteUserName = game.whiteUsername() ;
         currentUserName = authDAO.getUsernameFromAuth(command.getAuthToken());
         if(Objects.equals(currentUserName, whiteUserName)){
             enemy = blackUserName ;
@@ -63,14 +64,15 @@ public class WebSocketHandler {
 
     private void connect(UserGameCommand command, Session session) throws Exception {
         try {
+            Game game = gameDAO.getGame(command.getGameID()) ;
             connections.addAuthMap(command.getAuthToken(), session, command.getGameID());
-            if(gameDAO.getGame(command.getGameID()) == null){
+            if(game == null){
                 connections.broadcastIndividual(command, new ErrorMessage("This game does not exist!"));
             }
-            ChessGame game = gameDAO.getGame(command.getGameID()).game();
+            ChessGame chessGame = game.game() ;
             var noteNotification = new NotificationMessage("A new user has connected to the game!");
             connections.broadcastMultiple(command, noteNotification);
-            var loadNotification = new LoadGameMessage(game);
+            var loadNotification = new LoadGameMessage(chessGame);
             connections.broadcastIndividual(command, loadNotification);
         }
         catch (Exception ex){
@@ -80,11 +82,12 @@ public class WebSocketHandler {
     }
     private void makeMove(String message) throws Exception {
         MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
-        if(color != gameDAO.getGame(command.getGameID()).game().getTeamTurn()){
+        ChessGame chessGame = gameDAO.getGame(command.getGameID()).game() ;
+        if(color != chessGame.getTeamTurn()){
             connections.broadcastIndividual(command, new ErrorMessage("You can not move another player's piece!"));
             return ;
         }
-        if(gameDAO.getGame(command.getGameID()).game().getGameOver()){
+        if(chessGame.getGameOver()){
             connections.broadcastIndividual(command, new ErrorMessage("The game is over and no more moves can be made!"));
             return ;
         }
@@ -93,19 +96,18 @@ public class WebSocketHandler {
                 connections.broadcastIndividual(command, new ErrorMessage("You're an observer and can not make a move."));
                 return ;
             }
-            ChessGame game = gameDAO.getGame(command.getGameID()).game();
             ChessMove move = command.getMove();
-            String checking = helperMethods.mateCheck(game, move, game.getTeamTurn());
-            if (game.validMoves(move.getStartPosition()).contains(move)) {
+            String checking = helperMethods.mateCheck(chessGame, move, chessGame.getTeamTurn());
+            if (chessGame.validMoves(move.getStartPosition()).contains(move)) {
                 if (!checking.contains("False")) {
                     var notification = new NotificationMessage(checking);
                     connections.broadcastMultiple(command, notification);
                     connections.broadcastIndividual(command, notification);
                 }
-                game.makeMove(move);
-                gameDAO.updateGame(game, command.getGameID());
+                chessGame.makeMove(move);
+                gameDAO.updateGame(chessGame, command.getGameID());
                 var notification = new NotificationMessage("The other player has made a move!");
-                var loadNotification = new LoadGameMessage(game) ;
+                var loadNotification = new LoadGameMessage(chessGame) ;
                 connections.broadcastMultiple(command, loadNotification);
                 connections.broadcastMultiple(command, notification);
                 connections.broadcastIndividual(command, loadNotification);
@@ -135,7 +137,8 @@ public class WebSocketHandler {
     }
     private void resign(UserGameCommand command) throws Exception {
         try {
-            if(gameDAO.getGame(command.getGameID()).game().getGameOver()){
+            ChessGame game = gameDAO.getGame(command.getGameID()).game() ;
+            if(game.getGameOver()){
                 connections.broadcastIndividual(command, new ErrorMessage("You can not resign after the game is over!"));
                 return ;
             }
@@ -143,7 +146,6 @@ public class WebSocketHandler {
                 var notification = new NotificationMessage(String.format(" %s has resigned! %s won!! :)", currentUserName, enemy));
                 connections.broadcastMultiple(command, notification);
                 connections.broadcastIndividual(command, notification);
-                ChessGame game = gameDAO.getGame(command.getGameID()).game() ;
                 game.setGameOver(true);
                 gameDAO.updateGame(game, command.getGameID()) ;
             }
