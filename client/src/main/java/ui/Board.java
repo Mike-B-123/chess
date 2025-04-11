@@ -1,4 +1,5 @@
 package ui;
+import chess.ChessBoard;
 import serverfacade.ServerFacade;
 import chess.ChessGame;
 import chess.ChessPiece;
@@ -22,6 +23,7 @@ public class Board {
     private static String teamColor ; // how do I fix the static aspect?
     private static HashMap<ChessPiece.PieceType, String> pieceMap = new HashMap<>();
     private static Board instance ;
+    private static ChessBoard currentBoard ;
 
     public Board(String teamColor) {
         this.teamColor = teamColor;
@@ -30,7 +32,11 @@ public class Board {
     // Padded characters.
     private static final String EMPTY = "   ";
 
-    public static void main() {
+    public static void main(ChessBoard chessBoard) {
+        currentBoard = chessBoard ;
+        if(chessBoard == null){
+            currentBoard = new ChessBoard() ;
+        }
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         setPieceMap();
         out.print(ERASE_SCREEN);
@@ -123,7 +129,7 @@ public class Board {
     private static void printWhitePiece(int positionRow , int positionCol, PrintStream out) {
         positionCol += 1;
         positionRow += 1;
-        ChessPiece piece = server.getCurrentChessBoard().getPiece(new ChessPosition(positionRow, positionCol));
+        ChessPiece piece = currentBoard.getPiece(new ChessPosition(positionRow, positionCol));
         pieceHelper(piece, out);
     }
     private static void pieceHelper(ChessPiece piece, PrintStream out){
@@ -144,7 +150,7 @@ public class Board {
         positionRow += 1;
         int trueCol = 9 - positionCol;
         int trueRow = 9 - positionRow ;
-        ChessPiece piece = server.getCurrentChessBoard().getPiece(new ChessPosition(trueRow, trueCol));
+        ChessPiece piece = currentBoard.getPiece(new ChessPosition(trueRow, trueCol));
         pieceHelper(piece, out);
     }
 
@@ -176,6 +182,8 @@ public class Board {
         }
         return rightInt ;
     }
+
+
 
     public static void setPieceMap(){
         pieceMap.put(ChessPiece.PieceType.KING, KING);

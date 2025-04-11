@@ -3,6 +3,7 @@ package ui;
 import serverfacade.ServerFacade;
 import chess.ChessGame;
 import model.*;
+import websocket.WebSocketFacade;
 
 import java.util.Scanner;
 
@@ -13,10 +14,12 @@ public class GameClient {
     private static GameClient instance ;
     private static HelperMethods helperMethods = HelperMethods.getInstance();
     private static Board board ;
+    private final WebSocketFacade ws ;
 
 
-    public GameClient(ServerFacade inputServer) {
+    public GameClient(ServerFacade inputServer, WebSocketFacade ws) {
         this.server = inputServer ;
+        this.ws = ws;
     }
 
 
@@ -64,7 +67,7 @@ public class GameClient {
             JoinData joinData = new JoinData(helperMethods.colorVerificationHelp(color), gameID) ;
             server.joinGameCall(joinData) ;
             board = Board.getInstance(color);
-            board.main();
+            board.main(null);
             return String.format("Congrats! You are now apart of game # %s !", gameNum);
         } catch (Exception ex) {
             throw new Exception();
@@ -80,7 +83,7 @@ public class GameClient {
             int gameNum = Integer.parseInt(scanner.next()) ;
             int gameID = server.getGameNumList().get(gameNum) ;
             board = Board.getInstance("white");
-            board.main();
+            board.main(null);
             return String.format("Congrats! You are now apart of game # %s !", gameNum);
         } catch (Exception ex) {
             throw new Exception();

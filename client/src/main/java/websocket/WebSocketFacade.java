@@ -28,7 +28,7 @@ public class WebSocketFacade extends Endpoint{
             public void onMessage(String message) {
                 ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
                 if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-                    Board.main();
+                    Board.main(null);
                 }
                 notificationHandler.notify(serverMessage);
             }
