@@ -9,7 +9,7 @@ import websocket.messages.ServerMessage;
 import javax.websocket.*;
 import java.net.URI;
 
-public class WebSocketFacade {
+public class WebSocketFacade extends Endpoint{
     Session session;
     ServerMessageObserver notificationHandler;
 
