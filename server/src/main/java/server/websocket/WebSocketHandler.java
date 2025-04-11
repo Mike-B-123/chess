@@ -13,10 +13,7 @@ import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage ;
-import websocket.commands.UserGameCommand;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Timer;
 
@@ -33,7 +30,6 @@ public class WebSocketHandler {
     private String currentUserName ;
     private String enemy ;
     private ChessGame.TeamColor color ;
-    private Boolean gameOver = Boolean.FALSE ;
     HelperMethods helperMethods = HelperMethods.getInstance();
     public WebSocketHandler(GameDAO inputGameDAO, AuthDAO inputAuthDAO) {
         this.gameDAO = inputGameDAO ;
@@ -88,7 +84,7 @@ public class WebSocketHandler {
             connections.broadcastIndividual(command, new ErrorMessage("You can not move another player's piece!"));
             return ;
         }
-        if(gameOver){
+        if(gameDAO.getGame(command.getGameID()).game().getGameOver()){
             connections.broadcastIndividual(command, new ErrorMessage("The game is over and no more moves can be made!"));
             return ;
         }
@@ -139,17 +135,17 @@ public class WebSocketHandler {
     }
     private void resign(UserGameCommand command) throws Exception {
         try {
-            if(gameOver){
+            if(gameDAO.getGame(command.getGameID()).game().getGameOver()){
                 connections.broadcastIndividual(command, new ErrorMessage("You can not resign after the game is over!"));
-                var error = new NotificationMessage(String.format(" %s has resigned! %s won!! :)", currentUserName, enemy));
-                connections.broadcastMultiple(command, error);
                 return ;
             }
             if(Objects.equals(currentUserName, blackUserName) || Objects.equals(currentUserName, whiteUserName)) {
                 var notification = new NotificationMessage(String.format(" %s has resigned! %s won!! :)", currentUserName, enemy));
                 connections.broadcastMultiple(command, notification);
                 connections.broadcastIndividual(command, notification);
-                gameOver = Boolean.TRUE ;
+                ChessGame game = gameDAO.getGame(command.getGameID()).game() ;
+                game.setGameOver(true);
+                gameDAO.updateGame(game, command.getGameID()) ;
             }
             else{
                 var notification = new ErrorMessage("You are an Observer and can not resign. Please leave instead.") ;

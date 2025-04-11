@@ -12,7 +12,7 @@ import java.util.Objects;
 public class ChessGame {
     private ChessGame.TeamColor team;
     private ChessBoard currentBoard;
-
+    private Boolean gameOver = Boolean.FALSE;
 
 
     public ChessGame() {
@@ -29,6 +29,13 @@ public class ChessGame {
         return team;
     }
 
+    public Boolean getGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(Boolean gameOver) {
+        this.gameOver = gameOver;
+    }
 
     /**
      * Set's which teams turn it is
