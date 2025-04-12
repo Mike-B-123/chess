@@ -5,11 +5,15 @@ import model.Game;
 
 public class LoadGameMessage extends ServerMessage{
     private ChessGame game;
+    private String message ;
     public LoadGameMessage(ChessGame game){
         super(ServerMessageType.LOAD_GAME);
         this.game = game ;
     }
     public ChessGame getGame() {
         return game;
+    }
+    public String getMessage() {
+        return message;
     }
 }

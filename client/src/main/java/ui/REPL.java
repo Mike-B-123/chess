@@ -13,7 +13,7 @@ import websocket.messages.ServerMessage;
 
 import static ui.EscapeSequences.*;
 
-public class REPL implements ServerMessageObserver {
+public class REPL {
 
     private State state = State.SIGNEDOUT ;
     private Boolean inGame = false ;
@@ -117,23 +117,6 @@ public String eval(String input) {
         System.out.print("\n" + ">>> " + SET_TEXT_COLOR_GREEN); // should I keep the RESET thing?
     }
 
-    @Override
-    public void notify(ServerMessage serverMessage) {
-        // check for which message it is "load game" "error" "ect."
-        if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-            Board.main(null); //
-            LoadGameMessage loadGameMessage = (LoadGameMessage) serverMessage;
-            loadGameMessage.getGame() ;
-        } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-            NotificationMessage noteMessage = (NotificationMessage) serverMessage;
-            System.out.println(SET_TEXT_COLOR_RED + noteMessage.getNotificationMessage());
-        }
-        else if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
-            ErrorMessage errorMessage = (ErrorMessage) serverMessage;
-            System.out.println(SET_TEXT_COLOR_RED + errorMessage.getErrorMessage());
-        }
-        printPrompt();
-    }
 }
 
 // SP: a1 to EP: B1 letters can be numbers with 'a' - 96 = 1; watch out for row and column order col = value.charAt(0)

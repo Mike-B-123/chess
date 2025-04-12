@@ -4,20 +4,28 @@ import chess.*;
 import com.sun.jdi.Value;
 import serverfacade.ServerFacade;
 import model.*;
+import websocket.ServerMessageObserver;
 import websocket.WebSocketFacade;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_GREEN;
+import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
 
-public class GameClient {
+public class GameClient implements ServerMessageObserver {
     private final ServerFacade server;
     private static GameClient instance ;
     private static HelperMethods helperMethods = HelperMethods.getInstance();
     private static Board board ;
     private static ChessBoard printBoard ;
+    private static ChessGame currGame ;
     private static Integer currGameID ;
     private final WebSocketFacade ws ;
+    private String message ;
 
 
     public GameClient(ServerFacade inputServer, WebSocketFacade ws) {
@@ -103,7 +111,7 @@ public class GameClient {
             ChessPosition endPosition = helperMethods.positionGetter(new Scanner(System.in)) ;
             ChessMove move = new ChessMove(startPosition, endPosition, null) ;
             ws.makeMove(authData.authToken(), currGameID, move);
-            return "You have made a move!" ; // what String should I return ?
+            return message ; // what String should I return ?
         } catch (Exception ex) {
             throw new Exception();
         }
@@ -115,11 +123,11 @@ public class GameClient {
     }
     public String leave(AuthData authData) throws Exception {
         ws.leave(authData.authToken(), currGameID);
-        return "You have left!" ;
+        return message ;
     }
     public String resign(AuthData authData) throws Exception {
         ws.resign(authData.authToken(), currGameID);
-        return "You have resigned!" ;
+        return message ;
     }
 
     public String highlight() throws Exception {
@@ -138,5 +146,25 @@ public class GameClient {
     }
     private void printPrompt() {
         System.out.print(">>> " + SET_TEXT_COLOR_GREEN); // should I keep the RESET thing?
+    }
+
+    @Override
+    public void notify(ServerMessage serverMessage) {
+        // check for which message it is "load game" "error" "ect."
+        if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
+            Board.main(null); //
+            LoadGameMessage loadGameMessage = (LoadGameMessage) serverMessage;
+            currGame = loadGameMessage.getGame() ;
+            printBoard = currGame.getBoard() ;
+            message = loadGameMessage.getMessage() ;
+        } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+            NotificationMessage noteMessage = (NotificationMessage) serverMessage;
+            message = noteMessage.getNotificationMessage() ;
+        }
+        else if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+            ErrorMessage errorMessage = (ErrorMessage) serverMessage;
+            message = errorMessage.getErrorMessage() ;
+        }
+        printPrompt();
     }
 }

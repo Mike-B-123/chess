@@ -183,7 +183,9 @@ public class Board {
         return rightInt ;
     }
 
-
+    public static void highlight(ChessPosition startPosition, ChessBoard board) {
+        board.getPiece(startPosition).pieceMoves(board, startPosition) ;
+    }
 
     public static void setPieceMap(){
         pieceMap.put(ChessPiece.PieceType.KING, KING);
