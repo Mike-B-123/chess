@@ -80,8 +80,8 @@ public class GameClient implements ServerMessageObserver {
             String color = scanner.next();
             JoinData joinData = new JoinData(helperMethods.colorVerificationHelp(color), gameID) ;
             server.joinGameCall(joinData) ;
-            board = Board.getInstance(color);
-            board.main(null);
+            printBoard = new ChessBoard() ;
+            board.main(printBoard, currGame.getTeamTurn());
             return String.format("Congrats! You are now apart of game # %s !", gameNum);
         } catch (Exception ex) {
             throw new Exception();
@@ -97,7 +97,7 @@ public class GameClient implements ServerMessageObserver {
             int gameNum = Integer.parseInt(scanner.next()) ;
             currGameID = server.getGameNumList().get(gameNum) ;
             board = Board.getInstance("white");
-            board.main(null);
+            board.main(printBoard, ChessGame.TeamColor.WHITE);
             return String.format("Congrats! You are now apart of game # %s !", gameNum);
         } catch (Exception ex) {
             throw new Exception();
@@ -120,7 +120,8 @@ public class GameClient implements ServerMessageObserver {
     }
 
     public String redraw() throws Exception {
-        Board.main(printBoard);
+        // fix this
+        Board.main(printBoard, currGame.getTeamTurn());
         return "Here's your board!" ;
     }
     public String leave(AuthData authData) throws Exception {
@@ -156,7 +157,6 @@ public class GameClient implements ServerMessageObserver {
     public void notify(ServerMessage serverMessage) {
         // check for which message it is "load game" "error" "ect."
         if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-            Board.main(null); //
             LoadGameMessage loadGameMessage = (LoadGameMessage) serverMessage;
             currGame = loadGameMessage.getGame() ;
             printBoard = currGame.getBoard() ;

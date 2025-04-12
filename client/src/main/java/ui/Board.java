@@ -18,22 +18,22 @@ public class Board {
     private static final int[] ROW_HEADERS = {8, 7, 6, 5, 4, 3, 2, 1};
     private static String squareColor = SET_BG_COLOR_WHITE;
     private static String[] headers = {"a", "b", "c", "d", "e", "f", "g", "h"};
-    private static String teamColor ; // how do I fix the static aspect?
+    private static ChessGame.TeamColor teamColor ; // how do I fix the static aspect?
     private static HashMap<ChessPiece.PieceType, String> pieceMap = new HashMap<>();
     private static Board instance ;
     private static ChessBoard currentBoard ;
     private static Collection<ChessPosition> highlightPositions ;
     private static Boolean highlighting = Boolean.FALSE ;
 
-    public Board(String teamColor) {
-        this.teamColor = teamColor;
+    public Board() {
         server = new ServerFacade(8080);
     }
     // Padded characters.
     private static final String EMPTY = "   ";
 
-    public static void main(ChessBoard chessBoard) {
+    public static void main(ChessBoard chessBoard, ChessGame.TeamColor inputColor) {
         currentBoard = chessBoard ;
+        teamColor = inputColor;
         if(chessBoard == null){
             currentBoard = new ChessBoard() ;
         }
@@ -52,7 +52,7 @@ public class Board {
     private static void drawHeaders(PrintStream out) {
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(" ");
-        if (teamColor.toLowerCase().contentEquals("white")) {
+        if (teamColor == ChessGame.TeamColor.WHITE) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
                 drawHeader(out, headers[boardCol]);
             }
@@ -87,7 +87,7 @@ public class Board {
         out.print(SET_BG_COLOR_LIGHT_GREY);
         int rightInt = 0;
         int leftInt = 0;
-        if (teamColor.toLowerCase().contentEquals("black")) {
+        if (teamColor == ChessGame.TeamColor.BLACK) {
             leftInt = 7;
             rightInt = 7;
         }
@@ -110,7 +110,7 @@ public class Board {
                     int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
                     int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
                     out.print(EMPTY.repeat(prefixLength));
-                    if(teamColor.toLowerCase().contentEquals("white")){
+                    if(teamColor == ChessGame.TeamColor.WHITE){
                     printWhitePiece(squareRow, positionCol, out);
                     }
                     else{
@@ -172,7 +172,7 @@ public class Board {
     }
 
     private static int leftIntMath(int leftInt){
-        if(teamColor.toLowerCase().contentEquals("white")){
+        if(teamColor == ChessGame.TeamColor.WHITE){
             leftInt ++ ;
         }
         else{
@@ -182,7 +182,7 @@ public class Board {
     }
 
     private static int rightIntMath(int rightInt){
-        if(teamColor.toLowerCase().contentEquals("white")){
+        if(teamColor == ChessGame.TeamColor.WHITE){
             rightInt ++ ;
         }
         else{
@@ -196,7 +196,7 @@ public class Board {
         for(ChessMove move: validMoves){
             highlightPositions.add(move.getEndPosition()) ;
         }
-        main(game.getBoard()) ;
+        main(game.getBoard(), game.getTeamTurn()) ;
         highlighting = Boolean.FALSE ;
     }
 
@@ -209,6 +209,6 @@ public class Board {
         pieceMap.put(ChessPiece.PieceType.PAWN, PAWN);
     }
     public static Board getInstance(String color){
-            return instance = new Board(color) ;
+            return instance = new Board() ;
     }
 }
