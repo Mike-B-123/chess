@@ -1,4 +1,5 @@
 package ui;
+import model.AuthData;
 import serverfacade.ServerFacade ;
 
 import model.User;
@@ -7,6 +8,7 @@ public class RegisterClient {
     private final ServerFacade server;;
     private static RegisterClient instance ;
     HelperMethods helperMethods = HelperMethods.getInstance();
+    private AuthData currentAuthData ;
 
     public RegisterClient(ServerFacade inputServer) {
         this.server = inputServer ;
@@ -18,12 +20,16 @@ public class RegisterClient {
             String[] outPrompts = {"First pick a username.", "Now pick a password.", "Finally, what's your email?"};
             variables = helperMethods.varLoop(variables, outPrompts) ;
             User outputUser = new User(variables[0], variables[1], variables[2]) ;
-            server.registerCall(outputUser) ;
+            currentAuthData = server.registerCall(outputUser) ;
             return String.format("You signed in as %s.", outputUser.username());
         } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }
 
+    }
+
+    public AuthData getCurrentAuthData() {
+        return currentAuthData;
     }
 
     public String login() throws Exception {
@@ -32,7 +38,7 @@ public class RegisterClient {
             String[] outPrompts = {"What's your username?", "What's your password?", "Finally, what's your email?"};
             variables = helperMethods.varLoop(variables, outPrompts) ;
             User outputUser = new User(variables[0], variables[1], variables[2]) ;
-            server.loginCall(outputUser) ;
+            currentAuthData = server.loginCall(outputUser) ;
             return String.format("You signed in as %s .", outputUser.username());
         } catch (Exception ex) {
             throw new Exception();

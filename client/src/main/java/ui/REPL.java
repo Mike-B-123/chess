@@ -1,5 +1,6 @@
 package ui;
 
+import model.AuthData;
 import serverfacade.ServerFacade;
 
 import java.util.Scanner;
@@ -19,6 +20,7 @@ public class REPL implements ServerMessageObserver {
     ServerFacade serverFacade = ServerFacade.getInstance(8080);
     ServerMessageObserver notificationHandler;
     WebSocketFacade ws = new WebSocketFacade("http://localhost:8080", notificationHandler) ;
+    private AuthData currentAuthData ;
 
     public REPL() throws Exception {}
 
@@ -36,6 +38,7 @@ public class REPL implements ServerMessageObserver {
             try {
                 result = eval(line);
                 if(result.contains("You signed in as")) {
+                    currentAuthData = registerClient.getCurrentAuthData() ;
                     setState(State.SIGNEDIN);
                 } else if (result.contains("signed out")) {
                     setState(State.SIGNEDOUT);
@@ -98,10 +101,10 @@ public String eval(String input) {
             case "list" -> gameClient.listGames();
             case "play" -> gameClient.play() ;
             case "observe" -> gameClient.observeGame();// how in the world do we do this?
-            case "redraw" -> "placeholder" ;
-            case "leave" -> "placeholder" ;
-            case "move" -> "move" ;
-            case "resign" -> "resign" ;
+            case "redraw" -> gameClient.redraw() ;
+            case "leave" -> gameClient.leave(currentAuthData);
+            case "move" -> gameClient.makeMove(currentAuthData) ;
+            case "resign" -> gameClient.resign(currentAuthData);
             case "highlight" -> "highlight" ; // are these additions ok?
             case "quit" -> "quit";
             default -> help();

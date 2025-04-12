@@ -1,7 +1,8 @@
 package ui;
 
+import chess.*;
+import com.sun.jdi.Value;
 import serverfacade.ServerFacade;
-import chess.ChessGame;
 import model.*;
 import websocket.WebSocketFacade;
 
@@ -14,6 +15,8 @@ public class GameClient {
     private static GameClient instance ;
     private static HelperMethods helperMethods = HelperMethods.getInstance();
     private static Board board ;
+    private static ChessBoard printBoard ;
+    private static Integer currGameID ;
     private final WebSocketFacade ws ;
 
 
@@ -59,7 +62,8 @@ public class GameClient {
             printPrompt();
             Scanner scanner = new Scanner(System.in);
             int gameNum = Integer.parseInt(scanner.next()) ;
-            int gameID = server.getGameNumList().get(gameNum) ; // will this work?
+            int gameID = server.getGameNumList().get(gameNum) ;
+            currGameID = gameID ;
             System.out.println("What team color do you want to be? (Black or White)");
             printPrompt();
             scanner = new Scanner(System.in);
@@ -81,7 +85,7 @@ public class GameClient {
             printPrompt();
             Scanner scanner = new Scanner(System.in);
             int gameNum = Integer.parseInt(scanner.next()) ;
-            int gameID = server.getGameNumList().get(gameNum) ;
+            currGameID = server.getGameNumList().get(gameNum) ;
             board = Board.getInstance("white");
             board.main(null);
             return String.format("Congrats! You are now apart of game # %s !", gameNum);
@@ -89,20 +93,43 @@ public class GameClient {
             throw new Exception();
         }
     }
-    public void makeMove() throws Exception {
+    public String makeMove(AuthData authData) throws Exception {
         try { // should always give White prespective
-            System.out.println("Please provide the game list number for the game you want to observe?");
+            System.out.println("Start position:");
             printPrompt();
             Scanner scanner = new Scanner(System.in);
-            int gameNum = Integer.parseInt(scanner.next()) ;
-            int gameID = server.getGameNumList().get(gameNum) ;
-            board = Board.getInstance("white");
-            board.main(null);
-            return ;
+            String start = scanner.next() ;
+            int col = start.charAt(0) - 96 ;
+            int row = start.charAt(1) ;
+            ChessPosition startPosition = new ChessPosition(row, col) ;
+            System.out.println("End position:");
+            printPrompt();
+            scanner = new Scanner(System.in);
+            String end = scanner.next() ;
+            col = end.charAt(0) - 96 ;
+            row = end.charAt(1) ;
+            ChessPosition endPosition = new ChessPosition(row, col) ;
+            ChessMove move = new ChessMove(startPosition, endPosition, null) ;
+            ws.makeMove(authData.authToken(), currGameID, move);
+            return " " ; // what String should I return ?
         } catch (Exception ex) {
             throw new Exception();
         }
     }
+
+    public String redraw() throws Exception {
+        Board.main(printBoard);
+        return "Here's your board!" ;
+    }
+    public String leave(AuthData authData) throws Exception {
+        ws.leave(authData.authToken(), currGameID);
+        return "You have left!" ;
+    }
+    public String resign(AuthData authData) throws Exception {
+        ws.resign(authData.authToken(), currGameID);
+        return "You have resigned!" ;
+    }
+
 
     public static GameClient getInstance(ServerFacade server, WebSocketFacade ws){
         if(instance == null){
