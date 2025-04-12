@@ -35,31 +35,19 @@ public class HelperMethods {
         }
         return "False" ;
     }
-    public Boolean falseInfo(GameDAO gameDAO, AuthDAO authDAO, UserGameCommand command, Session session) throws Exception {
-        if(gameDAO.getGame(command.getGameID()) == null){
-            Connection con = new Connection(command.getAuthToken(), session, command.getGameID());
+    public Boolean falseInfo(GameDAO gDAO, AuthDAO aDAO, UserGameCommand com, Session ses) throws Exception {
+        if(gDAO.getGame(com.getGameID()) == null){
+            Connection con = new Connection(com.getAuthToken(), ses, com.getGameID());
             con.send(new Gson().toJson(new ErrorMessage("This game does not exist!")));
             return true ;
         }
-        if(authDAO.verifyAuth(command.getAuthToken())== null){
-            Connection con = new Connection(command.getAuthToken(), session, command.getGameID());
+        if(aDAO.verifyAuth(com.getAuthToken())== null){
+            Connection con = new Connection(com.getAuthToken(), ses, com.getGameID());
             con.send(new Gson().toJson(new ErrorMessage("This user id not authorized!")));
             return true ;
         }
         return false ;
     }
-
-//    public Boolean doubleResign(GameDAO gameDAO, UserGameCommand command, ConnectionManager connections, ChessGame.TeamColor color) throws Exception {
-//        if(Objects.equals(gameDAO.getGame(command.getGameID()).whiteUsername(), "null") && color == ChessGame.TeamColor.WHITE){
-//            connections.broadcastIndividual(command, new ErrorMessage("You can not resign twice!"));
-//            return true ;
-//        }
-//        if(Objects.equals(gameDAO.getGame(command.getGameID()).blackUsername(), "null") && color == ChessGame.TeamColor.BLACK){
-//            connections.broadcastIndividual(command, new ErrorMessage("You can not resign twice!"));
-//            return true ;
-//        }
-//        return false;
-//    }
 
     public static HelperMethods getInstance(){
         if(instance == null){

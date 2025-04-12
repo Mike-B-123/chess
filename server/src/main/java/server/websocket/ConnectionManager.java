@@ -30,10 +30,6 @@ public class ConnectionManager {
             }
         }
 
-        // Clean up any connections that were left open.
-//        for (var c : removeList) {
-//            authMap.remove(c.authToken);
-//        }
     }
         public void broadcastIndividual(UserGameCommand command, ServerMessage message) throws Exception {
             // do I need a remove list for this one?
