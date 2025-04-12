@@ -98,15 +98,15 @@ public class GameClient {
             int gameID = server.getGameNumList().get(gameNum) ;
             board = Board.getInstance("white");
             board.main(null);
-            return String.format("Congrats! You are now apart of game # %s !", gameNum);
+            return ;
         } catch (Exception ex) {
             throw new Exception();
         }
     }
 
-    public static GameClient getInstance(ServerFacade server){
+    public static GameClient getInstance(ServerFacade server, WebSocketFacade ws){
         if(instance == null){
-            return instance = new GameClient(server) ;
+            return instance = new GameClient(server, ws) ;
         }
         return instance ;
     }

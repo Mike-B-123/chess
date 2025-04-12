@@ -23,7 +23,7 @@ public class REPL implements ServerMessageObserver {
     public REPL() throws Exception {}
 
     RegisterClient registerClient = RegisterClient.getInstance(serverFacade);
-    GameClient gameClient = GameClient.getInstance(serverFacade);
+    GameClient gameClient = GameClient.getInstance(serverFacade, ws);
 
     public void run() throws Exception {
         System.out.println("Ready to play some Chess? First sign in! :)");
