@@ -1,12 +1,10 @@
 package ui;
-import chess.ChessBoard;
+import chess.*;
 import serverfacade.ServerFacade;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
@@ -24,6 +22,8 @@ public class Board {
     private static HashMap<ChessPiece.PieceType, String> pieceMap = new HashMap<>();
     private static Board instance ;
     private static ChessBoard currentBoard ;
+    private static Collection<ChessPosition> highlightPositions ;
+    private static Boolean highlighting = Boolean.FALSE ;
 
     public Board(String teamColor) {
         this.teamColor = teamColor;
@@ -98,7 +98,15 @@ public class Board {
             leftInt = leftIntMath(leftInt);
             int positionCol = 0 ;
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                out.print(squareColor);
+                if(highlighting) {
+                    ChessPosition testPos = new ChessPosition(squareRow, boardCol);
+                    if (highlightPositions.contains(testPos)) {
+                        out.print(SET_BG_COLOR_GREEN);
+                    }
+                }
+                else{
+                  out.print(squareColor);
+                }
                     int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
                     int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
                     out.print(EMPTY.repeat(prefixLength));
@@ -183,8 +191,13 @@ public class Board {
         return rightInt ;
     }
 
-    public static void highlight(ChessPosition startPosition, ChessBoard board) {
-        board.getPiece(startPosition).pieceMoves(board, startPosition) ;
+    public static void highlight(ChessGame game , Collection<ChessMove> validMoves) {
+        highlighting = Boolean.TRUE ;
+        for(ChessMove move: validMoves){
+            highlightPositions.add(move.getEndPosition()) ;
+        }
+        main(game.getBoard()) ;
+        highlighting = Boolean.FALSE ;
     }
 
     public static void setPieceMap(){

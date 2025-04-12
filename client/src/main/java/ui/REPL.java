@@ -105,7 +105,7 @@ public String eval(String input) {
             case "leave" -> gameClient.leave(currentAuthData);
             case "move" -> gameClient.makeMove(currentAuthData) ;
             case "resign" -> gameClient.resign(currentAuthData);
-            case "highlight" -> "highlight" ; // are these additions ok?
+            case "highlight" -> gameClient.highlight();
             case "quit" -> "quit";
             default -> help();
         };

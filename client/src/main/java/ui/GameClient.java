@@ -11,6 +11,8 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_GREEN;
@@ -134,6 +136,8 @@ public class GameClient implements ServerMessageObserver {
         System.out.println("Piece position:");
         printPrompt();
         ChessPosition startPosition = helperMethods.positionGetter(new Scanner(System.in)) ;
+        Collection<ChessMove> highlightMoves = currGame.validMoves(startPosition) ;
+        Board.highlight(currGame, highlightMoves);
         return "Here are your available moves!" ;
     }
 
