@@ -4,7 +4,10 @@ import serverfacade.ServerFacade;
 
 import java.util.Scanner;
 import websocket.ServerMessageObserver;
+import websocket.WebSocketFacade;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import static ui.EscapeSequences.*;
@@ -14,8 +17,10 @@ public class REPL implements ServerMessageObserver {
     private State state = State.SIGNEDOUT ;
     private Boolean inGame = false ;
     ServerFacade serverFacade = ServerFacade.getInstance(8080);
+    ServerMessageObserver notificationHandler;
+    WebSocketFacade ws = new WebSocketFacade("http://localhost:8080", notificationHandler) ;
 
-    public REPL(){}
+    public REPL() throws Exception {}
 
     RegisterClient registerClient = RegisterClient.getInstance(serverFacade);
     GameClient gameClient = GameClient.getInstance(serverFacade);
@@ -94,7 +99,7 @@ public String eval(String input) {
             case "play" -> gameClient.play() ;
             case "observe" -> gameClient.observeGame();// how in the world do we do this?
             case "redraw" -> "placeholder" ;
-            case "leave" -> "ws.leave" ;
+            case "leave" -> "placeholder" ;
             case "move" -> "move" ;
             case "resign" -> "resign" ;
             case "highlight" -> "highlight" ; // are these additions ok?
@@ -112,17 +117,26 @@ public String eval(String input) {
     @Override
     public void notify(ServerMessage serverMessage) {
         // check for which message it is "load game" "error" "ect."
-        System.out.println(SET_TEXT_COLOR_RED + serverMessage) ;
         if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-            Board.main(null);
+            Board.main(null); //
+            LoadGameMessage LGM = (LoadGameMessage) serverMessage;
+            LGM.getGame() ;
+        } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+            NotificationMessage noteMessage = (NotificationMessage) serverMessage;
+            System.out.println(SET_TEXT_COLOR_RED + noteMessage.getNotificationMessage());
+        }
+        else if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+            ErrorMessage noteMessage = (ErrorMessage) serverMessage;
+            System.out.println(SET_TEXT_COLOR_RED + noteMessage.getErrorMessage());
         }
         printPrompt();
     }
 }
 
+// SP: a1 to EP: B1 letters can be numbers with 'a' - 96 = 1; watch out for row and column order col = value.charAt(0)
 // Questions:
 // 1. Who should be calling my WS and should I be passing it into my clients? like
 // 2. How do I get the game from my LOAD_GAME message?
-// 3. Should I be loading the game from my REPL or game client?
+// 3. Should I be loading the game from my REPL or game client? (client)
 // 4. should I be passing in my chessboard into board?
 // 5. Do I add new optionality to the REPL? for connect, make move, ect.

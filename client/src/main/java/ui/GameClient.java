@@ -89,6 +89,21 @@ public class GameClient {
             throw new Exception();
         }
     }
+    public void makeMove() throws Exception {
+        try { // should always give White prespective
+            System.out.println("Please provide the game list number for the game you want to observe?");
+            printPrompt();
+            Scanner scanner = new Scanner(System.in);
+            int gameNum = Integer.parseInt(scanner.next()) ;
+            int gameID = server.getGameNumList().get(gameNum) ;
+            board = Board.getInstance("white");
+            board.main(null);
+            return String.format("Congrats! You are now apart of game # %s !", gameNum);
+        } catch (Exception ex) {
+            throw new Exception();
+        }
+    }
+
     public static GameClient getInstance(ServerFacade server){
         if(instance == null){
             return instance = new GameClient(server) ;
