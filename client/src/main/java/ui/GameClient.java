@@ -97,21 +97,13 @@ public class GameClient {
         try { // should always give White prespective
             System.out.println("Start position:");
             printPrompt();
-            Scanner scanner = new Scanner(System.in);
-            String start = scanner.next() ;
-            int col = start.charAt(0) - 96 ;
-            int row = start.charAt(1) ;
-            ChessPosition startPosition = new ChessPosition(row, col) ;
+            ChessPosition startPosition = helperMethods.positionGetter(new Scanner(System.in)) ;
             System.out.println("End position:");
             printPrompt();
-            scanner = new Scanner(System.in);
-            String end = scanner.next() ;
-            col = end.charAt(0) - 96 ;
-            row = end.charAt(1) ;
-            ChessPosition endPosition = new ChessPosition(row, col) ;
+            ChessPosition endPosition = helperMethods.positionGetter(new Scanner(System.in)) ;
             ChessMove move = new ChessMove(startPosition, endPosition, null) ;
             ws.makeMove(authData.authToken(), currGameID, move);
-            return " " ; // what String should I return ?
+            return "You have made a move!" ; // what String should I return ?
         } catch (Exception ex) {
             throw new Exception();
         }
@@ -128,6 +120,13 @@ public class GameClient {
     public String resign(AuthData authData) throws Exception {
         ws.resign(authData.authToken(), currGameID);
         return "You have resigned!" ;
+    }
+
+    public String highlight() throws Exception {
+        System.out.println("Piece position:");
+        printPrompt();
+        ChessPosition startPosition = helperMethods.positionGetter(new Scanner(System.in)) ;
+        return "Here are your available moves!" ;
     }
 
 

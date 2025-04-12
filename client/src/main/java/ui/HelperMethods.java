@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 
 import java.util.Scanner;
 
@@ -31,5 +32,13 @@ public class HelperMethods {
             teamColor = ChessGame.TeamColor.WHITE ;
         }
         return teamColor ;
+    }
+
+    public ChessPosition positionGetter(Scanner scanner){
+        String start = scanner.next() ;
+        int col = start.charAt(0) - 96 ;
+        int row = start.charAt(1) ;
+        ChessPosition position = new ChessPosition(row, col) ;
+        return position ;
     }
 }
