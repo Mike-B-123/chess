@@ -119,15 +119,15 @@ public String eval(String input) {
         // check for which message it is "load game" "error" "ect."
         if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
             Board.main(null); //
-            LoadGameMessage LGM = (LoadGameMessage) serverMessage;
-            LGM.getGame() ;
+            LoadGameMessage loadGameMessage = (LoadGameMessage) serverMessage;
+            loadGameMessage.getGame() ;
         } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
             NotificationMessage noteMessage = (NotificationMessage) serverMessage;
             System.out.println(SET_TEXT_COLOR_RED + noteMessage.getNotificationMessage());
         }
         else if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
-            ErrorMessage noteMessage = (ErrorMessage) serverMessage;
-            System.out.println(SET_TEXT_COLOR_RED + noteMessage.getErrorMessage());
+            ErrorMessage errorMessage = (ErrorMessage) serverMessage;
+            System.out.println(SET_TEXT_COLOR_RED + errorMessage.getErrorMessage());
         }
         printPrompt();
     }
