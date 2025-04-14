@@ -2,7 +2,10 @@ import chess.*;
 import ui.REPL;
 
 public class Main {
+    private static REPL repl ;
+
     public static void main(String[] args) throws Exception {
+        repl = new REPL() ;
         try {
             var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
             System.out.println("♕ 240 Chess Client: " + piece);
@@ -14,11 +17,11 @@ public class Main {
                 serverUrl = args[0];
             }
 
-            new REPL().run();
+            repl.run();
         }
         catch (Exception ex){
             System.out.print("\n");
-            new REPL().run();
+            repl.run() ;
         }
     }
 }

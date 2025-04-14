@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import model.Game;
 import model.User;
@@ -59,6 +60,7 @@ public class MySQLGameDAO implements GameDAO{
 
     public Game createGame(String gameName) throws DataAccessException {
         try {
+            // the 4 lines above are new
             String chessGame = new Gson().toJson(new ChessGame()) ;
             var statement = "INSERT INTO gameInfo (gameName, chessGame) VALUES (?, ?)";
             int id = executeUpdateReturn(statement, gameName, chessGame);

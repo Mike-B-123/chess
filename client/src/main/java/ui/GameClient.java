@@ -28,11 +28,13 @@ public class GameClient implements ServerMessageObserver {
     private static Integer currGameID ;
     private final WebSocketFacade ws ;
     private String message ;
+    private ChessGame.TeamColor teamColor ;
 
 
     public GameClient(ServerFacade inputServer, WebSocketFacade ws) {
         this.server = inputServer ;
-        this.ws = ws;
+        this.ws = ws ;
+        ws.setNotificationHandler(this);
     }
 
 
@@ -66,7 +68,7 @@ public class GameClient implements ServerMessageObserver {
             throw new Exception();
         }
     }
-    public String play() throws Exception {
+    public String play(AuthData authData) throws Exception {
         try {
             System.out.println("Please provide the game list number for the game you want to join?");
             printPrompt();
@@ -78,10 +80,15 @@ public class GameClient implements ServerMessageObserver {
             printPrompt();
             scanner = new Scanner(System.in);
             String color = scanner.next();
+            if(color.equalsIgnoreCase("black")){
+                teamColor = ChessGame.TeamColor.BLACK ;
+            }
+            else{
+                teamColor = ChessGame.TeamColor.WHITE ;
+            }
             JoinData joinData = new JoinData(helperMethods.colorVerificationHelp(color), gameID) ;
             server.joinGameCall(joinData) ;
-            printBoard = new ChessBoard() ;
-            board.main(printBoard, currGame.getTeamTurn());
+            ws.connect(authData.authToken(), currGameID);
             return String.format("Congrats! You are now apart of game # %s !", gameNum);
         } catch (Exception ex) {
             throw new Exception();
@@ -89,14 +96,14 @@ public class GameClient implements ServerMessageObserver {
 
 
     }
-    public String observeGame() throws Exception {
+    public String observeGame(AuthData authData) throws Exception {
         try { // should always give White prespective
             System.out.println("Please provide the game list number for the game you want to observe?");
             printPrompt();
             Scanner scanner = new Scanner(System.in);
             int gameNum = Integer.parseInt(scanner.next()) ;
             currGameID = server.getGameNumList().get(gameNum) ;
-            board = Board.getInstance("white");
+            ws.connect(authData.authToken(), currGameID);
             board.main(printBoard, ChessGame.TeamColor.WHITE);
             return String.format("Congrats! You are now apart of game # %s !", gameNum);
         } catch (Exception ex) {
@@ -122,11 +129,12 @@ public class GameClient implements ServerMessageObserver {
     public String redraw() throws Exception {
         // fix this
         Board.main(printBoard, currGame.getTeamTurn());
+        System.out.print(SET_TEXT_COLOR_GREEN);
         return "Here's your board!" ;
     }
     public String leave(AuthData authData) throws Exception {
         ws.leave(authData.authToken(), currGameID);
-        return message ;
+        return "you have left" ;
     }
     public String resign(AuthData authData) throws Exception {
         ws.resign(authData.authToken(), currGameID);
@@ -160,6 +168,7 @@ public class GameClient implements ServerMessageObserver {
             LoadGameMessage loadGameMessage = (LoadGameMessage) serverMessage;
             currGame = loadGameMessage.getGame() ;
             printBoard = currGame.getBoard() ;
+            board.main(printBoard, teamColor);
             message = loadGameMessage.getMessage() ;
         } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
             NotificationMessage noteMessage = (NotificationMessage) serverMessage;

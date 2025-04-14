@@ -16,11 +16,10 @@ public class WebSocketFacade extends Endpoint{
     Session session;
     ServerMessageObserver notificationHandler;
 
-    public WebSocketFacade(String url, ServerMessageObserver notificationHandler) throws Exception {
+    public WebSocketFacade(String url) throws Exception {
     try { // the notification Handler handles displaying recieved message, so it deals with UI work. Dont print is WS
         url = url.replace("http", "ws");
         URI socketURI = new URI(url + "/ws");
-        this.notificationHandler = notificationHandler;
 
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, socketURI);
@@ -46,7 +45,9 @@ public class WebSocketFacade extends Endpoint{
         throw new Exception(ex.getMessage());
     }
 }
-
+public void setNotificationHandler(ServerMessageObserver notificationHandler){
+        this.notificationHandler = notificationHandler ;
+}
 
 //Endpoint requires this method, but you don't have to do anything
 @Override // should I get rid of this?

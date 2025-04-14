@@ -6,34 +6,29 @@ import serverfacade.ServerFacade;
 import java.util.Scanner;
 import websocket.ServerMessageObserver;
 import websocket.WebSocketFacade;
-import websocket.messages.ErrorMessage;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
 
 import static ui.EscapeSequences.*;
 
 public class REPL {
 
     private State state = State.SIGNEDOUT ;
-    private Boolean inGame = false ;
+    private Boolean inGame = Boolean.FALSE ;
     ServerFacade serverFacade = ServerFacade.getInstance(8080);
-    ServerMessageObserver notificationHandler;
-    WebSocketFacade ws = new WebSocketFacade("http://localhost:8080", notificationHandler) ;
+    WebSocketFacade ws = new WebSocketFacade("http://localhost:8080") ;
     private AuthData currentAuthData ;
 
     public REPL() throws Exception {}
 
-    RegisterClient registerClient = RegisterClient.getInstance(serverFacade);
+    RegisterClient registerClient = new RegisterClient(serverFacade) ;
     GameClient gameClient = GameClient.getInstance(serverFacade, ws);
 
     public void run() throws Exception {
-        System.out.println("Ready to play some Chess? First sign in! :)");
+        System.out.println("Ready to play some Chess? Let's go!!");
         System.out.print(help()) ;
         printPrompt();
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while (!result.equals("quit")) {
+        while (result == null || !result.equals("quit")) { // is the result == null ok?
             String line = scanner.next();
             try {
                 result = eval(line);
@@ -43,7 +38,11 @@ public class REPL {
                 } else if (result.contains("signed out")) {
                     setState(State.SIGNEDOUT);
                 }
+                if(result.contains("apart")){
+                    inGame = Boolean.TRUE ;
+                }
                 System.out.print(result);
+                System.out.print(SET_TEXT_COLOR_GREEN);
                 printPrompt();
             } catch (Throwable e) {
                 System.out.println("An Error has occured. Restart and try again. Tip: Focus on giving the EXACT inputs. :)") ;
@@ -70,7 +69,7 @@ public class REPL {
                     - quit
                     """;
         }
-        if(inGame = true) {
+        if(inGame == Boolean.TRUE) {
             return """
                     - help
                     - redraw (redraws board)
@@ -99,8 +98,8 @@ public String eval(String input) {
             case "logout" -> registerClient.logout() ;
             case "create" -> gameClient.createGame() ;
             case "list" -> gameClient.listGames();
-            case "play" -> gameClient.play() ;
-            case "observe" -> gameClient.observeGame();// how in the world do we do this?
+            case "play" -> gameClient.play(currentAuthData) ;
+            case "observe" -> gameClient.observeGame(currentAuthData);// how in the world do we do this?
             case "redraw" -> gameClient.redraw() ;
             case "leave" -> gameClient.leave(currentAuthData);
             case "move" -> gameClient.makeMove(currentAuthData) ;

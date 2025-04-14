@@ -34,12 +34,10 @@ public class Board {
     public static void main(ChessBoard chessBoard, ChessGame.TeamColor inputColor) {
         currentBoard = chessBoard ;
         teamColor = inputColor;
-        if(chessBoard == null){
-            currentBoard = new ChessBoard() ;
-        }
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         setPieceMap();
         out.print(ERASE_SCREEN);
+        out.println();
 
         drawHeaders(out);
         drawChessBoard(out);
