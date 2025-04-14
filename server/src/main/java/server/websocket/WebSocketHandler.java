@@ -84,7 +84,7 @@ public class WebSocketHandler {
         MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
         ChessGame chessGame = gameDAO.getGame(command.getGameID()).game() ;
         if(color != chessGame.getTeamTurn()){
-            connections.broadcastIndividual(command, new ErrorMessage("You can not move another player's piece!"));
+            connections.broadcastIndividual(command, new ErrorMessage("It is not your turn tsk tsk!"));
             return ;
         }
         if(chessGame.getGameOver()){

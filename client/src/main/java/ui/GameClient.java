@@ -120,7 +120,7 @@ public class GameClient implements ServerMessageObserver {
             ChessPosition endPosition = helperMethods.positionGetter(new Scanner(System.in)) ;
             ChessMove move = new ChessMove(startPosition, endPosition, null) ;
             ws.makeMove(authData.authToken(), currGameID, move);
-            return "good move!" ; // what String should I return ?
+            return "Move executing!" ; // what String should I return ?
         } catch (Exception ex) {
             throw new Exception();
         }
@@ -134,7 +134,7 @@ public class GameClient implements ServerMessageObserver {
     }
     public String leave(AuthData authData) throws Exception {
         ws.leave(authData.authToken(), currGameID);
-        return "Leave comensing" ;
+        return "Attempting to leave..." ;
     }
     public String resign(AuthData authData) throws Exception {
         ws.resign(authData.authToken(), currGameID);

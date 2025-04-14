@@ -41,6 +41,9 @@ public class REPL {
                 if(result.contains("apart")){
                     inGame = Boolean.TRUE ;
                 }
+                else if (result.contains("leave")){
+                    inGame = Boolean.FALSE ;
+                    }
                 System.out.print(result);
                 System.out.print(SET_TEXT_COLOR_GREEN);
                 printPrompt();
