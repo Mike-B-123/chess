@@ -23,12 +23,13 @@ public class GameClient implements ServerMessageObserver {
     private static GameClient instance ;
     private static HelperMethods helperMethods = HelperMethods.getInstance();
     private static Board board ;
+    private static AuthData currAuth = null;
     private static ChessBoard printBoard ;
     private static ChessGame currGame ;
     private static Integer currGameID ;
     private final WebSocketFacade ws ;
     private String message ;
-    private ChessGame.TeamColor teamColor ;
+    private ChessGame.TeamColor teamColor = ChessGame.TeamColor.WHITE;
 
 
     public GameClient(ServerFacade inputServer, WebSocketFacade ws) {
@@ -70,6 +71,7 @@ public class GameClient implements ServerMessageObserver {
     }
     public String play(AuthData authData) throws Exception {
         try {
+            currAuth = authData ;
             System.out.println("Please provide the game list number for the game you want to join?");
             printPrompt();
             Scanner scanner = new Scanner(System.in);
@@ -82,9 +84,6 @@ public class GameClient implements ServerMessageObserver {
             String color = scanner.next();
             if(color.equalsIgnoreCase("black")){
                 teamColor = ChessGame.TeamColor.BLACK ;
-            }
-            else{
-                teamColor = ChessGame.TeamColor.WHITE ;
             }
             JoinData joinData = new JoinData(helperMethods.colorVerificationHelp(color), gameID) ;
             server.joinGameCall(joinData) ;
@@ -104,7 +103,6 @@ public class GameClient implements ServerMessageObserver {
             int gameNum = Integer.parseInt(scanner.next()) ;
             currGameID = server.getGameNumList().get(gameNum) ;
             ws.connect(authData.authToken(), currGameID);
-            board.main(printBoard, ChessGame.TeamColor.WHITE);
             return String.format("Congrats! You are now apart of game # %s !", gameNum);
         } catch (Exception ex) {
             throw new Exception();
@@ -166,6 +164,18 @@ public class GameClient implements ServerMessageObserver {
         // check for which message it is "load game" "error" "ect."
         if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
             LoadGameMessage loadGameMessage = (LoadGameMessage) serverMessage;
+            if(loadGameMessage.getMessage().contains("promotion")){
+                System.out.print("You can promote a pawn!! You can choose a rook, knight, queen, or bishop.");
+                printPrompt();
+                Scanner scanner = new Scanner(System.in);
+                String piecePromotion = scanner.next() ;
+                ChessPiece.PieceType type = helperMethods.promotionCaculator(piecePromotion) ;
+                try {
+                    ws.promote(currAuth.authToken(), currGameID, type);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
             currGame = loadGameMessage.getGame() ;
             printBoard = currGame.getBoard() ;
             board.main(printBoard, teamColor);

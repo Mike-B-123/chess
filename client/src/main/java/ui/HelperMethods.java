@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessPiece;
 import chess.ChessPosition;
 
 import java.util.Scanner;
@@ -40,5 +41,16 @@ public class HelperMethods {
         int row = start.charAt(1) - 48 ;
         ChessPosition position = new ChessPosition(row, col) ;
         return position ;
+    }
+    public ChessPiece.PieceType promotionCaculator(String rawPiece){
+        ChessPiece.PieceType piece = ChessPiece.PieceType.QUEEN ;
+        if(rawPiece.equalsIgnoreCase("knight")){
+            piece = ChessPiece.PieceType.KNIGHT ;
+        } else if (rawPiece.equalsIgnoreCase("rook")) {
+            piece = ChessPiece.PieceType.ROOK ;
+        } else if (rawPiece.equalsIgnoreCase("bishop")) {
+            piece = ChessPiece.PieceType.BISHOP ;
+        }
+        return piece ;
     }
 }

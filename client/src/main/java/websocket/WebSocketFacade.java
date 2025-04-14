@@ -1,8 +1,10 @@
 package websocket;
 import chess.ChessMove;
+import chess.ChessPiece;
 import com.google.gson.Gson;
 import ui.Board;
 import websocket.commands.MakeMoveCommand;
+import websocket.commands.Promotion;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -86,5 +88,13 @@ public void resign(String authToken, Integer gameID) throws Exception {
         throw new Exception(ex.getMessage()) ;
     }
 }
+    public void promote(String authToken, Integer gameID, ChessPiece.PieceType type) throws Exception {
+        try {
+            var action = new Promotion(type, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage()) ;
+        }
+    }
 
 }

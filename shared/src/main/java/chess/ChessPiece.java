@@ -70,6 +70,9 @@ public class ChessPiece {
     public PieceType getPieceType() {
         return type;
     }
+    public void setPieceType(PieceType inputType) {
+        type = inputType;
+    }
 
     public void setRook() {
         rookPreviousMove = true ;

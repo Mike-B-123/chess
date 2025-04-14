@@ -2,6 +2,7 @@ package server.websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import com.google.gson.Gson;
 import dataaccess.* ;
 import model.Game;
@@ -9,6 +10,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.MakeMoveCommand;
+import websocket.commands.Promotion;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -23,81 +25,88 @@ import java.util.Timer;
 public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
-    private GameDAO gameDAO ;
-    private AuthDAO authDAO ;
-    private String whiteUserName ;
-    private String blackUserName ;
-    private String currentUserName ;
-    private String enemy ;
-    private ChessGame.TeamColor color ;
+    private GameDAO gameDAO;
+    private AuthDAO authDAO;
+    private String whiteUserName;
+    private String blackUserName;
+    private String currentUserName;
+    private String enemy;
+    private ChessGame.TeamColor color;
     HelperMethods helperMethods = HelperMethods.getInstance();
+    private ChessMove recentMove  ;
+
     public WebSocketHandler(GameDAO inputGameDAO, AuthDAO inputAuthDAO) {
-        this.gameDAO = inputGameDAO ;
-        this.authDAO = inputAuthDAO ;
+        this.gameDAO = inputGameDAO;
+        this.authDAO = inputAuthDAO;
     }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
-       if(helperMethods.falseInfo(gameDAO,authDAO,command,session)){
-           return ;
-       }
-       Game game = gameDAO.getGame(command.getGameID()) ;
-        blackUserName = game.blackUsername() ;
-        whiteUserName = game.whiteUsername() ;
-        currentUserName = authDAO.getUsernameFromAuth(command.getAuthToken());
-        if(Objects.equals(currentUserName, whiteUserName)){
-            enemy = blackUserName ;
-            color = ChessGame.TeamColor.WHITE ;
+        if (helperMethods.falseInfo(gameDAO, authDAO, command, session)) {
+            return;
         }
-        else if(Objects.equals(currentUserName, blackUserName)){
-            enemy = whiteUserName ;
-            color = ChessGame.TeamColor.BLACK ;
+        Game game = gameDAO.getGame(command.getGameID());
+        blackUserName = game.blackUsername();
+        whiteUserName = game.whiteUsername();
+        currentUserName = authDAO.getUsernameFromAuth(command.getAuthToken());
+        if (Objects.equals(currentUserName, whiteUserName)) {
+            enemy = blackUserName;
+            color = ChessGame.TeamColor.WHITE;
+        } else if (Objects.equals(currentUserName, blackUserName)) {
+            enemy = whiteUserName;
+            color = ChessGame.TeamColor.BLACK;
         }
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
             case MAKE_MOVE -> makeMove(message);
-            case LEAVE ->  leave(command);
+            case LEAVE -> leave(command);
             case RESIGN -> resign(command);
+           case PROMOTION -> promote(message);
         }
     }
 
     private void connect(UserGameCommand command, Session session) throws Exception {
         try {
-            Game game = gameDAO.getGame(command.getGameID()) ;
+            Game game = gameDAO.getGame(command.getGameID());
             connections.addAuthMap(command.getAuthToken(), session, command.getGameID());
-            if(game == null){
+            if (game == null) {
                 connections.broadcastIndividual(command, new ErrorMessage("This game does not exist!"));
             }
-            ChessGame chessGame = game.game() ;
+            ChessGame chessGame = game.game();
             var noteNotification = new NotificationMessage("A new user has connected to the game!");
             connections.broadcastMultiple(command, noteNotification);
             var loadNotification = new LoadGameMessage(chessGame);
             connections.broadcastIndividual(command, loadNotification);
-        }
-        catch (Exception ex){
-            var error = new ErrorMessage("An error occured while connecting. Try a new input.") ;
+        } catch (Exception ex) {
+            var error = new ErrorMessage("An error occured while connecting. Try a new input.");
             connections.broadcastIndividual(command, error);
         }
     }
+
     private void makeMove(String message) throws Exception {
         MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
-        ChessGame chessGame = gameDAO.getGame(command.getGameID()).game() ;
-        if(color != chessGame.getTeamTurn()){
+        ChessGame chessGame = gameDAO.getGame(command.getGameID()).game();
+        String loadMessage = "False" ;
+        if (color != chessGame.getTeamTurn()) {
             connections.broadcastIndividual(command, new ErrorMessage("It is not your turn tsk tsk!"));
-            return ;
+            return;
         }
-        if(chessGame.getGameOver()){
+        if (chessGame.getGameOver()) {
             connections.broadcastIndividual(command, new ErrorMessage("The game is over and no more moves can be made!"));
-            return ;
+            return;
         }
         try {
-            if(!Objects.equals(currentUserName, whiteUserName) && !Objects.equals(currentUserName, blackUserName)){
+            if (!Objects.equals(currentUserName, whiteUserName) && !Objects.equals(currentUserName, blackUserName)) {
                 connections.broadcastIndividual(command, new ErrorMessage("You're an observer and can not make a move."));
-                return ;
+                return;
             }
             ChessMove move = command.getMove();
+            recentMove = move ;
             String checking = helperMethods.mateCheck(chessGame, move, chessGame.getTeamTurn());
+            if(move.getEndPosition().getRow() == 8 || move.getEndPosition().getRow() == 0){
+                loadMessage = "promotion" ;
+            }
             if (chessGame.validMoves(move.getStartPosition()).contains(move)) {
                 if (!checking.contains("False")) {
                     var notification = new NotificationMessage(checking);
@@ -107,7 +116,8 @@ public class WebSocketHandler {
                 chessGame.makeMove(move);
                 gameDAO.updateGame(chessGame, command.getGameID());
                 var notification = new NotificationMessage("The other player has made a move!");
-                var loadNotification = new LoadGameMessage(chessGame) ;
+                var loadNotification = new LoadGameMessage(chessGame);
+                loadNotification.setMessage(loadMessage);
                 connections.broadcastMultiple(command, loadNotification);
                 connections.broadcastMultiple(command, notification);
                 connections.broadcastIndividual(command, loadNotification);
@@ -120,42 +130,56 @@ public class WebSocketHandler {
             connections.broadcastIndividual(command, notification);
         }
     }
+
     private void leave(UserGameCommand command) throws Exception {
         try {
             var notification = new NotificationMessage(String.format(" %s has left the Game :( wait for a new player!", currentUserName));
-            if(Objects.equals(currentUserName, blackUserName) || Objects.equals(currentUserName, whiteUserName)){
+            if (Objects.equals(currentUserName, blackUserName) || Objects.equals(currentUserName, whiteUserName)) {
                 gameDAO.updateUser(color, command.getGameID());
             }
             connections.broadcastMultiple(command, notification);
             connections.removeAuthMap(command.getAuthToken());
-        }
-        catch (Exception ex){
-            var notification = new ErrorMessage("You are unable to leave the game. Try again!") ;
+        } catch (Exception ex) {
+            var notification = new ErrorMessage("You are unable to leave the game. Try again!");
             connections.broadcastIndividual(command, notification);
         }
         // if it's an observer do I need to update the game?
     }
+
     private void resign(UserGameCommand command) throws Exception {
         try {
-            ChessGame game = gameDAO.getGame(command.getGameID()).game() ;
-            if(game.getGameOver()){
+            ChessGame game = gameDAO.getGame(command.getGameID()).game();
+            if (game.getGameOver()) {
                 connections.broadcastIndividual(command, new ErrorMessage("You can not resign after the game is over!"));
-                return ;
+                return;
             }
-            if(Objects.equals(currentUserName, blackUserName) || Objects.equals(currentUserName, whiteUserName)) {
+            if (Objects.equals(currentUserName, blackUserName) || Objects.equals(currentUserName, whiteUserName)) {
                 var notification = new NotificationMessage(String.format(" %s has resigned! %s won!! :)", currentUserName, enemy));
                 connections.broadcastMultiple(command, notification);
                 connections.broadcastIndividual(command, notification);
                 game.setGameOver(true);
-                gameDAO.updateGame(game, command.getGameID()) ;
-            }
-            else{
-                var notification = new ErrorMessage("You are an Observer and can not resign. Please leave instead.") ;
+                gameDAO.updateGame(game, command.getGameID());
+            } else {
+                var notification = new ErrorMessage("You are an Observer and can not resign. Please leave instead.");
                 connections.broadcastIndividual(command, notification);
             }
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    private void promote(String promotionCommand) throws Exception {
+        Promotion command = new Gson().fromJson(promotionCommand, Promotion.class);
+        try{
+        ChessGame chessGame = gameDAO.getGame(command.getGameID()).game();
+        ChessPiece piece = chessGame.getBoard().getPiece(recentMove.getEndPosition());
+        piece.setPieceType(command.getType());
+        chessGame.getBoard().addPiece(recentMove.getEndPosition(), piece);
+        gameDAO.updateGame(chessGame, command.getGameID());
         }
         catch (Exception ex) {
-            throw new Exception(ex.getMessage());
+            var notification = new ErrorMessage("Error executing promotion!");
+            connections.broadcastIndividual(command, notification);
         }
     }
 }

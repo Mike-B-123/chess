@@ -1,6 +1,7 @@
 package ui;
 import chess.*;
 import serverfacade.ServerFacade;
+import websocket.messages.NotificationMessage;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -126,6 +127,9 @@ public class Board {
                     out.print(EMPTY.repeat(prefixLength));
                     ChessPosition position = new ChessPosition(squareRow + 1, boardCol + 1) ;
                     ChessPiece piece = currentBoard.getPiece(position) ;
+                    if(piece.getPieceType() == ChessPiece.PieceType.PAWN && boardCol == 7 || boardCol == 0){
+
+                    }
                 if (piece != null) {
                     pieceHelper(piece, out);
                 }
