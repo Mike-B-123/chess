@@ -37,7 +37,7 @@ public class HelperMethods {
     public ChessPosition positionGetter(Scanner scanner){
         String start = scanner.next() ;
         int col = start.charAt(0) - 96 ;
-        int row = start.charAt(1) ;
+        int row = start.charAt(1) - 48 ;
         ChessPosition position = new ChessPosition(row, col) ;
         return position ;
     }

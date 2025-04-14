@@ -120,7 +120,7 @@ public class GameClient implements ServerMessageObserver {
             ChessPosition endPosition = helperMethods.positionGetter(new Scanner(System.in)) ;
             ChessMove move = new ChessMove(startPosition, endPosition, null) ;
             ws.makeMove(authData.authToken(), currGameID, move);
-            return message ; // what String should I return ?
+            return "good move!" ; // what String should I return ?
         } catch (Exception ex) {
             throw new Exception();
         }
@@ -134,11 +134,11 @@ public class GameClient implements ServerMessageObserver {
     }
     public String leave(AuthData authData) throws Exception {
         ws.leave(authData.authToken(), currGameID);
-        return "you have left" ;
+        return "Leave comensing" ;
     }
     public String resign(AuthData authData) throws Exception {
         ws.resign(authData.authToken(), currGameID);
-        return message ;
+        return "trying to resign now!" ;
     }
 
     public String highlight() throws Exception {
@@ -170,13 +170,16 @@ public class GameClient implements ServerMessageObserver {
             printBoard = currGame.getBoard() ;
             board.main(printBoard, teamColor);
             message = loadGameMessage.getMessage() ;
+            System.out.print(message);
         } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
             NotificationMessage noteMessage = (NotificationMessage) serverMessage;
             message = noteMessage.getNotificationMessage() ;
+            System.out.print(message);
         }
         else if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
             ErrorMessage errorMessage = (ErrorMessage) serverMessage;
             message = errorMessage.getErrorMessage() ;
+            System.out.print(message);
         }
         printPrompt();
     }

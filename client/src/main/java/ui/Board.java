@@ -140,11 +140,11 @@ public class Board {
     }
     private static void pieceHelper(ChessPiece piece, PrintStream out){
         if (piece != null) {
-            if (piece.getTeamColor().equals(ChessGame.TeamColor.BLACK)) {
-                out.print(SET_TEXT_COLOR_BLUE);
+            if (piece.getTeamColor().equals(ChessGame.TeamColor.WHITE)) {
+                out.print(SET_TEXT_COLOR_RED);
                 out.print(pieceMap.get(piece.getPieceType()));
             } else {
-                out.print(SET_TEXT_COLOR_RED);
+                out.print(SET_TEXT_COLOR_BLUE);
                 out.print(pieceMap.get(piece.getPieceType()));
             }
         } else {
