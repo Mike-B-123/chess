@@ -117,6 +117,16 @@ public class GameClient implements ServerMessageObserver {
             printPrompt();
             ChessPosition endPosition = helperMethods.positionGetter(new Scanner(System.in)) ;
             ChessMove move = new ChessMove(startPosition, endPosition, null) ;
+            if(printBoard.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN) {
+                if (move.getEndPosition().getRow() == 8 || move.getEndPosition().getRow() == 1) {
+                    System.out.print("You can promote a pawn!! You can choose a rook, knight, queen, or bishop. (be exact)! ");
+                    printPrompt();
+                    Scanner scanner = new Scanner(System.in);
+                    String piecePromotion = scanner.next() ;
+                    ChessPiece.PieceType type = helperMethods.promotionCaculator(piecePromotion) ;
+                    move.setPromotionPiece(type);
+                }
+            }
             ws.makeMove(authData.authToken(), currGameID, move);
             return "Move executing!" ; // what String should I return ?
         } catch (Exception ex) {
@@ -188,18 +198,6 @@ public class GameClient implements ServerMessageObserver {
         // check for which message it is "load game" "error" "ect."
         else if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
             LoadGameMessage loadGameMessage = (LoadGameMessage) serverMessage;
-            if(loadGameMessage.getGame().getPromotion()){
-                System.out.print("You can promote a pawn!! You can choose a rook, knight, queen, or bishop.");
-                printPrompt();
-                Scanner scanner = new Scanner(System.in);
-                String piecePromotion = scanner.next() ;
-                ChessPiece.PieceType type = helperMethods.promotionCaculator(piecePromotion) ;
-                try {
-                    ws.promote(currAuth.authToken(), currGameID, type);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
             currGame = loadGameMessage.getGame() ;
             System.out.println();
             printBoard = currGame.getBoard() ;

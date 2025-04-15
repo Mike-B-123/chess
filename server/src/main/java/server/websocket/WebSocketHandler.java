@@ -17,6 +17,8 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 import java.util.Objects;
+import java.util.Timer;
+
 
 
 @WebSocket
@@ -29,7 +31,6 @@ public class WebSocketHandler {
     private String blackUserName;
     private String currentUserName;
     private String enemy;
-    private String joined ;
     private ChessGame.TeamColor color;
     HelperMethods helperMethods = HelperMethods.getInstance();
     private ChessMove recentMove  ;
@@ -52,34 +53,28 @@ public class WebSocketHandler {
         if (Objects.equals(currentUserName, whiteUserName)) {
             enemy = blackUserName;
             color = ChessGame.TeamColor.WHITE;
-            joined = "White" ;
         } else if (Objects.equals(currentUserName, blackUserName)) {
             enemy = whiteUserName;
             color = ChessGame.TeamColor.BLACK;
-            joined = "Black" ;
-        }
-        else{
-            joined = "observer" ;
         }
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
             case MAKE_MOVE -> makeMove(message);
             case LEAVE -> leave(command);
             case RESIGN -> resign(command);
-           case PROMOTION -> promote(message);
+            case PROMOTION -> promote(message);
         }
     }
 
     private void connect(UserGameCommand command, Session session) throws Exception {
         try {
-            String userName = authDAO.getUsernameFromAuth(command.getAuthToken()) ;
             Game game = gameDAO.getGame(command.getGameID());
             connections.addAuthMap(command.getAuthToken(), session, command.getGameID());
             if (game == null) {
                 connections.broadcastIndividual(command, new ErrorMessage("This game does not exist!"));
             }
             ChessGame chessGame = game.game();
-            var noteNotification = new NotificationMessage(String.format("%s has connected as %s", currentUserName, joined));
+            var noteNotification = new NotificationMessage("A new user has connected to the game!");
             connections.broadcastMultiple(command, noteNotification);
             var loadNotification = new LoadGameMessage(chessGame);
             connections.broadcastIndividual(command, loadNotification);
@@ -91,7 +86,8 @@ public class WebSocketHandler {
 
     private void makeMove(String message) throws Exception {
         MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
-        ChessGame chessGame = gameDAO.getGame(command.getGameID()).game();
+        Game game = gameDAO.getGame(command.getGameID()) ;
+        ChessGame chessGame = game.game() ;
         if (color != chessGame.getTeamTurn()) {
             connections.broadcastIndividual(command, new ErrorMessage("It is not your turn tsk tsk!"));
             return;
@@ -107,15 +103,7 @@ public class WebSocketHandler {
             }
             ChessMove move = command.getMove();
             recentMove = move ;
-            String checking = helperMethods.mateCheck(gameDAO.getGame(command.getGameID()), move, chessGame.getTeamTurn(), command);
-            if(chessGame.getBoard().getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.PAWN) {
-                if (move.getEndPosition().getRow() == 8 || move.getEndPosition().getRow() == 0) {
-                    chessGame.setPromotion(true);
-                    var loadNotification = new LoadGameMessage(chessGame);
-                    connections.broadcastIndividual(command, loadNotification);
-                    chessGame.setPromotion(false);
-                }
-            }
+            String checking = helperMethods.mateCheck(game, move, chessGame.getTeamTurn(), command);
             if (chessGame.validMoves(move.getStartPosition()).contains(move)) {
                 if (!checking.contains("False")) {
                     var notification = new NotificationMessage(checking);
@@ -124,7 +112,7 @@ public class WebSocketHandler {
                 }
                 chessGame.makeMove(move);
                 gameDAO.updateGame(chessGame, command.getGameID());
-                var notification = new NotificationMessage(String.format("The %s has made a move!", currentUserName));
+                var notification = new NotificationMessage("The other player has made a move!");
                 var loadNotification = new LoadGameMessage(chessGame);
                 connections.broadcastMultiple(command, loadNotification);
                 connections.broadcastMultiple(command, notification);
@@ -141,7 +129,7 @@ public class WebSocketHandler {
 
     private void leave(UserGameCommand command) throws Exception {
         try {
-            var notification = new NotificationMessage(String.format(" %s has left the game", currentUserName));
+            var notification = new NotificationMessage(String.format(" %s has left the Game :( wait for a new player!", currentUserName));
             if (Objects.equals(currentUserName, blackUserName) || Objects.equals(currentUserName, whiteUserName)) {
                 gameDAO.updateUser(color, command.getGameID());
             }
@@ -179,11 +167,11 @@ public class WebSocketHandler {
     private void promote(String promotionCommand) throws Exception {
         Promotion command = new Gson().fromJson(promotionCommand, Promotion.class);
         try{
-        ChessGame chessGame = gameDAO.getGame(command.getGameID()).game();
-        ChessPiece piece = chessGame.getBoard().getPiece(recentMove.getEndPosition());
-        piece.setPieceType(command.getType());
-        chessGame.getBoard().addPiece(recentMove.getEndPosition(), piece);
-        gameDAO.updateGame(chessGame, command.getGameID());
+            ChessGame chessGame = gameDAO.getGame(command.getGameID()).game();
+            ChessPiece piece = chessGame.getBoard().getPiece(recentMove.getEndPosition());
+            piece.setPieceType(command.getType());
+            chessGame.getBoard().addPiece(recentMove.getEndPosition(), piece);
+            gameDAO.updateGame(chessGame, command.getGameID());
         }
         catch (Exception ex) {
             var notification = new ErrorMessage("Error executing promotion!");

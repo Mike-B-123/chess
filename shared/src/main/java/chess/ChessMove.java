@@ -44,6 +44,10 @@ public class ChessMove {
         return promotionPiece ; // double check this is right implementation with establishing the object
         // do I need to do an 'if' statement to see if it's 'null' and then return 'null' or is this automatic?
     }
+    public void setPromotionPiece(ChessPiece.PieceType type) {
+        this.promotionPiece = type ; // double check this is right implementation with establishing the object
+        // do I need to do an 'if' statement to see if it's 'null' and then return 'null' or is this automatic?
+    }
 
     @Override
     public boolean equals(Object o) {

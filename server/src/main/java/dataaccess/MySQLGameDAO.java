@@ -60,8 +60,9 @@ public class MySQLGameDAO implements GameDAO{
 
     public Game createGame(String gameName) throws DataAccessException {
         try {
+            ChessGame game = new ChessGame();
             // the 4 lines above are new
-            String chessGame = new Gson().toJson(new ChessGame()) ;
+            String chessGame = new Gson().toJson(game) ;
             var statement = "INSERT INTO gameInfo (gameName, chessGame) VALUES (?, ?)";
             int id = executeUpdateReturn(statement, gameName, chessGame);
             return getGame(id) ;
@@ -122,7 +123,6 @@ public class MySQLGameDAO implements GameDAO{
         }
         return Boolean.TRUE ;
     }
-
 
     private Game readGame(ResultSet rs) throws DataAccessException {
         try {
