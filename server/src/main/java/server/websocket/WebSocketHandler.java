@@ -111,6 +111,9 @@ public class WebSocketHandler {
             if(chessGame.getBoard().getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.PAWN) {
                 if (move.getEndPosition().getRow() == 8 || move.getEndPosition().getRow() == 0) {
                     chessGame.setPromotion(true);
+                    var loadNotification = new LoadGameMessage(chessGame);
+                    connections.broadcastIndividual(command, loadNotification);
+                    chessGame.setPromotion(false);
                 }
             }
             if (chessGame.validMoves(move.getStartPosition()).contains(move)) {
