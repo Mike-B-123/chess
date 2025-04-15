@@ -29,6 +29,7 @@ public class WebSocketHandler {
     private String blackUserName;
     private String currentUserName;
     private String enemy;
+    private String joined ;
     private ChessGame.TeamColor color;
     HelperMethods helperMethods = HelperMethods.getInstance();
     private ChessMove recentMove  ;
@@ -51,9 +52,14 @@ public class WebSocketHandler {
         if (Objects.equals(currentUserName, whiteUserName)) {
             enemy = blackUserName;
             color = ChessGame.TeamColor.WHITE;
+            joined = "White" ;
         } else if (Objects.equals(currentUserName, blackUserName)) {
             enemy = whiteUserName;
             color = ChessGame.TeamColor.BLACK;
+            joined = "Black" ;
+        }
+        else{
+            joined = "observer" ;
         }
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
@@ -66,13 +72,14 @@ public class WebSocketHandler {
 
     private void connect(UserGameCommand command, Session session) throws Exception {
         try {
+            String userName = authDAO.getUsernameFromAuth(command.getAuthToken()) ;
             Game game = gameDAO.getGame(command.getGameID());
             connections.addAuthMap(command.getAuthToken(), session, command.getGameID());
             if (game == null) {
                 connections.broadcastIndividual(command, new ErrorMessage("This game does not exist!"));
             }
             ChessGame chessGame = game.game();
-            var noteNotification = new NotificationMessage("A new user has connected to the game!");
+            var noteNotification = new NotificationMessage(String.format("%s has connected as %s", currentUserName, joined));
             connections.broadcastMultiple(command, noteNotification);
             var loadNotification = new LoadGameMessage(chessGame);
             connections.broadcastIndividual(command, loadNotification);
@@ -100,9 +107,11 @@ public class WebSocketHandler {
             }
             ChessMove move = command.getMove();
             recentMove = move ;
-            String checking = helperMethods.mateCheck(chessGame, move, chessGame.getTeamTurn());
-            if(move.getEndPosition().getRow() == 8 || move.getEndPosition().getRow() == 0){
-                chessGame.setPromotion(true);
+            String checking = helperMethods.mateCheck(gameDAO.getGame(command.getGameID()), move, chessGame.getTeamTurn(), command);
+            if(chessGame.getBoard().getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.PAWN) {
+                if (move.getEndPosition().getRow() == 8 || move.getEndPosition().getRow() == 0) {
+                    chessGame.setPromotion(true);
+                }
             }
             if (chessGame.validMoves(move.getStartPosition()).contains(move)) {
                 if (!checking.contains("False")) {
@@ -112,7 +121,7 @@ public class WebSocketHandler {
                 }
                 chessGame.makeMove(move);
                 gameDAO.updateGame(chessGame, command.getGameID());
-                var notification = new NotificationMessage("The other player has made a move!");
+                var notification = new NotificationMessage(String.format("The %s has made a move!", currentUserName));
                 var loadNotification = new LoadGameMessage(chessGame);
                 connections.broadcastMultiple(command, loadNotification);
                 connections.broadcastMultiple(command, notification);
@@ -129,7 +138,7 @@ public class WebSocketHandler {
 
     private void leave(UserGameCommand command) throws Exception {
         try {
-            var notification = new NotificationMessage(String.format(" %s has left the Game :( wait for a new player!", currentUserName));
+            var notification = new NotificationMessage(String.format(" %s has left the game", currentUserName));
             if (Objects.equals(currentUserName, blackUserName) || Objects.equals(currentUserName, whiteUserName)) {
                 gameDAO.updateUser(color, command.getGameID());
             }

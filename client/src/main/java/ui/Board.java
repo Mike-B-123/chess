@@ -216,6 +216,10 @@ public class Board {
     public static void highlight(ChessGame game , Collection<ChessMove> validMoves, ChessGame.TeamColor color) {
         preHighlight = currentBoard ;
         highlightPositions = new ArrayList<>() ;
+        if(validMoves.isEmpty()){
+            main(game.getBoard(), color) ;
+            return ;
+        }
         highlighting = Boolean.TRUE ;
         for(ChessMove move: validMoves){
             ChessPosition endPost = move.getEndPosition() ;

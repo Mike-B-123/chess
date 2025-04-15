@@ -19,24 +19,34 @@ import java.util.Objects;
 
 public class HelperMethods {
     private static HelperMethods instance ;
-    public String mateCheck(ChessGame game, ChessMove move, ChessGame.TeamColor teamColor) throws InvalidMoveException {
+    public String mateCheck(Game orGame, ChessMove move, ChessGame.TeamColor color, MakeMoveCommand com) throws InvalidMoveException, DataAccessException {
         // how do I return a tuple? I mean I could do a record class but that seems silly
+        ChessGame game = orGame.game() ;
+        String White = orGame.whiteUsername() ;
+        String Black = orGame.blackUsername();
+        String userName = White ;
         ChessGame.TeamColor enemy = ChessGame.TeamColor.BLACK;
+        String enemyUer = Black ;
         String middle = new Gson().toJson(game) ;
         ChessGame testGame = new Gson().fromJson(middle, ChessGame.class) ;
         testGame.makeMove(move);
-        if(teamColor == ChessGame.TeamColor.BLACK){
+        if(color == ChessGame.TeamColor.BLACK){
             enemy = ChessGame.TeamColor.WHITE ;
+            enemyUer = White ;
+            userName = Black ;
         }
         if(testGame.isInCheckmate(enemy)){
-            return String.format("That's checkmate! %s wins!", teamColor) ;
-        } else if (testGame.isInStalemate(teamColor)) {
+            return String.format("%s is in  checkmate! %s wins!", enemyUer, userName) ;
+        }
+        else if(testGame.isInCheckmate(color)) {
+            return String.format("%s is in  checkmate! %s wins!", userName, enemyUer) ;
+        }else if (testGame.isInStalemate(color)) {
             return "It's a stalemate!" ;
         } else if (testGame.isInCheck(enemy)) {
-            return String.format("%s is in Check!", enemy) ;
+            return String.format("%s is in Check!", enemyUer) ;
         }
-        else if (testGame.isInCheck(teamColor)) {
-            return String.format("%s is in Check!", teamColor);
+        else if (testGame.isInCheck(color)) {
+            return String.format("%s is in Check!", userName);
         }
         return "False" ;
     }

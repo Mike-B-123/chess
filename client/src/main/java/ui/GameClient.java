@@ -135,8 +135,22 @@ public class GameClient implements ServerMessageObserver {
         return "Attempting to leave..." ;
     }
     public String resign(AuthData authData) throws Exception {
-        ws.resign(authData.authToken(), currGameID);
-        return "trying to resign now!" ;
+        try {
+            System.out.print("Are you sure you want to resign? [yes/no]");
+            printPrompt();
+            Scanner scanner = new Scanner(System.in);
+            String answer = scanner.next();
+            if (answer.contains("yes")) {
+                ws.resign(authData.authToken(), currGameID);
+            } else if (answer.contains("no")) {
+                return "Good choice continue playing!";
+            } else {
+                throw new Exception("Not a valid answer!");
+            }
+            return "trying to resign now!";
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
     }
 
     public String highlight() throws Exception {
@@ -144,7 +158,7 @@ public class GameClient implements ServerMessageObserver {
         printPrompt();
         ChessPosition startPosition = helperMethods.positionGetter(new Scanner(System.in)) ;
         Collection<ChessMove> highlightMoves = currGame.validMoves(startPosition) ;
-        if(highlightMoves.isEmpty()){
+        if(highlightMoves == null || highlightMoves.isEmpty()){
             return "There are no valid moves :(" ;
         }
         Board.highlight(currGame, highlightMoves, teamColor);
@@ -169,6 +183,7 @@ public class GameClient implements ServerMessageObserver {
             message = noteMessage.getNotificationMessage() ;
             System.out.println();
             System.out.print(message);
+            System.out.println();
         }
         // check for which message it is "load game" "error" "ect."
         else if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
@@ -186,6 +201,7 @@ public class GameClient implements ServerMessageObserver {
                 }
             }
             currGame = loadGameMessage.getGame() ;
+            System.out.println();
             printBoard = currGame.getBoard() ;
             board.main(printBoard, teamColor);
         } else if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
@@ -193,6 +209,7 @@ public class GameClient implements ServerMessageObserver {
             message = errorMessage.getErrorMessage() ;
             System.out.println();
             System.out.print(message);
+            System.out.println();
         }
         printPrompt();
     }
