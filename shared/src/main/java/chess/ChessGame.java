@@ -13,6 +13,7 @@ public class ChessGame {
     private ChessGame.TeamColor team;
     private ChessBoard currentBoard;
     private Boolean gameOver = Boolean.FALSE;
+    private Boolean promotion = Boolean.FALSE ;
 
 
     public ChessGame() {
@@ -35,6 +36,13 @@ public class ChessGame {
 
     public void setGameOver(Boolean gameOver) {
         this.gameOver = gameOver;
+    }
+    public Boolean getPromotion() {
+        return promotion;
+    }
+
+    public void setPromotion(Boolean inputPromotion) {
+        this.promotion = inputPromotion;
     }
 
     /**

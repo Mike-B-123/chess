@@ -5,6 +5,7 @@ import websocket.messages.NotificationMessage;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
@@ -21,6 +22,7 @@ public class Board {
     private static ChessGame.TeamColor teamColor ; // how do I fix the static aspect?
     private static HashMap<ChessPiece.PieceType, String> pieceMap = new HashMap<>();
     private static Board instance ;
+    private static ChessBoard preHighlight ;
     private static ChessBoard currentBoard ;
     private static Collection<ChessPosition> highlightPositions ;
     private static Boolean highlighting = Boolean.FALSE ;
@@ -116,20 +118,20 @@ public class Board {
                 if(highlighting) {
                     ChessPosition testPos = new ChessPosition(squareRow, boardCol);
                     if (highlightPositions.contains(testPos)) {
-                        out.print(SET_BG_COLOR_GREEN);
+                        out.print(SET_BG_COLOR_GREEN) ;
+                    }
+                    else{
+                        out.print(squareColor);
                     }
                 }
                 else{
-                  out.print(squareColor);
+                    out.print(squareColor);
                 }
                     int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
                     int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
                     out.print(EMPTY.repeat(prefixLength));
                     ChessPosition position = new ChessPosition(squareRow + 1, boardCol + 1) ;
                     ChessPiece piece = currentBoard.getPiece(position) ;
-                    if(piece.getPieceType() == ChessPiece.PieceType.PAWN && boardCol == 7 || boardCol == 0){
-
-                    }
                 if (piece != null) {
                     pieceHelper(piece, out);
                 }
@@ -211,13 +213,18 @@ public class Board {
         return rightInt ;
     }
 
-    public static void highlight(ChessGame game , Collection<ChessMove> validMoves) {
+    public static void highlight(ChessGame game , Collection<ChessMove> validMoves, ChessGame.TeamColor color) {
+        preHighlight = currentBoard ;
+        highlightPositions = new ArrayList<>() ;
         highlighting = Boolean.TRUE ;
         for(ChessMove move: validMoves){
-            highlightPositions.add(move.getEndPosition()) ;
+            ChessPosition endPost = move.getEndPosition() ;
+            ChessPosition addPost = new ChessPosition(endPost.getRow() - 1, endPost.getColumn() -1) ;
+            highlightPositions.add(addPost) ;
         }
-        main(game.getBoard(), game.getTeamTurn()) ;
+       main(game.getBoard(), color) ;
         highlighting = Boolean.FALSE ;
+        currentBoard = preHighlight ;
     }
 
     public static void setPieceMap(){

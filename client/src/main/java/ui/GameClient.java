@@ -144,7 +144,10 @@ public class GameClient implements ServerMessageObserver {
         printPrompt();
         ChessPosition startPosition = helperMethods.positionGetter(new Scanner(System.in)) ;
         Collection<ChessMove> highlightMoves = currGame.validMoves(startPosition) ;
-        Board.highlight(currGame, highlightMoves);
+        if(highlightMoves.isEmpty()){
+            return "There are no valid moves :(" ;
+        }
+        Board.highlight(currGame, highlightMoves, teamColor);
         return "Here are your available moves!" ;
     }
 
@@ -161,10 +164,16 @@ public class GameClient implements ServerMessageObserver {
 
     @Override
     public void notify(ServerMessage serverMessage) {
+        if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+            NotificationMessage noteMessage = (NotificationMessage) serverMessage;
+            message = noteMessage.getNotificationMessage() ;
+            System.out.println();
+            System.out.print(message);
+        }
         // check for which message it is "load game" "error" "ect."
-        if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
+        else if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
             LoadGameMessage loadGameMessage = (LoadGameMessage) serverMessage;
-            if(loadGameMessage.getMessage().contains("promotion")){
+            if(loadGameMessage.getGame().getPromotion()){
                 System.out.print("You can promote a pawn!! You can choose a rook, knight, queen, or bishop.");
                 printPrompt();
                 Scanner scanner = new Scanner(System.in);
@@ -179,16 +188,10 @@ public class GameClient implements ServerMessageObserver {
             currGame = loadGameMessage.getGame() ;
             printBoard = currGame.getBoard() ;
             board.main(printBoard, teamColor);
-            message = loadGameMessage.getMessage() ;
-            System.out.print(message);
-        } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-            NotificationMessage noteMessage = (NotificationMessage) serverMessage;
-            message = noteMessage.getNotificationMessage() ;
-            System.out.print(message);
-        }
-        else if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+        } else if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
             ErrorMessage errorMessage = (ErrorMessage) serverMessage;
             message = errorMessage.getErrorMessage() ;
+            System.out.println();
             System.out.print(message);
         }
         printPrompt();

@@ -17,8 +17,6 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 import java.util.Objects;
-import java.util.Timer;
-
 
 
 @WebSocket
@@ -87,7 +85,6 @@ public class WebSocketHandler {
     private void makeMove(String message) throws Exception {
         MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
         ChessGame chessGame = gameDAO.getGame(command.getGameID()).game();
-        String loadMessage = "False" ;
         if (color != chessGame.getTeamTurn()) {
             connections.broadcastIndividual(command, new ErrorMessage("It is not your turn tsk tsk!"));
             return;
@@ -105,7 +102,7 @@ public class WebSocketHandler {
             recentMove = move ;
             String checking = helperMethods.mateCheck(chessGame, move, chessGame.getTeamTurn());
             if(move.getEndPosition().getRow() == 8 || move.getEndPosition().getRow() == 0){
-                loadMessage = "promotion" ;
+                chessGame.setPromotion(true);
             }
             if (chessGame.validMoves(move.getStartPosition()).contains(move)) {
                 if (!checking.contains("False")) {
@@ -117,7 +114,6 @@ public class WebSocketHandler {
                 gameDAO.updateGame(chessGame, command.getGameID());
                 var notification = new NotificationMessage("The other player has made a move!");
                 var loadNotification = new LoadGameMessage(chessGame);
-                loadNotification.setMessage(loadMessage);
                 connections.broadcastMultiple(command, loadNotification);
                 connections.broadcastMultiple(command, notification);
                 connections.broadcastIndividual(command, loadNotification);
